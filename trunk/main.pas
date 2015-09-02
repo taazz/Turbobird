@@ -12,119 +12,121 @@ interface
 uses
   Classes, SysUtils, IBConnection, sqldb, sqldblib, memds, FileUtil, LResources,
   Forms, Controls, Graphics, Dialogs, Menus, ComCtrls, Reg, QueryWindow, Grids,
-  ExtCtrls, Buttons, StdCtrls, TableManage, dbugintf, turbocommon, importtable,
+  ExtCtrls, Buttons, StdCtrls, ActnList, TableManage, dbugintf, turbocommon, importtable,
   IniFiles;
 
 {$i turbocommon.inc}
 
 type
   TDatabaseRec = record
-    Index: Integer;
-    RegRec: TRegisteredDatabase;
-    OrigRegRec: TRegisteredDatabase;
-    IBConnection: TIBConnection;
-    SQLTrans: TSQLTransaction;
+    Index        :Integer;
+    RegRec       :TRegisteredDatabase;
+    OrigRegRec   :TRegisteredDatabase;
+    IBConnection :TIBConnection;
+    SQLTrans     :TSQLTransaction;
   end;
 
   { TfmMain }
 
   TfmMain = class(TForm)
-      editorFontDialog: TFontDialog;
-      Image1: TImage;
-    ImageList1: TImageList;
-    mnOptions: TMenuItem;
-    mnEditorFont: TMenuItem;
-    toolbarImages: TImageList;
-    MainMenu1: TMainMenu;
-    mdsHistory: TMemDataset;
-    lmImportTable: TMenuItem;
-    mnFile: TMenuItem;
-    lmDisplayView: TMenuItem;
-    lmViewTrigger: TMenuItem;
-    lmCreateDB: TMenuItem;
-    lmRegdb: TMenuItem;
-    lmRestore: TMenuItem;
-    lmSweep: TMenuItem;
-    lmAddUser: TMenuItem;
-    lmChangePassword: TMenuItem;
-    lmUserPermManagement: TMenuItem;
-    lmRolePerManagement: TMenuItem;
-    lmSetGen: TMenuItem;
-    lmDisconnect: TMenuItem;
-    lmCopyTable: TMenuItem;
-    lmCopyUserPermission: TMenuItem;
-    lmViewFields: TMenuItem;
-    lmEditField: TMenuItem;
-    lmDBInfo: TMenuItem;
-    lmCopyRolePermission: TMenuItem;
-    lmCompare: TMenuItem;
-    lmGetIncrementGen: TMenuItem;
-    lmDropTable: TMenuItem;
-    lmRecalculateStatistics: TMenuItem;
-    mnuImport: TMenuItem;
-    mnExit: TMenuItem;
-    mnCreateDB: TMenuItem;
-    mnRegDB: TMenuItem;
-    mnHelp: TMenuItem;
-    mnAbout: TMenuItem;
-    lmEditReg: TMenuItem;
-    lmUnregisterDatabase: TMenuItem;
-    lmViewFirst1000: TMenuItem;
-    lmViewStoredProcedure: TMenuItem;
-    lmViewGen: TMenuItem;
-    lmNewTable: TMenuItem;
-    lmNewGen: TMenuItem;
-    lmCreateAutoInc: TMenuItem;
-    lmCreateStoredProc: TMenuItem;
-    lmEditProc: TMenuItem;
-    lmCreateView: TMenuItem;
-    lmDisplay1000V: TMenuItem;
-    lmEditView: TMenuItem;
-    lmCreateTrigger: TMenuItem;
-    lmEditTrigger: TMenuItem;
-    lmActivateTrig: TMenuItem;
-    lmDeactiveTrig: TMenuItem;
-    lmScriptTable: TMenuItem;
-    lmScriptTableCreate: TMenuItem;
-    lmScriptInsert: TMenuItem;
-    lmScriptUpdate: TMenuItem;
-    lmEditTable: TMenuItem;
-    lmCallStoreProc: TMenuItem;
-    lmEditDataForm: TMenuItem;
-    lmNewUDF: TMenuItem;
-    lmViewUDF: TMenuItem;
-    lmOpenSystemTable: TMenuItem;
-    lmViewDomain: TMenuItem;
-    lmNewDomain: TMenuItem;
-    lmNewRole: TMenuItem;
-    lmSeparator: TMenuItem;
-    lmOpenQuery: TMenuItem;
-    lmNewException: TMenuItem;
-    lmRefresh: TMenuItem;
-    lmDropException: TMenuItem;
-    lmScriptException: TMenuItem;
-    lmScriptDatabase: TMenuItem;
-    lmConnectAs: TMenuItem;
-    lmPermissions: TMenuItem;
-    lmRolePermissions: TMenuItem;
-    lmTableManage: TMenuItem;
-    lmSeparator2: TMenuItem;
-    lmBackup: TMenuItem;
-    mnRestore: TMenuItem;
-    PageControl1: TPageControl;
-    pmDatabase: TPopupMenu;
-    Splitter1: TSplitter;
-    SQLQuery1: TSQLQuery;
-    StatusBar1: TStatusBar;
-    TabSheet1: TTabSheet;
-    ToolBar1: TToolBar;
-    tbtnCreateNewDB: TToolButton;
-    tbtnRegDatabase: TToolButton;
-    tbtnRestoreDatabase: TToolButton;
-    tbtnAbout: TToolButton;
-    ToolButton3: TToolButton;
-    tbtnEditorFont: TToolButton;
-    tvMain: TTreeView;
+    actDBRegister :TAction;
+    ActionList1 :TActionList;
+    editorFontDialog        :TFontDialog;
+    Image1                  :TImage;
+    ImageList1              :TImageList;
+    mnOptions               :TMenuItem;
+    mnEditorFont            :TMenuItem;
+    toolbarImages           :TImageList;
+    MainMenu1               :TMainMenu;
+    mdsHistory              :TMemDataset;
+    lmImportTable           :TMenuItem;
+    mnFile                  :TMenuItem;
+    lmDisplayView           :TMenuItem;
+    lmViewTrigger           :TMenuItem;
+    lmCreateDB              :TMenuItem;
+    lmRegdb                 :TMenuItem;
+    lmRestore               :TMenuItem;
+    lmSweep                 :TMenuItem;
+    lmAddUser               :TMenuItem;
+    lmChangePassword        :TMenuItem;
+    lmUserPermManagement    :TMenuItem;
+    lmRolePerManagement     :TMenuItem;
+    lmSetGen                :TMenuItem;
+    lmDisconnect            :TMenuItem;
+    lmCopyTable             :TMenuItem;
+    lmCopyUserPermission    :TMenuItem;
+    lmViewFields            :TMenuItem;
+    lmEditField             :TMenuItem;
+    lmDBInfo                :TMenuItem;
+    lmCopyRolePermission    :TMenuItem;
+    lmCompare               :TMenuItem;
+    lmGetIncrementGen       :TMenuItem;
+    lmDropTable             :TMenuItem;
+    lmRecalculateStatistics :TMenuItem;
+    mnuImport               :TMenuItem;
+    mnExit                  :TMenuItem;
+    mnCreateDB              :TMenuItem;
+    mnRegDB                 :TMenuItem;
+    mnHelp                  :TMenuItem;
+    mnAbout                 :TMenuItem;
+    lmEditReg               :TMenuItem;
+    lmUnregisterDatabase    :TMenuItem;
+    lmViewFirst1000         :TMenuItem;
+    lmViewStoredProcedure   :TMenuItem;
+    lmViewGen               :TMenuItem;
+    lmNewTable              :TMenuItem;
+    lmNewGen                :TMenuItem;
+    lmCreateAutoInc         :TMenuItem;
+    lmCreateStoredProc      :TMenuItem;
+    lmEditProc              :TMenuItem;
+    lmCreateView            :TMenuItem;
+    lmDisplay1000V          :TMenuItem;
+    lmEditView              :TMenuItem;
+    lmCreateTrigger         :TMenuItem;
+    lmEditTrigger           :TMenuItem;
+    lmActivateTrig          :TMenuItem;
+    lmDeactiveTrig          :TMenuItem;
+    lmScriptTable           :TMenuItem;
+    lmScriptTableCreate     :TMenuItem;
+    lmScriptInsert          :TMenuItem;
+    lmScriptUpdate          :TMenuItem;
+    lmEditTable             :TMenuItem;
+    lmCallStoreProc         :TMenuItem;
+    lmEditDataForm          :TMenuItem;
+    lmNewUDF                :TMenuItem;
+    lmViewUDF               :TMenuItem;
+    lmOpenSystemTable       :TMenuItem;
+    lmViewDomain            :TMenuItem;
+    lmNewDomain             :TMenuItem;
+    lmNewRole               :TMenuItem;
+    lmSeparator             :TMenuItem;
+    lmOpenQuery             :TMenuItem;
+    lmNewException          :TMenuItem;
+    lmRefresh               :TMenuItem;
+    lmDropException         :TMenuItem;
+    lmScriptException       :TMenuItem;
+    lmScriptDatabase        :TMenuItem;
+    lmConnectAs             :TMenuItem;
+    lmPermissions           :TMenuItem;
+    lmRolePermissions       :TMenuItem;
+    lmTableManage           :TMenuItem;
+    lmSeparator2            :TMenuItem;
+    lmBackup                :TMenuItem;
+    mnRestore               :TMenuItem;
+    PageControl1            :TPageControl;
+    pmDatabase              :TPopupMenu;
+    Splitter1               :TSplitter;
+    SQLQuery1               :TSQLQuery;
+    StatusBar1              :TStatusBar;
+    TabSheet1               :TTabSheet;
+    ToolBar1                :TToolBar;
+    tbtnCreateNewDB         :TToolButton;
+    tbtnRegDatabase         :TToolButton;
+    tbtnRestoreDatabase     :TToolButton;
+    tbtnAbout               :TToolButton;
+    ToolButton3             :TToolButton;
+    tbtnEditorFont          :TToolButton;
+    tvMain                  :TTreeView;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -1387,20 +1389,20 @@ procedure TfmMain.SetConnection(Index: Integer);
 begin
   if FIBConnection <> RegisteredDatabases[Index].IBConnection then
   begin
-    FIBConnection:= RegisteredDatabases[Index].IBConnection;
+    FIBConnection := RegisteredDatabases[Index].IBConnection;
     // This used to say FIBConnection.Close which will simply also close all open
     // queries - not a good idea
     //FIBConnection.Close;
-    FSQLTransaction:= RegisteredDatabases[Index].SQLTrans;
-    FIBConnection.Transaction:= FSQLTransaction;
-    SQLQuery1.DataBase:= FIBConnection;
-    SQLQuery1.Transaction:= FSQLTransaction;
+    FSQLTransaction           := RegisteredDatabases[Index].SQLTrans;
+    FIBConnection.Transaction := FSQLTransaction;
+    SQLQuery1.DataBase        := FIBConnection;
+    SQLQuery1.Transaction     := FSQLTransaction;
   end;
 end;
 
 procedure TfmMain.SetFocus;
 begin
-  if not FActivated then
+  if not FActivated then //1?
     inherited SetFocus;
 end;
 

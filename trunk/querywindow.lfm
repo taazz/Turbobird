@@ -17,7 +17,7 @@ object fmQueryWindow: TfmQueryWindow
   OnShow = FormShow
   PopupMenu = pmTab
   Position = poScreenCenter
-  LCLVersion = '1.4.0.3'
+  LCLVersion = '1.4.2.0'
   object Panel1: TPanel
     Left = 0
     Height = 64
@@ -187,9 +187,9 @@ object fmQueryWindow: TfmQueryWindow
       end
       object cxAutoCommit: TCheckBox
         Left = 436
-        Height = 24
+        Height = 17
         Top = 2
-        Width = 116
+        Width = 81
         Caption = 'Auto Commit'
         Checked = True
         State = cbChecked

@@ -508,7 +508,8 @@ begin
   for i:= OutputTabsList.Count - 1 downto 0 do
   begin
     OutputTabsList.Objects[i].Free;
-    OutputTabsList.Delete(i);
+    OutputTabsList.Objects[i]:=Nil;
+    //OutputTabsList.Delete(i);
   end;
 end;
 
@@ -1350,8 +1351,7 @@ begin
         else  // Script
         begin
           try
-            if ExecuteScript(FQueryPart) then
-            begin
+            if ExecuteScript(FQueryPart) then begin
               Inc(FModifyCount);
               SqlType:= GetSQLType(FQueryPart, Command);
               fmMain.AddToSQLHistory(FRegRec.Title, SqlType, FQueryPart);
@@ -1655,8 +1655,8 @@ begin
     OnCommit:= nil;
   end;
   FIBConnection.Close;
-  OutputTabsList.Free;
   RemovePreviousResultTabs;
+  OutputTabsList.Free;
   CloseAction:= caFree;
 end;
 

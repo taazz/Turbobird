@@ -18,17 +18,17 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="1107"/>
+      <BuildNr Value="1109"/>
       <StringTable ProductVersion="0.9"/>
     </VersionInfo>
     <BuildModes Count="2">
-      <Item1 Name="default" Default="True"/>
+      <Item1 Name="Release" Default="True"/>
       <Item2 Name="debug">
         <CompilerOptions>
           <Version Value="11"/>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../Synapse/source/lib"/>
+            <OtherUnitFiles Value="../Synapse/source/lib;../../../Workbench/Common-classes"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -36,6 +36,7 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
             <Checks>
               <IOChecks Value="True"/>
               <RangeChecks Value="True"/>
@@ -50,6 +51,7 @@
             <Debugging>
               <UseHeaptrc Value="True"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -97,7 +99,7 @@
         <PackageName Value="LCL"/>
       </Item6>
     </RequiredPackages>
-    <Units Count="45">
+    <Units Count="46">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -108,7 +110,6 @@
         <ComponentName Value="fmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="main"/>
       </Unit1>
       <Unit2>
         <Filename Value="createdb.pas"/>
@@ -123,6 +124,7 @@
         <ComponentName Value="fmReg"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Reg"/>
       </Unit3>
       <Unit4>
         <Filename Value="querywindow.pas"/>
@@ -297,6 +299,7 @@
         <ComponentName Value="fmCreateUser"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CreateUser"/>
       </Unit28>
       <Unit29>
         <Filename Value="changepass.pas"/>
@@ -389,6 +392,11 @@
         <Filename Value="csvdocument.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit44>
+      <Unit45>
+        <Filename Value="../../../Workbench/Common-classes/uevsmanagers.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UEvsManagers"/>
+      </Unit45>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -402,7 +410,6 @@
       <Optimizations>
         <OptimizationLevel Value="3"/>
       </Optimizations>
-      <SmallerCode Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>

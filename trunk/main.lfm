@@ -1,11 +1,11 @@
 object fmMain: TfmMain
-  Left = 320
+  Left = 434
   Height = 519
-  Top = 113
+  Top = 167
   Width = 942
   ActiveControl = tvMain
   Caption = 'TurboBird Admin for FireBird'
-  ClientHeight = 497
+  ClientHeight = 500
   ClientWidth = 942
   Color = clForm
   Font.Name = 'Sans'
@@ -548,17 +548,16 @@ object fmMain: TfmMain
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   Position = poScreenCenter
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.2.0'
   WindowState = wsMaximized
   object tvMain: TTreeView
     Left = 0
-    Height = 436
+    Height = 440
     Top = 40
     Width = 304
     Align = alLeft
     BackgroundColor = clWhite
     Color = clCream
-    DefaultItemHeight = 18
     ExpandSignColor = clMaroon
     HideSelection = False
     Images = ImageList1
@@ -573,14 +572,14 @@ object fmMain: TfmMain
   end
   object Splitter1: TSplitter
     Left = 304
-    Height = 436
+    Height = 440
     Top = 40
     Width = 14
     Beveled = True
   end
   object PageControl1: TPageControl
     Left = 321
-    Height = 429
+    Height = 433
     Top = 43
     Width = 618
     ActivePage = TabSheet1
@@ -600,7 +599,7 @@ object fmMain: TfmMain
     object TabSheet1: TTabSheet
       BorderWidth = 1
       Caption = 'Main'
-      ClientHeight = 398
+      ClientHeight = 402
       ClientWidth = 610
       Font.Color = clNavy
       Font.Name = 'Arial'
@@ -1150,8 +1149,8 @@ object fmMain: TfmMain
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 21
-    Top = 476
+    Height = 20
+    Top = 480
     Width = 942
     Panels = <    
       item
@@ -1200,6 +1199,7 @@ object fmMain: TfmMain
     end
     object ToolButton3: TToolButton
       Left = 121
+      Height = 40
       Top = 2
       Width = 10
       Caption = 'ToolButton3'
@@ -5899,5 +5899,12 @@ object fmMain: TfmMain
     MaxFontSize = 0
     left = 40
     top = 56
+  end
+  object ActionList1: TActionList
+    left = 149
+    top = 271
+    object actDBRegister: TAction
+      Caption = 'actDBRegister'
+    end
   end
 end

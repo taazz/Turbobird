@@ -26,8 +26,8 @@ uses
   turbocommon, importtable, fileimport, csvdocument, sqldblib, uTBTypes;
 
 const
-  Major = 1;
-  Minor = 2;
+  Major   = 1;
+  Minor   = 2;
   Release = 1;
 
   VersionDate = '2010 - Jan 2015';

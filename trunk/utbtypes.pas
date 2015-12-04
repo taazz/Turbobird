@@ -41,6 +41,7 @@ type
   end;
   TConstraintCounts = array of TConstraintCount;
 
+  TEvsBackupRestoreOperation = (brBackup, brRestore);
 
 implementation
 

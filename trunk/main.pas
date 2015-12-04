@@ -52,8 +52,9 @@ type
     actRestoreDB            :TAction;
     actNewDB                :TAction;
     ActionList1             :TActionList;
+    CoolBar1 :TCoolBar;
     editorFontDialog        :TFontDialog;
-    Image1                  :TImage;
+    Image2 :TImage;
     ImageList1              :TImageList;
     MainMenu2               :TMainMenu;
     MenuItem1               :TMenuItem;
@@ -67,6 +68,12 @@ type
     MenuItem9               :TMenuItem;
     mnOptions               :TMenuItem;
     mnEditorFont            :TMenuItem;
+    tbtnAbout :TToolButton;
+    tbtnCreateNewDB :TToolButton;
+    tbtnEditorFont :TToolButton;
+    tbtnRegDatabase :TToolButton;
+    tbtnRestoreDatabase :TToolButton;
+    ToolBar1 :TToolBar;
     toolbarImages           :TImageList;
     MainMenu1               :TMainMenu;
     mdsHistory              :TMemDataset;
@@ -150,13 +157,8 @@ type
     SQLQuery1               :TSQLQuery;
     StatusBar1              :TStatusBar;
     TabSheet1               :TTabSheet;
-    ToolBar1                :TToolBar;
-    tbtnCreateNewDB         :TToolButton;
-    tbtnRegDatabase         :TToolButton;
-    tbtnRestoreDatabase     :TToolButton;
-    tbtnAbout               :TToolButton;
-    ToolButton3             :TToolButton;
-    tbtnEditorFont          :TToolButton;
+    NewTBarImages :TImageList;
+    ToolButton3 :TToolButton;
     tvMain                  :TTreeView;
     procedure actExitExecute(Sender :TObject);
     procedure actFontEditorExecute(Sender :TObject);
@@ -4298,14 +4300,13 @@ function TfmMain._FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
 var
   vCntr: Integer;
 begin
-  Result := nil;
-  for vCntr := 0 to Screen.FormCount - 1 do begin
-    if Screen.Forms[vCntr] is aClass then
-      if Screen.Forms[vCntr].Caption = aTitle then begin
-        Result := Screen.Forms[vCntr];
+  Result:= nil;
+  for vCntr:= 0 to Screen.FormCount - 1 do
+    if Screen.Forms[vCntr] is AClass then
+      if Screen.Forms[vCntr].Caption = ATitle then begin
+        Result:= Screen.Forms[vCntr];
         Break;
       end;
-  end;
 end;
 
 (****************  Delete Registration   *************************)
@@ -4416,8 +4417,7 @@ begin
       'ORDER BY s.RDB$FIELD_POSITION';
   List.Clear;
   SQLQuery1.Open;
-  while not SQLQuery1.EOF do
-  begin
+  while not SQLQuery1.EOF do begin
     List.Add(Trim(SQLQuery1.Fields[0].AsString));
     SQLQuery1.Next;
   end;

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, Buttons, ExtCtrls, Zipper, dbugintf
+  StdCtrls, Buttons, ExtCtrls, Zipper, dbugintf, uTBTypes
   {$IFDEF MSWINDOWS}
   , shlobj {for special folders}
   {$ENDIF};
@@ -50,11 +50,14 @@ type
     FUserSpecifiedBackupFile: boolean;
     // If backup combobox selected and user has not edited backup filename,
     // write a system-generated backup filename
+    function GetOperation :TEvsBackupRestoreOperation;
     procedure SetBackupFileName;
+    procedure SetOperation(aValue :TEvsBackupRestoreOperation);
   public
-    procedure Init(Title, Database, User, Password: string);
     { public declarations }
-  end; 
+    procedure Init(Title, Database, User, Password: string);
+    property Operation :TEvsBackupRestoreOperation read GetOperation write SetOperation;
+  end;
 
 var
   fmBackupRestore: TfmBackupRestore;
@@ -80,16 +83,14 @@ end;
 procedure TfmBackupRestore.sbBroseBackupFileClick(Sender: TObject);
 begin
   SaveDialog1.DefaultExt:= '.fbk';
-  if ((cbOperation.ItemIndex = 0) and (SaveDialog1.Execute)) or
-   ((cbOperation.ItemIndex = 1) and (OpenDialog1.Execute)) then
-  begin
-    if cbOperation.ItemIndex = 0 then //backup
-    begin
+  //if ((cbOperation.ItemIndex = 0) and (SaveDialog1.Execute)) or
+  // ((cbOperation.ItemIndex = 1) and (OpenDialog1.Execute)) then
+  // JKoz: a bit weird code above if the shortcircuit evaluation if disabled the savedialog will be executed twice
+  if (SaveDialog1.Execute) then begin
       edBackup.Text:= SaveDialog1.FileName;
-      FUserSpecifiedBackupFile:= false; //indicate user explicitly set filename
+    if Operation = brBackup then begin //JKOZ : does it make any diference if it is always set to false regardles of operation?
+      FUserSpecifiedBackupFile := False; //indicate user explicitly set filename
     end
-    else //restore
-      edBackup.Text:= OpenDialog1.FileName;
   end;
 end;
 
@@ -123,6 +124,16 @@ begin
   end;
 end;
 
+function TfmBackupRestore.GetOperation :TEvsBackupRestoreOperation;
+begin
+  Result := TEvsBackupRestoreOperation(cbOperation.ItemIndex);
+end;
+
+procedure TfmBackupRestore.SetOperation(aValue :TEvsBackupRestoreOperation);
+begin
+  cbOperation.ItemIndex := Integer(aValue);
+end;
+
 procedure TfmBackupRestore.Init(Title, Database, User, Password: string);
 begin
   FDatabase:= Database;
@@ -135,9 +146,7 @@ begin
   begin
     edHost.Text:= Trim(Copy(FDatabase, 1, Pos(':', FDatabase) - 1));
     edTargetDatabase.Text:= Trim(Copy(FDatabase, Pos(':', FDatabase) + 1, Length(FDatabase)));
-  end
-  else
-  begin
+  end else begin
     // Assume local host for *nix, embedded for Windows
     {$IFDEF MSWINDOWS}
     edHost.Text := '';
@@ -160,29 +169,25 @@ var
   FBKZippedFile: string; //name of fbk file when zip compressing
   Zipper: TZipper;
 begin
-  TempDir:= GetTempDir(false);
-  FireBirdServices:= TFirebirdServices.Create;
+  TempDir:= IncludeTrailingPathDelimiter(GetTempDir(False));//JKOZ make sure that the last character is a path delimeter.
+  FireBirdServices := TFirebirdServices.Create;
   try
     Screen.Cursor := crHourglass; // inform user of long-running operation
-    FireBirdServices.VerboseOutput:= True;
+    FireBirdServices.VerboseOutput := True;
     meLog.Clear;
-    with FireBirdServices do
-    begin
-      HostName:= edHost.Text;
-      DBName:= edTargetDatabase.Text;
-      UserName:= edUserName.Text;
-      Password:= edPassword.Text;
-      UserFile:= trim(edBackup.Text);
+    with FireBirdServices do begin
+      HostName := edHost.Text;
+      DBName   := edTargetDatabase.Text;
+      UserName := edUserName.Text;
+      Password := edPassword.Text;
+      UserFile := trim(edBackup.Text);
 
-      if LowerCase(ExtractFileExt(UserFile))='.zip' then
-      begin
-        if cbOperation.ItemIndex = 0 then
-        begin
+      {$REGION 'Decompress archive'}
+      if LowerCase(ExtractFileExt(UserFile))='.zip' then begin
+        if Operation = brBackup then begin
           // Backup: set up destination for backup process
           TempFile:= GetTempFilename(TempDir,'B');
-        end
-        else
-        begin
+        end else begin
           // Restore: unzip .fbk into temporary file
           TempFile:= sysutils.GetTempFilename;
           Unzipper:= TUnzipper.Create;
@@ -190,47 +195,47 @@ begin
             Unzipper.FileName:= UserFile;
             Unzipper.OutputPath:= TempDir;
             Unzipper.Examine;
-            if Unzipper.Entries.Count=0 then
-            begin
+            if Unzipper.Entries.Count=0 then begin
               ShowMessage(Format('%s contains no files. Aborting.',[UserFile]));
               exit;
             end;
-            if Unzipper.Entries.Count<>1 then
-            begin
+            if Unzipper.Entries.Count<>1 then begin
               ShowMessage(Format('%s has more than 1 files. Only zip files with one .fbk file are supported. Aborting.',[UserFile]));
               exit;
             end;
-            meLog.Lines.Add('Going to unzip file ' + UserFile + ':' + Unzipper.Entries[0].DiskFileName + ' into directory ' + TempDir);
+            meLog.Lines.Add('Decompressing file ' + UserFile + ':' + Unzipper.Entries[0].DiskFileName + ' into directory ' + TempDir);
             Unzipper.UnZipAllFiles; //we know we're unzipping just 1 file
-            TempFile:= TempDir +
-              ExtractFileName(Unzipper.Entries[0].DiskFileName);
+            TempFile := TempDir + ExtractFileName(Unzipper.Entries[0].DiskFileName);
           finally
             Unzipper.Free;
           end;
         end;
       end;
+      {$ENDREGION}
 
       if TempFile='' then
-        BackupFile:= UserFile // no zip files involved
+        BackupFile := UserFile // no zip files involved
       else
         {backup to temp, then zip later or
         restore from temp file}
-        BackupFile:= TempFile;
+        BackupFile := TempFile;
 
       AttachService;
       try
-        if cbOperation.ItemIndex = 0 then
-          StartBackup
-        else
-          StartRestore;
+        //if cbOperation.ItemIndex = 0 then
+        //  StartBackup
+        //else
+        //  StartRestore;
+        case Operation of
+          brBackup  :StartBackup;
+          brRestore :StartRestore;
+        end;
 
         while ServiceQuery(Res) do
           meLog.Lines.Add(Res);
 
-        if (TempFile<>'' {using zip file}) and
-          (cbOperation.ItemIndex <> 0 {restore}) then
-        // Delete temp file when restore from zip is done
-        begin
+        if (TempFile<>'' {using zip file}) and (Operation = brRestore) then begin
+          // Delete temp file when restore from zip is done
           Sleep(40); //give file system chance to update locks etc
           DeleteFile(TempFile);
         end;
@@ -263,8 +268,7 @@ begin
           Sleep(40); //give filesystem chance to update locks etc
           Sysutils.DeleteFile(TempFile);
         except
-          on E: Exception do
-          begin
+          on E: Exception do begin
             meLog.Lines.Add('Error compressing file. Technical details: '+E.Message);
           end;
         end;

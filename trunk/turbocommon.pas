@@ -5,9 +5,9 @@ SysTables covers functionality for which a db connection is required. }
 {$mode objfpc}{$H+}
 
 interface
-
+{.$DEFINE EVS_CONTAINERS}
 uses
-  Classes, SysUtils, sqldb;
+  Classes, SysUtils, sqldb {$IFDEF EVS_CONTAINERS},uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs;
 
 const
   // Some field types used in e.g. RDB$FIELDS
@@ -21,212 +21,40 @@ const
   // Update this whenever Firebird supports new character sets
   DefaultFBCharacterSet=42; //Used for GUI controls etc. UTF8 in CharacterSets below.
   // Available character sets as per Firebird 2.5
-  FBCharacterSets: array[0..51] of string =
-    ('NONE',
-    'ASCII',
-    'BIG_5',
-    'CP943C',
-    'CYRL',
-    'DOS437',
-    'DOS737',
-    'DOS775',
-    'DOS850',
-    'DOS852',
-    'DOS857',
-    'DOS858',
-    'DOS860',
-    'DOS861',
-    'DOS862',
-    'DOS863',
-    'DOS864',
-    'DOS865',
-    'DOS866',
-    'DOS869',
-    'EUCJ_0208',
-    'GB18030',
-    'GBK',
-    'GB_2312',
-    'ISO8859_1',
-    'ISO8859_13',
-    'ISO8859_2',
-    'ISO8859_3',
-    'ISO8859_4',
-    'ISO8859_5',
-    'ISO8859_6',
-    'ISO8859_7',
-    'ISO8859_8',
-    'ISO8859_9',
-    'KOI8R',
-    'KOI8U',
-    'KSC_5601',
-    'NEXT',
-    'OCTETS',
-    'SJIS_0208',
-    'TIS620',
-    'UNICODE_FSS', //obsolete
-    'UTF8', //good default
-    'WIN1250',
-    'WIN1251',
-    'WIN1252',
-    'WIN1253',
-    'WIN1254',
-    'WIN1255',
-    'WIN1256',
-    'WIN1257',
-    'WIN1258');
+  FBCharacterSets: array[0..51] of string =  ///Hate hate hate tall pieces of code.
+    ('NONE', 'ASCII', 'BIG_5', 'CP943C', 'CYRL', 'DOS437', 'DOS737', 'DOS775', 'DOS850', 'DOS852', 'DOS857', 'DOS858', 'DOS860', 'DOS861', 'DOS862',
+     'DOS863', 'DOS864', 'DOS865', 'DOS866', 'DOS869', 'EUCJ_0208', 'GB18030', 'GBK', 'GB_2312', 'ISO8859_1', 'ISO8859_13', 'ISO8859_2', 'ISO8859_3',
+     'ISO8859_4','ISO8859_5', 'ISO8859_6', 'ISO8859_7', 'ISO8859_8', 'ISO8859_9', 'KOI8R', 'KOI8U', 'KSC_5601', 'NEXT', 'OCTETS', 'SJIS_0208', 'TIS620',
+     'UNICODE_FSS', //obsolete
+     'UTF8', //good default
+     'WIN1250', 'WIN1251', 'WIN1252', 'WIN1253', 'WIN1254', 'WIN1255', 'WIN1256', 'WIN1257', 'WIN1258');
   // Available collations as per Firebird 2.5
   // Pairs of collation names and the character set name
   // that must be used to support this collation
-  FBCollations: array[0..148-1,0..1] of string =
-    (
-    ('ASCII','ASCII'),
-    ('BIG_5','BIG_5'),
-    ('BS_BA','WIN1250'),
-    ('CP943C','CP943C'),
-    ('CP943C_UNICODE','CP943C'),
-    ('CS_CZ','ISO8859_2'),
-    ('CYRL','CYRL'),
-    ('DA_DA','ISO8859_1'),
-    ('DB_CSY','DOS852'),
-    ('DB_DAN865','DOS865'),
-    ('DB_DEU437','DOS437'),
-    ('DB_DEU850','DOS850'),
-    ('DB_ESP437','DOS437'),
-    ('DB_ESP850','DOS850'),
-    ('DB_FIN437','DOS437'),
-    ('DB_FRA437','DOS437'),
-    ('DB_FRA850','DOS850'),
-    ('DB_FRC850','DOS850'),
-    ('DB_FRC863','DOS863'),
-    ('DB_ITA437','DOS437'),
-    ('DB_ITA850','DOS850'),
-    ('DB_NLD437','DOS437'),
-    ('DB_NLD850','DOS850'),
-    ('DB_NOR865','DOS865'),
-    ('DB_PLK','DOS852'),
-    ('DB_PTB850','DOS850'),
-    ('DB_PTG860','DOS860'),
-    ('DB_RUS','CYRL'),
-    ('DB_SLO','DOS852'),
-    ('DB_SVE437','DOS437'),
-    ('DB_SVE850','DOS850'),
-    ('DB_TRK','DOS857'),
-    ('DB_UK437','DOS437'),
-    ('DB_UK850','DOS850'),
-    ('DB_US437','DOS437'),
-    ('DB_US850','DOS850'),
-    ('DE_DE','ISO8859_1'),
-    ('DOS437','DOS437'),
-    ('DOS737','DOS737'),
-    ('DOS775','DOS775'),
-    ('DOS850','DOS850'),
-    ('DOS852','DOS852'),
-    ('DOS857','DOS857'),
-    ('DOS858','DOS858'),
-    ('DOS860','DOS860'),
-    ('DOS861','DOS861'),
-    ('DOS862','DOS862'),
-    ('DOS863','DOS863'),
-    ('DOS864','DOS864'),
-    ('DOS865','DOS865'),
-    ('DOS866','DOS866'),
-    ('DOS869','DOS869'),
-    ('DU_NL','ISO8859_1'),
-    ('EN_UK','ISO8859_1'),
-    ('EN_US','ISO8859_1'),
-    ('ES_ES','ISO8859_1'),
-    ('ES_ES_CI_AI','ISO8859_1'),
-    ('EUCJ_0208','EUCJ_0208'),
-    ('FI_FI','ISO8859_1'),
-    ('FR_CA','ISO8859_1'),
-    ('FR_FR','ISO8859_1'),
-    ('FR_FR_CI_AI','ISO8859_1'),
-    ('GB18030','GB18030'),
-    ('GB18030_UNICODE','GB18030'),
-    ('GBK','GBK'),
-    ('GBK_UNICODE','GBK'),
-    ('GB_2312','GB_2312'),
-    ('ISO8859_1','ISO8859_1'),
-    ('ISO8859_13','ISO8859_13'),
-    ('ISO8859_2','ISO8859_2'),
-    ('ISO8859_3','ISO8859_3'),
-    ('ISO8859_4','ISO8859_4'),
-    ('ISO8859_5','ISO8859_5'),
-    ('ISO8859_6','ISO8859_6'),
-    ('ISO8859_7','ISO8859_7'),
-    ('ISO8859_8','ISO8859_8'),
-    ('ISO8859_9','ISO8859_9'),
-    ('ISO_HUN','ISO8859_2'),
-    ('ISO_PLK','ISO8859_2'),
-    ('IS_IS','ISO8859_1'),
-    ('IT_IT','ISO8859_1'),
-    ('KOI8R','KOI8R'),
-    ('KOI8R_RU','KOI8R'),
-    ('KOI8U','KOI8U'),
-    ('KOI8U_UA','KOI8U'),
-    ('KSC_5601','KSC_5601'),
-    ('KSC_DICTIONARY','KSC_5601'),
-    ('LT_LT','ISO8859_13'),
-    ('NEXT','NEXT'),
-    ('NONE','NONE'),
-    ('NO_NO','ISO8859_1'),
-    ('NXT_DEU','NEXT'),
-    ('NXT_ESP','NEXT'),
-    ('NXT_FRA','NEXT'),
-    ('NXT_ITA','NEXT'),
-    ('NXT_US','NEXT'),
-    ('OCTETS','OCTETS'),
-    ('PDOX_ASCII','DOS437'),
-    ('PDOX_CSY','DOS852'),
-    ('PDOX_CYRL','CYRL'),
-    ('PDOX_HUN','DOS852'),
-    ('PDOX_INTL','DOS437'),
-    ('PDOX_ISL','DOS861'),
-    ('PDOX_NORDAN4','DOS865'),
-    ('PDOX_PLK','DOS852'),
-    ('PDOX_SLO','DOS852'),
-    ('PDOX_SWEDFIN','DOS437'),
-    ('PT_BR','ISO8859_1'),
-    ('PT_PT','ISO8859_1'),
-    ('PXW_CSY','WIN1250'),
-    ('PXW_CYRL','WIN1251'),
-    ('PXW_GREEK','WIN1253'),
-    ('PXW_HUN','WIN1250'),
-    ('PXW_HUNDC','WIN1250'),
-    ('PXW_INTL','WIN1252'),
-    ('PXW_INTL850','WIN1252'),
-    ('PXW_NORDAN4','WIN1252'),
-    ('PXW_PLK','WIN1250'),
-    ('PXW_SLOV','WIN1250'),
-    ('PXW_SPAN','WIN1252'),
-    ('PXW_SWEDFIN','WIN1252'),
-    ('PXW_TURK','WIN1254'),
-    ('SJIS_0208','SJIS_0208'),
-    ('SV_SV','ISO8859_1'),
-    ('TIS620','TIS620'),
-    ('TIS620_UNICODE','TIS620'),
-    ('UCS_BASIC','UTF8'),
-    ('UNICODE','UTF8'),
-    ('UNICODE_CI','UTF8'),
-    ('UNICODE_CI_AI','UTF8'),
-    ('UNICODE_FSS','UNICODE_FSS'),
-    ('UTF8','UTF8'),
-    ('WIN1250','WIN1250'),
-    ('WIN1251','WIN1251'),
-    ('WIN1251_UA','WIN1251'),
-    ('WIN1252','WIN1252'),
-    ('WIN1253','WIN1253'),
-    ('WIN1254','WIN1254'),
-    ('WIN1255','WIN1255'),
-    ('WIN1256','WIN1256'),
-    ('WIN1257','WIN1257'),
-    ('WIN1257_EE','WIN1257'),
-    ('WIN1257_LT','WIN1257'),
-    ('WIN1257_LV','WIN1257'),
-    ('WIN1258','WIN1258'),
-    ('WIN_CZ','WIN1250'),
-    ('WIN_CZ_CI_AI','WIN1250'),
-    ('WIN_PTBR','WIN1252')
+  FBCollations: array[0..147, 0..1] of string =
+    (('ASCII', 'ASCII'), ('BIG_5','BIG_5'), ('BS_BA','WIN1250'), ('CP943C','CP943C'), ('CP943C_UNICODE','CP943C'), ('CS_CZ','ISO8859_2'), ('CYRL','CYRL'),
+     ('DA_DA','ISO8859_1'), ('DB_CSY','DOS852'), ('DB_DAN865','DOS865'), ('DB_DEU437','DOS437'), ('DB_DEU850','DOS850'), ('DB_ESP437','DOS437'), ('DB_ESP850','DOS850'),
+     ('DB_FIN437','DOS437'), ('DB_FRA437','DOS437'), ('DB_FRA850','DOS850'), ('DB_FRC850','DOS850'), ('DB_FRC863','DOS863'), ('DB_ITA437','DOS437'),
+     ('DB_ITA850','DOS850'), ('DB_NLD437','DOS437'), ('DB_NLD850','DOS850'), ('DB_NOR865','DOS865'), ('DB_PLK','DOS852'), ('DB_PTB850','DOS850'),
+     ('DB_PTG860','DOS860'), ('DB_RUS','CYRL'), ('DB_SLO','DOS852'), ('DB_SVE437','DOS437'), ('DB_SVE850','DOS850'), ('DB_TRK','DOS857'), ('DB_UK437','DOS437'),
+     ('DB_UK850','DOS850'), ('DB_US437','DOS437'), ('DB_US850','DOS850'), ('DE_DE','ISO8859_1'), ('DOS437','DOS437'), ('DOS737','DOS737'), ('DOS775','DOS775'),
+     ('DOS850','DOS850'), ('DOS852','DOS852'), ('DOS857','DOS857'), ('DOS858','DOS858'), ('DOS860','DOS860'), ('DOS861','DOS861'), ('DOS862','DOS862'),
+     ('DOS863','DOS863'), ('DOS864','DOS864'), ('DOS865','DOS865'), ('DOS866','DOS866'), ('DOS869','DOS869'), ('DU_NL','ISO8859_1'), ('EN_UK','ISO8859_1'),
+     ('EN_US','ISO8859_1'), ('ES_ES','ISO8859_1'), ('ES_ES_CI_AI','ISO8859_1'), ('EUCJ_0208','EUCJ_0208'), ('FI_FI','ISO8859_1'), ('FR_CA','ISO8859_1'),
+     ('FR_FR','ISO8859_1'), ('FR_FR_CI_AI','ISO8859_1'), ('GB18030','GB18030'), ('GB18030_UNICODE','GB18030'), ('GBK','GBK'), ('GBK_UNICODE','GBK'),
+     ('GB_2312','GB_2312'), ('ISO8859_1','ISO8859_1'), ('ISO8859_13','ISO8859_13'), ('ISO8859_2','ISO8859_2'), ('ISO8859_3','ISO8859_3'), ('ISO8859_4','ISO8859_4'),
+     ('ISO8859_5','ISO8859_5'), ('ISO8859_6','ISO8859_6'), ('ISO8859_7','ISO8859_7'), ('ISO8859_8','ISO8859_8'), ('ISO8859_9','ISO8859_9'), ('ISO_HUN','ISO8859_2'),
+     ('ISO_PLK','ISO8859_2'), ('IS_IS','ISO8859_1'), ('IT_IT','ISO8859_1'), ('KOI8R','KOI8R'), ('KOI8R_RU','KOI8R'), ('KOI8U','KOI8U'), ('KOI8U_UA','KOI8U'),
+     ('KSC_5601','KSC_5601'), ('KSC_DICTIONARY','KSC_5601'), ('LT_LT','ISO8859_13'), ('NEXT','NEXT'), ('NONE','NONE'), ('NO_NO','ISO8859_1'), ('NXT_DEU','NEXT'),
+     ('NXT_ESP','NEXT'), ('NXT_FRA','NEXT'), ('NXT_ITA','NEXT'), ('NXT_US','NEXT'), ('OCTETS','OCTETS'), ('PDOX_ASCII','DOS437'), ('PDOX_CSY','DOS852'),
+     ('PDOX_CYRL','CYRL'), ('PDOX_HUN','DOS852'), ('PDOX_INTL','DOS437'), ('PDOX_ISL','DOS861'), ('PDOX_NORDAN4','DOS865'), ('PDOX_PLK','DOS852'),
+     ('PDOX_SLO','DOS852'), ('PDOX_SWEDFIN','DOS437'), ('PT_BR','ISO8859_1'), ('PT_PT','ISO8859_1'), ('PXW_CSY','WIN1250'), ('PXW_CYRL','WIN1251'),
+     ('PXW_GREEK','WIN1253'), ('PXW_HUN','WIN1250'), ('PXW_HUNDC','WIN1250'), ('PXW_INTL','WIN1252'), ('PXW_INTL850','WIN1252'), ('PXW_NORDAN4','WIN1252'),
+     ('PXW_PLK','WIN1250'), ('PXW_SLOV','WIN1250'), ('PXW_SPAN','WIN1252'), ('PXW_SWEDFIN','WIN1252'), ('PXW_TURK','WIN1254'), ('SJIS_0208','SJIS_0208'),
+     ('SV_SV','ISO8859_1'), ('TIS620','TIS620'), ('TIS620_UNICODE','TIS620'), ('UCS_BASIC','UTF8'), ('UNICODE','UTF8'), ('UNICODE_CI','UTF8'), ('UNICODE_CI_AI','UTF8'),
+     ('UNICODE_FSS','UNICODE_FSS'), ('UTF8','UTF8'), ('WIN1250','WIN1250'), ('WIN1251','WIN1251'), ('WIN1251_UA','WIN1251'), ('WIN1252','WIN1252'),
+     ('WIN1253','WIN1253'), ('WIN1254','WIN1254'), ('WIN1255','WIN1255'), ('WIN1256','WIN1256'), ('WIN1257','WIN1257'), ('WIN1257_EE','WIN1257'),
+     ('WIN1257_LT','WIN1257'), ('WIN1257_LV','WIN1257'), ('WIN1258','WIN1258'), ('WIN_CZ','WIN1250'), ('WIN_CZ_CI_AI','WIN1250'), ('WIN_PTBR','WIN1252')
     );
 
 type
@@ -234,30 +62,76 @@ type
   // Note: the order and count must match the array below
   // Also, do not assign values to the individual enums; code depends
   // on them starting with 0 and being contiguous
-  TObjectType = (
-    otTables,
-    otGenerators,
-    otTriggers,
-    otViews,
-    otStoredProcedures,
-    otUDF {User-Defined functions},
-    otSystemTables,
-    otDomains {excludes system domains},
-    otRoles,
-    otExceptions,
-    otUsers,
-    otIndexes,
-    otConstraints
-    );
+  TObjectType = ( otTables, otGenerators, otTriggers, otViews, otStoredProcedures,
+                  otUDF {User-Defined functions},
+                  otSystemTables,
+                  otDomains {excludes system domains},
+                  otRoles, otExceptions, otUsers, otIndexes, otConstraints );
+
+  //TEvsPoolContainer = class({$IFDEF EVS_CONTAINERS} TEvsStack {$ELSE} TStack {$ENDIF})
+  //end;
+
+  { TEvsCustomComponentPool }
+
+  TEvsCustomComponentPool = class(TObject)
+  private
+    //JKOZ :
+    //  TODO 0001 : extend to support soft max value as well.
+    //               hard max value = no more than FMaxValue will ever be created if more are requested then nil is returned.
+    //               Soft max Value = max value = the size of the pool when the pool is full every component returned to it will be destroyed.
+    FContainer  :{$IFDEF EVS_CONTAINERS} TEvsStack {$ELSE} TStack {$ENDIF};
+    FLazyCreate :Boolean; //default false
+    FMaxCount   :Integer; //default 10
+    FSoftMax    :Boolean; //default true;
+    {$IFDEF EVS_CONTAINERS}
+    FCount      :Integer;
+    {$ENDIF}
+    FAquired :Integer;  //init 0
+    FClass   :TComponentClass; //default TComponent
+    function GetCount :Integer;virtual;
+    procedure SetLazyCreate(aValue :Boolean);virtual;
+  protected
+    procedure Put(const aItem:TComponent);virtual;
+    function  Get :TComponent;virtual;
+    function CreateNew:TComponent;virtual;
+    procedure FillPool;virtual;
+    procedure EmptyPool;
+  public
+    constructor Create(const aMaxCount :Integer = 10; const aLazyCreate :Boolean = False; const aClass :TComponentClass=nil);virtual;
+    destructor Destroy; override;
+    function Aquire :TComponent;
+    procedure Return(const aComponent :TComponent);
+
+    property MaxCount   :Integer read FMaxCount;
+    property Count      :Integer read GetCount;
+    property LazyCreate :Boolean read FLazyCreate write SetLazyCreate;
+    property SoftMax    :Boolean read FSoftMax write FSoftMax;
+  end;
+
+  { TEvsThreadedComponentPool }
+  //needs testing.
+  TEvsThreadedComponentPool = Class(TEvsCustomComponentPool)
+  private
+    FLock :TCriticalSection;
+    procedure SetLazyCreate(aValue :Boolean); override;
+  protected
+    procedure Lock;
+    procedure Unlock;
+    procedure Put(const aItem:TComponent);override;
+    function  Get :TComponent;            override;
+    function CreateNew :TComponent;       override;
+    function GetCount  :Integer;          override;
+    procedure FillPool;                   override;
+  public
+    constructor Create(const aMaxCount :Integer = 10; const aLazyCreate :Boolean = False; const aClass :TComponentClass=nil);override;
+    destructor Destroy; override;
+  end;
 
 const
   NumObjects = 13; //number of different objects in dbObjects array below
   dbObjects: array [0 .. NumObjects-1] of string =
-    ('Tables', 'Generators', 'Triggers',
-    'Views', 'Stored Procedures', 'UDFs',
-    'Sys Tables', 'Domains', 'Roles',
-    'Exceptions', 'Users', 'Indices',
-    'Constraints');
+    ('Tables', 'Generators', 'Triggers', 'Views', 'Stored Procedures', 'UDFs','Sys Tables',
+     'Domains', 'Roles',  'Exceptions', 'Users', 'Indices', 'Constraints');
 
 // Retrieve available collations for specified Characterset into Collations
 function GetCollations(const Characterset: string; var Collations: TStringList): boolean;
@@ -281,7 +155,17 @@ function IsPrimaryIndexSystemGenerated(IndexName: string): boolean;
 // Given TIBConnection parameters, sets transaction isolation level
 procedure SetTransactionIsolation(Params: TStringList);
 
+
+function GetQuery(const aConnection : TSQLConnection; const aTransaction:TSQLTransaction=nil):TSQLQuery;
+procedure ReleaseQuery(const aQuery : TSQLQuery);
+
 implementation
+const
+  TransactionOwned = -1;
+  TransactionNotOwned = 0;
+
+var
+  QueryPool : TEvsCustomComponentPool;
 
 function GetCollations(const Characterset: string; var Collations: TStringList): boolean;
 var
@@ -307,6 +191,31 @@ begin
   Params.Add('isc_tpb_read_commited');
   Params.Add('isc_tpb_concurrency');
   Params.Add('isc_tpb_nowait');
+end;
+
+function GetQuery(const aConnection :TSQLConnection; const aTransaction :TSQLTransaction) :TSQLQuery;
+begin
+  Result := TSQLQuery(QueryPool.Aquire);
+  Result.DataBase := aConnection;
+  if Assigned(aTransaction) then Result.Transaction := aConnection.Transaction;
+  if not assigned(Result.Transaction) then begin
+    Result.Transaction := TSQLTransaction.Create(Result);
+    Result.Transaction.DataBase := aConnection;
+    Result.Tag := TransactionOwned;
+  end;
+end;
+
+procedure ReleaseQuery(const aQuery :TSQLQuery);
+var
+  vTmp :TSQLTransaction;
+begin
+  if aQuery.Tag = TransactionOwned then begin
+    vTmp := TSQLTransaction(aQuery.Transaction);
+    aQuery.Transaction := Nil;
+    aQuery.Tag := 0;
+    vTmp.Free;
+  end;
+  QueryPool.Return(aQuery);
 end;
 
 procedure GetFieldType(FieldQuery: TSQLQuery; var FieldType: string; var FieldSize: integer);
@@ -416,5 +325,174 @@ begin
   result:= (pos('RDB$PRIMARY',uppercase(Trim(IndexName)))=1);
 end;
 
+{$REGION ' TEvsThreadedComponentPool '}
+
+procedure TEvsThreadedComponentPool.SetLazyCreate(aValue :Boolean);
+begin
+  Lock;
+  try
+    inherited SetLazyCreate(aValue);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TEvsThreadedComponentPool.Lock;
+begin
+  FLock.Enter;
+end;
+
+procedure TEvsThreadedComponentPool.Unlock;
+begin
+  FLock.Leave;
+end;
+
+procedure TEvsThreadedComponentPool.Put(const aItem :TComponent);
+begin
+  Lock;
+  try
+    inherited Put(aItem);
+  finally
+    Unlock;
+  end;
+end;
+
+function TEvsThreadedComponentPool.Get :TComponent;
+begin
+  Lock;
+  try
+    Result := inherited Get;
+  finally
+    Unlock;
+  end;
+end;
+
+function TEvsThreadedComponentPool.CreateNew :TComponent;
+begin
+  Lock;
+  try
+    Result := inherited CreateNew;
+  finally
+    Unlock;
+  end;
+end;
+
+function TEvsThreadedComponentPool.GetCount :Integer;
+begin
+  Lock;
+  try
+    Result := FContainer.Count;
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TEvsThreadedComponentPool.FillPool;
+begin
+  Lock;
+  try
+    inherited FillPool;
+  finally
+    Unlock;
+  end;
+end;
+
+constructor TEvsThreadedComponentPool.Create(const aMaxCount :Integer; const aLazyCreate :Boolean; const aClass :TComponentClass);
+begin
+  inherited Create(aMaxCount, aLazyCreate, aClass);
+  FLock := TCriticalSection.Create;
+end;
+
+destructor TEvsThreadedComponentPool.Destroy;
+begin
+  FLock.Free;
+  inherited Destroy;
+end;
+
+
+{$ENDREGION}
+
+{$REGION ' TEvsCustomComponentPool '}
+
+function TEvsCustomComponentPool.GetCount :Integer;
+begin
+  Result := FContainer.Count;
+end;
+
+procedure TEvsCustomComponentPool.SetLazyCreate(aValue :Boolean);
+begin
+  FLazyCreate := aValue;
+end;
+
+procedure TEvsCustomComponentPool.Put(const aItem :TComponent);
+begin
+  if Count >= FMaxCount then aItem.Free
+  else FContainer.Push(aItem);
+  Dec(FAquired);
+end;
+
+function TEvsCustomComponentPool.Get :TComponent;
+begin
+  Result := TComponent(FContainer.Pop);
+  if not Assigned(Result) and ((FAquired < FMaxCount) or FSoftMax) then Result := CreateNew;
+  if Assigned(Result) then Inc(FAquired);
+end;
+
+function TEvsCustomComponentPool.CreateNew :TComponent;
+begin
+  Result := TComponentClass.Create(Nil);
+end;
+
+procedure TEvsCustomComponentPool.FillPool;
+var
+  vCntr :Integer;
+begin
+  for vCntr := 1 to FMaxCount do Put(CreateNew);
+end;
+
+procedure TEvsCustomComponentPool.EmptyPool;
+var
+  vRes : TComponent;
+begin
+  repeat
+    vRes := TComponent(Get);
+    if Assigned(vRes) then vRes.Free;
+  until vRes = nil;
+end;
+
+constructor TEvsCustomComponentPool.Create(const aMaxCount :Integer; const aLazyCreate :Boolean; const aClass :TComponentClass);
+begin
+  inherited Create;
+  FMaxCount   := aMaxCount;
+  FLazyCreate := aLazyCreate;
+  FSoftMax    := True;
+  FContainer  := {$IFDEF EVS_CONTAINERS} TEvsStack.Create {$ELSE} TStack.Create {$ENDIF};
+  if not FLazyCreate then FillPool;
+end;
+
+destructor TEvsCustomComponentPool.Destroy;
+begin
+  EmptyPool;
+  FContainer.Free;
+  inherited Destroy;
+end;
+
+function TEvsCustomComponentPool.Aquire :TComponent;
+begin
+  Result := Get;
+end;
+
+procedure TEvsCustomComponentPool.Return(const aComponent :TComponent);
+begin
+  Put(aComponent);
+end;
+
+{$ENDREGION}
+
+initialization
+  QueryPool := TEvsCustomComponentPool.Create(10, True, TSQLQuery);
+  QueryPool.SoftMax := True;
+finalization
+  QueryPool.Free;//no access is possible at this point.
 end.
 

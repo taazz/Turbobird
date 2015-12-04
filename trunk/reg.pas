@@ -6,22 +6,9 @@ interface
 
 uses
   Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls,
-  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls;
+  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, uTBTypes;
 
 type
-
-  TRegisteredDatabase = packed record
-    Title: string[30];
-    DatabaseName: string[200];
-    UserName: string[100];
-    Password: string[100];
-    Charset: string[40];
-    Deleted: Boolean;
-    SavePassword: Boolean;
-    Role: string[100];
-    LastOpened: TDateTime;
-    Reserved: array [0 .. 40] of Byte;
-  end;
 
   { TfmReg }
 

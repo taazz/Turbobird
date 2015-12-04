@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, db, sqldb, IBConnection, FileUtil, LResources, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, DbCtrls, DBGrids, StdCtrls, ComCtrls,
-  Buttons, main;
+  Buttons, main, uTBTypes;
 
 type
 

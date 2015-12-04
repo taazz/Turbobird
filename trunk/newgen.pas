@@ -32,9 +32,9 @@ type
     FIBConnection: TIBConnection;
     FSQLTrans: TSQLTransaction;
   public
-    procedure Init(dbIndex: Integer);
     { public declarations }
-  end; 
+    procedure Init(dbIndex: Integer);
+  end;
 
 var
   fmNewGen: TfmNewGen;
@@ -122,8 +122,8 @@ var
   TableNames: string;
   Count: Integer;
 begin
-  FDBIndex:= dbIndex;
-  TableNames:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
+  FDBIndex   := dbIndex;
+  TableNames := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
 
   fmNewGen.cbTables.Items.CommaText:= TableNames;
 

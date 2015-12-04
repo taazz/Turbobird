@@ -83,8 +83,6 @@ type
     procedure sgFieldsDblClick(Sender: TObject);
     procedure sgPermissionsDblClick(Sender: TObject);
     procedure sgTriggersDblClick(Sender: TObject);
-    procedure tsFieldsContextPopup(Sender: TObject; MousePos: TPoint;
-        var Handled: Boolean);
   private
     FDBIndex: Integer;
     FTableName: string;
@@ -150,13 +148,6 @@ begin
   // Double clicking allows user to edit trigger
   bbEditTriggerClick(Sender);
 end;
-
-procedure TfmTableManage.tsFieldsContextPopup(Sender: TObject;
-    MousePos: TPoint; var Handled: Boolean);
-begin
-
-end;
-
 
 procedure TfmTableManage.bbEditClick(Sender: TObject);
 var

@@ -76,34 +76,36 @@ function ScriptAllRoles(dbIndex: Integer; var List: TStringList): Boolean;
 const
   AdminRole= 'RDB$ADMIN';
 var
-  Count: Integer;
-  HasRDBAdmin: boolean;
-  i: Integer;
+  Count       :Integer;
+  HasRDBAdmin :Boolean;
+  vCntr       :Integer;
 begin
   HasRDBAdmin:= false;
-  List.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count);
+  {$IFDEF EVS_New}
+  dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, List);
+  {$ELSE}
+  List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
+  {$ENDIF}
+  //List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
   { Wwrap creates role RDB$Admin statement - in FB 2.5+ this role is present
   by default, in lower dbs it isn't. No way to find out in advance when writing
   a script. No support in FB yet for CREATE OR UPDATE ROLE so best
   to do it in execute block with error handling }
-  i:= 0;
-  while i<List.Count do
-  begin
-    if uppercase(List[i]) = AdminRole then
-    begin
+  vCntr:= 0;
+
+  while vCntr<List.Count do begin
+    if uppercase(List[vCntr]) = AdminRole then begin
       // Delete now; recreate at beginning with line endings
-      HasRDBAdmin:= true;
-      List.Delete(i);
-    end
-    else
-    begin
+      HasRDBAdmin := True;
+      List.Delete(vCntr);
+    end else begin
       // Normal role
-      List[i]:= 'Create Role ' + List[i] + ';';
-      inc(i);
+      List[vCntr] := 'Create Role ' + List[vCntr] + ';';
+      Inc(vCntr);
     end;
   end;
-  if HasRDBAdmin then
-  begin
+
+  if HasRDBAdmin then begin
     // Insert special role at beginning for easy editing
     List.Insert(0, '-- use set term for isql, FlameRobin etc. Execute block supported since FB 2.0');
     List.Insert(1, 'set term !! ;'); //temporarily change terminator

@@ -246,8 +246,13 @@ type
     FCurrentHistoryFile :string;
     FActivated          :Boolean;
 
+<<<<<<< HEAD
     function FindCustomForm(aTitle: string; aClass: TClass): TComponent;overload;
     function _FindCustomForm(aTitle: string; aClass: TFormClass): TForm;overload;
+=======
+    function FindCustomForm(ATitle: string; AClass: TClass): TComponent;overload;
+    function FindCustomForm(ATitle: string; AClass: TFormClass): TForm;overload;
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
     // Show new generator form
     procedure InitNewGen(DatabaseIndex: Integer);
     function GetServerNameNode(ServerName: string): TTreeNode;
@@ -1540,11 +1545,17 @@ end;
 function TfmMain.GetSelectedDatabaseNode :TTreeNode;
 begin
   Result := tvMain.Selected;
+<<<<<<< HEAD
   if tvMain.Selected.Level >= 1 then begin
     while Result.Level > 1 do
       Result := Result.Parent;
   end;
   if (Result.Level <> 1) then Result := nil;
+=======
+  tvMain.Selected.Level >= 1 then ;
+  while Result.Level > 1 do Result := Result.Parent;
+  if Result.Level <> 1 then Result := nil;
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
 end;
 
 function TfmMain.IsDBNode(Const aNode :TTreeNode) :boolean;
@@ -2715,7 +2726,11 @@ begin
   if (Assigned(FSQLTransaction)) then
     FSQLTransaction.Commit;
   //vRec := RegisteredDatabases[DatabaseIndex];
+<<<<<<< HEAD
   SetConnection(aDatabase);
+=======
+  SetConnection(DatabaseIndex);
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
   SQLQuery1.SQL.Text:= format(QueryTemplate,[ATableName]);
   {$IFDEF NEVER}
   // Left for debugging
@@ -4298,11 +4313,31 @@ function TfmMain._FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
 var
   vCntr: Integer;
 begin
+<<<<<<< HEAD
+=======
+  Result:= nil;
+  for i:= 0 to Application.ComponentCount- 1 do
+    if Application.Components[i] is AClass then
+      if (Application.Components[i] as TForm).Caption = ATitle then begin
+        Result:= Application.Components[i];
+        Break;
+      end;
+end;
+
+function TfmMain.FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
+var
+  vCntr: Integer;
+begin
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
   Result := nil;
   for vCntr := 0 to Screen.FormCount - 1 do begin
     if Screen.Forms[vCntr] is aClass then
       if Screen.Forms[vCntr].Caption = aTitle then begin
+<<<<<<< HEAD
         Result := Screen.Forms[vCntr];
+=======
+        Result:= Screen.Forms[vCntr];
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         Break;
       end;
   end;
@@ -4401,7 +4436,7 @@ end;
 
 function TfmMain.GetConstraintFields(ATableName, AIndexName: string; var List: TStringList): Boolean;
 begin
-  SQLQuery1.Close;
+  SQLQuery1.Close; TRegisteredDatabase
   SQLQuery1.SQL.Text:= 'SELECT s.RDB$FIELD_NAME AS field_name ' +
      'FROM RDB$INDEX_SEGMENTS s ' +
      'LEFT JOIN RDB$INDICES i ON i.RDB$INDEX_NAME = s.RDB$INDEX_NAME ' +

@@ -18,10 +18,19 @@
         <ComponentName Value="fmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+<<<<<<< HEAD
         <TopLine Value="4375"/>
         <CursorPos X="20" Y="4404"/>
         <FoldState Value=" T6iz40M:"/>
+=======
+        <TopLine Value="220"/>
+        <CursorPos X="21" Y="250"/>
+        <FoldState Value=" T6iye0MB"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
+        <Bookmarks Count="1">
+          <Item0 X="36" Y="292"/>
+        </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -41,7 +50,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Reg"/>
+<<<<<<< HEAD
         <EditorIndex Value="2"/>
+=======
+        <EditorIndex Value="1"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <CursorPos X="59" Y="7"/>
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
@@ -53,7 +66,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="QueryWindow"/>
+<<<<<<< HEAD
         <EditorIndex Value="4"/>
+=======
+        <EditorIndex Value="3"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <CursorPos X="55" Y="12"/>
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
@@ -124,7 +141,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewGen"/>
+<<<<<<< HEAD
         <EditorIndex Value="6"/>
+=======
+        <EditorIndex Value="5"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <TopLine Value="78"/>
         <CursorPos X="46" Y="125"/>
         <UsageCount Value="229"/>
@@ -170,7 +191,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditTable"/>
+<<<<<<< HEAD
         <EditorIndex Value="7"/>
+=======
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <TopLine Value="5"/>
         <CursorPos X="23" Y="35"/>
         <UsageCount Value="229"/>
@@ -238,7 +264,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="SysTables"/>
+<<<<<<< HEAD
         <EditorIndex Value="5"/>
+=======
+        <EditorIndex Value="4"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <TopLine Value="1004"/>
         <CursorPos X="114" Y="1030"/>
         <UsageCount Value="229"/>
@@ -283,9 +313,14 @@
         <Filename Value="scriptdb.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Scriptdb"/>
+<<<<<<< HEAD
         <EditorIndex Value="8"/>
         <TopLine Value="601"/>
         <CursorPos X="92" Y="631"/>
+=======
+        <EditorIndex Value="-1"/>
+        <CursorPos X="34" Y="14"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
         <Bookmarks Count="1">
           <Item0 X="38" Y="574"/>
@@ -310,10 +345,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TableManage"/>
+<<<<<<< HEAD
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="316"/>
         <CursorPos X="82" Y="346"/>
+=======
+        <EditorIndex Value="-1"/>
+        <TopLine Value="441"/>
+        <CursorPos X="34" Y="475"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
       </Unit26>
@@ -336,10 +377,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CreateUser"/>
+<<<<<<< HEAD
         <EditorIndex Value="9"/>
         <CursorPos X="41" Y="52"/>
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
+=======
+        <EditorIndex Value="-1"/>
+        <CursorPos X="21" Y="32"/>
+        <UsageCount Value="229"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit28>
       <Unit29>
         <Filename Value="changepass.pas"/>
@@ -359,9 +406,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PermissionManage"/>
+<<<<<<< HEAD
         <EditorIndex Value="10"/>
         <TopLine Value="542"/>
         <CursorPos X="97" Y="594"/>
+=======
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="5"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
       </Unit30>
@@ -383,9 +435,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CopyTable"/>
+<<<<<<< HEAD
         <EditorIndex Value="11"/>
         <TopLine Value="153"/>
         <CursorPos X="103" Y="202"/>
+=======
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="11"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
       </Unit32>
@@ -407,9 +464,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Comparison"/>
+<<<<<<< HEAD
         <EditorIndex Value="12"/>
         <TopLine Value="2085"/>
         <CursorPos X="93" Y="2115"/>
+=======
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="7"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <UsageCount Value="229"/>
         <Loaded Value="True"/>
       </Unit34>
@@ -449,7 +511,11 @@
       <Unit39>
         <Filename Value="turbocommon.pas"/>
         <IsPartOfProject Value="True"/>
+<<<<<<< HEAD
         <EditorIndex Value="13"/>
+=======
+        <EditorIndex Value="7"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <TopLine Value="418"/>
         <CursorPos X="7" Y="450"/>
         <FoldState Value=" T3ke0G122 pj3kH051%"/>
@@ -485,9 +551,15 @@
         <Filename Value="utbtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTBTypes"/>
+<<<<<<< HEAD
         <EditorIndex Value="3"/>
         <CursorPos X="3" Y="28"/>
         <UsageCount Value="55"/>
+=======
+        <EditorIndex Value="2"/>
+        <CursorPos X="3" Y="28"/>
+        <UsageCount Value="53"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <Loaded Value="True"/>
       </Unit43>
       <Unit44>
@@ -495,48 +567,80 @@
         <ComponentName Value="fmProcMod"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+<<<<<<< HEAD
         <UsageCount Value="224"/>
       </Unit44>
       <Unit45>
         <Filename Value="trunksqlscript.pas"/>
         <UsageCount Value="224"/>
+=======
+        <UsageCount Value="225"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="trunksqlscript.pas"/>
+        <UsageCount Value="225"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit45>
       <Unit46>
         <Filename Value="../../../Workbench/Common-classes/uevsmanagers.pas"/>
         <UnitName Value="UEvsManagers"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25" Y="24"/>
+<<<<<<< HEAD
         <UsageCount Value="135"/>
+=======
+        <UsageCount Value="136"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit46>
       <Unit47>
         <Filename Value="Z:/Tools &amp; Comps/jkoz/Downloads/Ebooks/The Delphi Magazine/Disks/Issue93/Async/UMessageQueue.pas"/>
         <EditorIndex Value="-1"/>
+<<<<<<< HEAD
         <UsageCount Value="28"/>
+=======
+        <UsageCount Value="29"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit47>
       <Unit48>
         <Filename Value="Z:/Tools &amp; Comps/jkoz/Downloads/Ebooks/The Delphi Magazine/Disks/Issue93/Async/UMessageQueueServer.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="12"/>
+<<<<<<< HEAD
         <UsageCount Value="28"/>
+=======
+        <UsageCount Value="29"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit48>
       <Unit49>
         <Filename Value="Z:/Tools &amp; Comps/jkoz/Downloads/Ebooks/The Delphi Magazine/Disks/Issue93/Async/UMSMQServer.pas"/>
         <EditorIndex Value="-1"/>
+<<<<<<< HEAD
         <UsageCount Value="28"/>
+=======
+        <UsageCount Value="29"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit49>
       <Unit50>
         <Filename Value="Z:/Tools &amp; Comps/jkoz/Downloads/Ebooks/The Delphi Magazine/Disks/Issue93/Async/MSMQ_TLB.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="190"/>
         <CursorPos X="9" Y="439"/>
+<<<<<<< HEAD
         <UsageCount Value="28"/>
+=======
+        <UsageCount Value="29"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit50>
       <Unit51>
         <Filename Value="../../WebCrawler/uevshttputils.pas"/>
         <UnitName Value="uEvsHttpUtils"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="33" Y="2318"/>
+<<<<<<< HEAD
         <UsageCount Value="63"/>
+=======
+        <UsageCount Value="64"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit51>
       <Unit52>
         <Filename Value="../../../1.2.4/lcl/forms.pp"/>
@@ -544,7 +648,11 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1371"/>
         <CursorPos X="15" Y="1400"/>
+<<<<<<< HEAD
         <UsageCount Value="22"/>
+=======
+        <UsageCount Value="23"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit52>
       <Unit53>
         <Filename Value="../../../1.2.4/lcl/include/application.inc"/>
@@ -552,20 +660,29 @@
         <TopLine Value="2102"/>
         <CursorPos X="144" Y="2140"/>
         <FoldState Value=" TIiof35U"/>
+<<<<<<< HEAD
         <UsageCount Value="1"/>
+=======
+        <UsageCount Value="2"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit53>
       <Unit54>
         <Filename Value="../../../1.2.4/fpc/2.6.4/source/packages/ibase/src/ibase60.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2433"/>
         <CursorPos X="10" Y="2463"/>
+<<<<<<< HEAD
         <UsageCount Value="1"/>
+=======
+        <UsageCount Value="2"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit54>
       <Unit55>
         <Filename Value="../../../1.2.4/fpc/2.6.4/source/rtl/objpas/classes/classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1590"/>
         <CursorPos X="25" Y="1624"/>
+<<<<<<< HEAD
         <UsageCount Value="5"/>
       </Unit55>
       <Unit56>
@@ -574,14 +691,31 @@
         <TopLine Value="390"/>
         <CursorPos X="14" Y="419"/>
         <UsageCount Value="14"/>
+=======
+        <UsageCount Value="6"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-db/src/sqldb/sqldb.pp"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="390"/>
+        <CursorPos X="14" Y="419"/>
+        <UsageCount Value="13"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <Loaded Value="True"/>
       </Unit56>
       <Unit57>
         <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-db/src/base/db.pas"/>
+<<<<<<< HEAD
         <EditorIndex Value="15"/>
         <TopLine Value="47"/>
         <CursorPos X="3" Y="77"/>
         <UsageCount Value="12"/>
+=======
+        <EditorIndex Value="9"/>
+        <TopLine Value="47"/>
+        <CursorPos X="3" Y="77"/>
+        <UsageCount Value="11"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
         <Loaded Value="True"/>
       </Unit57>
       <Unit58>
@@ -589,24 +723,37 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="456"/>
         <CursorPos X="33" Y="490"/>
+<<<<<<< HEAD
         <UsageCount Value="6"/>
+=======
+        <UsageCount Value="7"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit58>
       <Unit59>
         <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-base/src/contnrs.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="112"/>
         <CursorPos X="14" Y="142"/>
+<<<<<<< HEAD
         <UsageCount Value="7"/>
+=======
+        <UsageCount Value="8"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit59>
       <Unit60>
         <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-base/src/syncobjs.pp"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="14" Y="16"/>
+<<<<<<< HEAD
         <UsageCount Value="7"/>
+=======
+        <UsageCount Value="8"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Unit60>
       <Unit61>
         <Filename Value="systables.lrs"/>
         <EditorIndex Value="-1"/>
+<<<<<<< HEAD
         <UsageCount Value="7"/>
       </Unit61>
     </Units>
@@ -730,6 +877,131 @@
       <Position30>
         <Filename Value="tablemanage.pas"/>
         <Caret Line="475" Column="34" TopLine="441"/>
+=======
+        <UsageCount Value="8"/>
+      </Unit61>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="28">
+      <Position1>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="126" Column="17" TopLine="84"/>
+      </Position1>
+      <Position2>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="400" Column="100" TopLine="348"/>
+      </Position2>
+      <Position3>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="126" Column="91" TopLine="125"/>
+      </Position3>
+      <Position4>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="128" Column="20" TopLine="79"/>
+      </Position4>
+      <Position5>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="213" Column="22" TopLine="170"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-db/src/sqldb/sqldb.pp"/>
+        <Caret Line="474" Column="14" TopLine="446"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-db/src/sqldb/sqldb.pp"/>
+        <Caret Line="419" Column="14" TopLine="390"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../../../1.4.4/fpc/2.6.4/source/packages/fcl-db/src/base/db.pas"/>
+        <Caret Line="1839" Column="40" TopLine="1800"/>
+      </Position8>
+      <Position9>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="213" Column="28" TopLine="149"/>
+      </Position9>
+      <Position10>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="210" Column="13" TopLine="170"/>
+      </Position10>
+      <Position11>
+        <Filename Value="turbocommon.pas"/>
+        <Caret Line="430" Column="35" TopLine="397"/>
+      </Position11>
+      <Position12>
+        <Filename Value="utbtypes.pas"/>
+        <Caret Line="14" Column="30"/>
+      </Position12>
+      <Position13>
+        <Filename Value="main.pas"/>
+        <Caret Line="4382" Column="39" TopLine="4360"/>
+      </Position13>
+      <Position14>
+        <Filename Value="reg.pas"/>
+        <Caret Line="9" Column="59"/>
+      </Position14>
+      <Position15>
+        <Filename Value="main.pas"/>
+        <Caret Line="4382" Column="39" TopLine="2197"/>
+      </Position15>
+      <Position16>
+        <Filename Value="querywindow.pas"/>
+        <Caret Line="85" Column="34" TopLine="46"/>
+      </Position16>
+      <Position17>
+        <Filename Value="systables.pas"/>
+        <Caret Line="37"/>
+      </Position17>
+      <Position18>
+        <Filename Value="systables.pas"/>
+        <Caret Line="203" TopLine="169"/>
+      </Position18>
+      <Position19>
+        <Filename Value="newgen.pas"/>
+        <Caret Line="133" Column="22" TopLine="78"/>
+      </Position19>
+      <Position20>
+        <Filename Value="newgen.pas"/>
+        <Caret Line="31" Column="7" TopLine="5"/>
+      </Position20>
+      <Position21>
+        <Filename Value="newgen.pas"/>
+        <Caret Line="84" Column="27" TopLine="36"/>
+      </Position21>
+      <Position22>
+        <Filename Value="main.pas"/>
+        <Caret Line="935" Column="40" TopLine="897"/>
+      </Position22>
+      <Position23>
+        <Filename Value="main.pas"/>
+        <Caret Line="936" Column="44" TopLine="908"/>
+      </Position23>
+      <Position24>
+        <Filename Value="main.pas"/>
+        <Caret Line="3050" Column="32" TopLine="3018"/>
+      </Position24>
+      <Position25>
+        <Filename Value="main.pas"/>
+        <Caret Line="249" Column="58" TopLine="220"/>
+      </Position25>
+      <Position26>
+        <Filename Value="main.pas"/>
+        <Caret Line="250" Column="45" TopLine="225"/>
+      </Position26>
+      <Position27>
+        <Filename Value="newgen.pas"/>
+        <Caret Line="84" Column="27" TopLine="36"/>
+      </Position27>
+      <Position28>
+        <Filename Value="edittable.pas"/>
+        <Caret Line="19" Column="29"/>
+      </Position28>
+      <Position29>
+        <Filename Value="edittable.pas"/>
+        <Caret Line="35" Column="23" TopLine="5"/>
+      </Position29>
+      <Position30>
+        <Filename Value="utbtypes.pas"/>
+        <Caret Line="28" Column="3"/>
+>>>>>>> 70acbe971b975607a52d6258019bb92d7cca344a
       </Position30>
     </JumpHistory>
   </ProjectSession>

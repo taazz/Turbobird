@@ -2,20 +2,15 @@ unit SysTables;
 
 {$mode objfpc}{$H+}
 
+{$DEFINE EVS_NEW}
+
 interface
 
 uses
   Classes, SysUtils, sqldb, IBConnection, FileUtil, LResources, Forms, Controls,
-  Dialogs, dbugintf, turbocommon;
+  Dialogs, dbugintf, turbocommon, uTBTypes;
 
 type
-
-  // e.g. used for composite foreign key constraints
-  TConstraintCount = record
-    Name: string; // name of constraint
-    Count: integer; // count of occurrences
-  end;
-  TConstraintCounts = array of TConstraintCount;
 
   { TdmSysTables }
 
@@ -23,20 +18,24 @@ type
     sqQuery: TSQLQuery;
   private
     { private declarations }
+  protected
+    procedure OpenQuery(aObjectType: TObjectType);
   public
-    ibcDatabase: TIBConnection;
-    stTrans: TSQLTransaction;
+    ibcDatabase : TIBConnection; //Remove both.
+    stTrans     : TSQLTransaction;
     // Fills array with composite (multikey) foreign key constraint names
     // and field count for specified table
     // Then use GetCompositeFKConstraint to check this array for a specified
     // constraint name
-    procedure FillCompositeFKConstraints(const TableName: string;
-      var ConstraintsArray: TConstraintCounts);
+    procedure FillCompositeFKConstraints(const TableName: string; var ConstraintsArray: TConstraintCounts);
     // Initialize unit to work with specified database
-    procedure Init(dbIndex: Integer);
+    procedure Init(dbIndex: Integer);overload;deprecated;//jkoz use the one with the TDatabaseRec param.
+    procedure Init(aDB: TDatabaseRec);overload;//jkoz use the one with the TDatabaseRec param.
     // Gets list of object names that have type specified by TVIndex
     // Returns count of objects in Count
-    function GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;
+    //function GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;overload;deprecated;
+    function GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; var aCount: Integer): string;overload;
+    procedure GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; aList:TStrings);overload;
 
     // Recalculates index statistics for all fields in database
     // Useful when a large amount of inserts/deletes may have changed the statistics
@@ -118,10 +117,10 @@ type
       var FieldsList: TStringList; var ConstraintName: string; var Unique, Ascending, IsPrimary: Boolean): Boolean;
 
     // Gets field names for table
-    procedure GetTableFields(dbIndex: Integer; ATableName: string; FieldsList: TStringList);
+    procedure GetTableFields(dbIndex: Integer; ATableName: string; FieldsList: TStringList);overload; deprecated;//jkoz use the one with the DatabaseRec parameter
+    procedure GetTableFields(aDB: TDatabaseRec; ATableName: string; FieldsList: TStringList);overload;
 
-    function GetConstraintsOfTable(ATableName: string; var SqlQuery: TSQLQuery;
-      ConstraintsList: TStringList=nil): Boolean;
+    function GetConstraintsOfTable(ATableName: string; var SqlQuery: TSQLQuery; ConstraintsList: TStringList=nil): Boolean;
 
     { public declarations }
   end; 
@@ -151,19 +150,44 @@ end;
 
 procedure TdmSysTables.Init(dbIndex: Integer);
 begin
+  //JKOZ : Deprecated and replaced will be removed in the near future.
   // todo: first step: do not close, reopen connection if we're using the correct
   // connection/transaction already
-  with fmMain.RegisteredDatabases[dbIndex] do
-  begin
-    if IBConnection.Connected then
-      IBConnection.Close;
+  //with fmMain.RegisteredDatabases[dbIndex] do
+  //begin
+  //  if not IBConnection.Connected then begin
+  //    IBConnection.DatabaseName:= RegRec.DatabaseName;
+  //    IBConnection.UserName:= RegRec.UserName;
+  //    IBConnection.Password:= RegRec.Password;
+  //    IBConnection.Role:= RegRec.Role;
+  //    IBConnection.CharSet:= RegRec.Charset;
+  //    IBConnection.Connected := True;
+  //  end;
+  //  sqQuery.Close;
+  //  ibcDatabase := IBConnection;
+  //  stTrans:= SQLTrans;
+  //  sqQuery.DataBase:= ibcDatabase;
+  //  sqQuery.Transaction:= stTrans;
+  //end;
+  Init(fmMain.RegisteredDatabases[dbIndex]);
+end;
+
+procedure TdmSysTables.Init(aDB :TDatabaseRec);
+begin
+  // todo: first step: do not close, reopen connection if we're using the correct
+  // connection/transaction already
+  //JKOZ : there is no way to use the wrong connection/transaction it uses the objects in the databaserec.
+  with aDB do begin
+    if not IBConnection.Connected then begin
+      IBConnection.DatabaseName:= aDB.RegRec.DatabaseName;
+      IBConnection.UserName:= aDB.RegRec.UserName;
+      IBConnection.Password:= aDB.RegRec.Password;
+      IBConnection.Role:= aDB.RegRec.Role;
+      IBConnection.CharSet:= aDB.RegRec.Charset;
+      IBConnection.Connected := True;
+    end;
     sqQuery.Close;
-    IBConnection.DatabaseName:= RegRec.DatabaseName;
-    IBConnection.UserName:= RegRec.UserName;
-    IBConnection.Password:= RegRec.Password;
-    IBConnection.Role:= RegRec.Role;
-    IBConnection.CharSet:= RegRec.Charset;
-    ibcDatabase:= IBConnection;
+    ibcDatabase := IBConnection;
     stTrans:= SQLTrans;
     sqQuery.DataBase:= ibcDatabase;
     sqQuery.Transaction:= stTrans;
@@ -172,57 +196,103 @@ end;
 
 (*****  GetDBObjectNames, like Table names, Triggers, Generators, etc according to TVIndex  ****)
 
-function TdmSysTables.GetDBObjectNames(DatabaseIndex: integer;
-  ObjectType: TObjectType;
-  var Count: Integer): string;
-begin
-  Init(DatabaseIndex);
-  sqQuery.Close;
-  if ObjectType = otTables then // Tables
-    sqQuery.SQL.Text:= 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
-      ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
-  else
-  if ObjectType = otGenerators then // Generators
-    sqQuery.SQL.Text:= 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
-  else
-  if ObjectType = otTriggers then // Triggers
-    sqQuery.SQL.Text:= 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
-  else
-  if ObjectType = otViews then // Views
-    sqQuery.SQL.Text:= 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
-  else
-  if ObjectType = otStoredProcedures then // Stored Procedures
-    sqQuery.SQL.Text:= 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
-  else
-  if ObjectType = otUDF then // UDF
-    sqQuery.SQL.Text:= 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
-  else
-  if ObjectType = otSystemTables then // System Tables
-    sqQuery.SQL.Text:= 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
-      'order by RDB$RELATION_NAME'
-  else
-  if ObjectType = otDomains then // Domains, excluding system-defined domains
-    sqQuery.SQL.Text:= 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
-  else
-  if ObjectType = otRoles then // Roles
-    sqQuery.SQL.Text:= 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
-  else
-  if ObjectType = otExceptions then // Exceptions
-    sqQuery.SQL.Text:= 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
-  else
-  if ObjectType = otUsers then // Users
-    sqQuery.SQL.Text:= 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+//function TdmSysTables.GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;
+//begin
+//  GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], ObjectType, Count);
+//end;
 
-  // Save the result list as comma delimited string
-  sqQuery.Open;
-  while not sqQuery.EOF do
-  begin
-    Result:= Result + Trim(sqQuery.Fields[0].AsString);
-    sqQuery.Next;
-    if not sqQuery.EOF then
-      Result:= Result + ',';
+function TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; var aCount :Integer) :string;
+var
+  vList :TStringList;
+begin
+  vList := TStringList.Create;
+  try
+    {$IFDEF EVS_New}
+    GetDBObjectNames(aDatabase, aObjectType, vList);
+    {$ELSE}
+    OpenQuery(aObjectType);
+    Init(aDatabase);
+    sqQuery.Close;
+    if aObjectType         = otTables then // Tables
+      sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+                          'and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
+    else if aObjectType    = otGenerators then // Generators
+      sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
+    else if aObjectType    = otTriggers then // Triggers
+      sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
+    else if aObjectType    = otViews then // Views
+      sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
+    else if aObjectType    = otStoredProcedures then // Stored Procedures
+      sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
+    else if aObjectType    = otUDF then // UDF
+      sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
+    else if aObjectType    = otSystemTables then // System Tables
+      sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
+                          'order by RDB$RELATION_NAME'
+    else if aObjectType    = otDomains then // Domains, excluding system-defined domains
+      sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
+    else if aObjectType    = otRoles then // Roles
+      sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
+    else if aObjectType    = otExceptions then // Exceptions
+      sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
+    else if aObjectType    = otUsers then // Users
+      sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+
+    sqQuery.Open;
+    sqQuery.First;
+    while not sqQuery.EOF do begin
+      Result := Result + Trim(sqQuery.Fields[0].AsString);
+      sqQuery.Next;
+      if not sqQuery.EOF then Result:= Result + ',';
+    end;
+    {$ENDIF}
+    aCount := vList.Count;// sqQuery.RecordCount;
+    Result := vList.CommaText;
+    //sqQuery.Close;
+  finally
+    vList.Free;
   end;
-  Count:= sqQuery.RecordCount;
+end;
+
+procedure TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; aList :TStrings);
+begin
+  Init(aDatabase);
+  {$IFDEF EVS_New}
+  OpenQuery(aObjectType);
+  {$ELSE}
+  sqQuery.Close;
+  if aObjectType         = otTables then // Tables
+    sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+                        'and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
+  else if aObjectType    = otGenerators then // Generators
+    sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
+  else if aObjectType    = otTriggers then // Triggers
+    sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
+  else if aObjectType    = otViews then // Views
+    sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
+  else if aObjectType    = otStoredProcedures then // Stored Procedures
+    sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
+  else if aObjectType    = otUDF then // UDF
+    sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
+  else if aObjectType    = otSystemTables then // System Tables
+    sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
+                        'order by RDB$RELATION_NAME'
+  else if aObjectType    = otDomains then // Domains, excluding system-defined domains
+    sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
+  else if aObjectType    = otRoles then // Roles
+    sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
+  else if aObjectType    = otExceptions then // Exceptions
+    sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
+  else if aObjectType    = otUsers then // Users
+    sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+
+  sqQuery.Open;
+  sqQuery.First;
+  {$ENDIF}
+  aList.Clear;
+  while not sqQuery.EOF do begin
+    aList.Add(Trim(sqQuery.Fields[0].AsString));
+  end;
   sqQuery.Close;
 end;
 
@@ -566,6 +636,39 @@ begin
   sqQuery.Close;
 end;
 
+procedure TdmSysTables.OpenQuery(aObjectType :TObjectType);
+begin
+  sqQuery.Close;
+  if aObjectType         = otTables then // Tables
+    sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+                        ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
+  else if aObjectType    = otGenerators then // Generators
+    sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
+  else if aObjectType    = otTriggers then // Triggers
+    sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
+  else if aObjectType    = otViews then // Views
+    sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
+  else if aObjectType    = otStoredProcedures then // Stored Procedures
+    sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
+  else if aObjectType    = otUDF then // UDF
+    sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
+  else if aObjectType    = otSystemTables then // System Tables
+    sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
+                        'order by RDB$RELATION_NAME'
+  else if aObjectType    = otDomains then // Domains, excluding system-defined domains
+    sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
+  else if aObjectType    = otRoles then // Roles
+    sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
+  else if aObjectType    = otExceptions then // Exceptions
+    sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
+  else if aObjectType    = otUsers then // Users
+    sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+
+  // Save the result list as comma delimited string
+  sqQuery.Open;
+  sqQuery.First;
+end;
+
 procedure TdmSysTables.FillCompositeFKConstraints(const TableName: string;
   var ConstraintsArray: TConstraintCounts);
 const
@@ -637,8 +740,8 @@ end;
 
 (**********  Get Constraint Info  ********************)
 
-function TdmSysTables.GetConstraintInfo(dbIndex: Integer; ATableName, ConstraintName: string; var KeyName,
-    CurrentTableName, CurrentFieldName, OtherTableName, OtherFieldName, UpdateRule, DeleteRule: string): Boolean;
+function TdmSysTables.GetConstraintInfo(dbIndex :integer; ATableName, ConstraintName :string; var KeyName, CurrentTableName, CurrentFieldName,
+  OtherTableName, OtherFieldName, UpdateRule, DeleteRule :string) :Boolean;
 begin
   Init(dbIndex);
   sqQuery.Close;
@@ -707,8 +810,8 @@ end;
 
 (************  View Domain info  ***************)
 
-procedure TdmSysTables.GetDomainInfo(dbIndex: Integer; DomainName: string; var DomainType: string;
-  var DomainSize: Integer; var DefaultValue: string; var CheckConstraint: string; var CharacterSet: string; var Collation: string);
+procedure TdmSysTables.GetDomainInfo(dbIndex :integer; DomainName :string; var DomainType :string; var DomainSize :Integer; var DefaultValue :string;
+  var CheckConstraint :string; var CharacterSet :string; var Collation :string);
 const
   // Select domain and associated collation (if text type domain)
   // note weird double join fields required...
@@ -924,7 +1027,7 @@ procedure TdmSysTables.GetDomainTypes(dbIndex: Integer; List: TStrings);
 var
   Count: Integer;
 begin
-  List.CommaText:= List.CommaText + ',' + GetDBObjectNames(dbIndex, otDomains, Count);
+  List.CommaText:= List.CommaText + ',' + GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otDomains, Count);
 end;
 
 function TdmSysTables.GetDefaultTypeSize(dbIndex: Integer; TypeName: string): Integer;
@@ -1206,10 +1309,51 @@ begin
 end;
 
 procedure TdmSysTables.GetTableFields(dbIndex: Integer; ATableName: string; FieldsList: TStringList);
+//var
+//  FieldName: string;
+begin
+  //Jkoz : Deprecate and replaced.
+  //
+  //Init(dbIndex);
+  //sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
+  //    ' r.RDB$DESCRIPTION AS field_description, ' +
+  //    ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value}+
+  //    ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
+  //    ' f.RDB$FIELD_LENGTH AS field_length, ' +
+  //    ' f.RDB$FIELD_PRECISION AS field_precision, ' +
+  //    ' f.RDB$FIELD_SCALE AS field_scale, ' +
+  //    ' f.RDB$FIELD_TYPE as field_type_int, ' +
+  //    ' f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
+  //    ' coll.RDB$COLLATION_NAME AS field_collation, ' +
+  //    ' cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
+  //    ' f.RDB$computed_source AS computed_source, ' +
+  //    ' dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
+  //    ' r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain} +
+  //    ' FROM RDB$RELATION_FIELDS r ' +
+  //    ' LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+  //    ' LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
+  //    ' LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+  //    ' LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
+  //    ' WHERE r.RDB$RELATION_NAME=''' + ATableName + '''  ' +
+  //    ' ORDER BY r.RDB$FIELD_POSITION;';
+  //sqQuery.Open;
+  //FieldsList.Clear;
+  //while not sqQuery.EOF do
+  //begin
+  //  FieldName:= Trim(sqQuery.FieldByName('field_name').AsString);
+  //  if FieldsList.IndexOf(FieldName) = -1 then
+  //    FieldsList.Add(FieldName);
+  //  sqQuery.Next;
+  //end;
+  //sqQuery.Close;
+  GetTableFields(fmMain.RegisteredDatabases[dbIndex], ATableName, FieldsList);
+end;
+
+procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; ATableName :string; FieldsList :TStringList);
 var
   FieldName: string;
 begin
-  Init(dbIndex);
+  Init(aDB);
   sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
       ' r.RDB$DESCRIPTION AS field_description, ' +
       ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value}+

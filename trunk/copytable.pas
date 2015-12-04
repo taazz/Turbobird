@@ -57,7 +57,7 @@ begin
   laDatabase.Caption:= fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.DatabaseName;
   cbDestDatabase.SetFocus;
   dmSysTables.Init(cbDestDatabase.ItemIndex);
-  cbDestTable.Items.CommaText:= dmSysTables.GetDBObjectNames(cbDestDatabase.ItemIndex, otTables, count);
+  cbDestTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex], otTables, count);
   if cbDestTable.Items.IndexOf(cbSourceTable.Text) <> -1 then
     cbDestTable.Text:= cbSourceTable.Text;
 end;
@@ -199,7 +199,7 @@ begin
     cbDestDatabase.Items.Add(fmMain.RegisteredDatabases[i].RegRec.Title);
   laDatabase.Caption:= '';
 
-  cbSourceTable.Items.CommaText:= dmSysTables.GetDBObjectNames(SourceIndex, otTables, count);
+  cbSourceTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[SourceIndex], otTables, count);
   cbSourceTable.Text:= ATableName;
   SynSQLSyn1.TableNames.Text:= cbSourceTable.Text;
   cbSourceTableChange(nil);

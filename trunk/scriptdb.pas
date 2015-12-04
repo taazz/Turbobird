@@ -6,7 +6,7 @@ unit Scriptdb;
 interface
 
 uses
-  Classes, SysUtils, turbocommon, dialogs;
+  Classes, SysUtils, turbocommon, uTBTypes, dialogs;
 
 
 // Scripts all roles; changes List to contain the CREATE ROLE SQL statements
@@ -76,34 +76,36 @@ function ScriptAllRoles(dbIndex: Integer; var List: TStringList): Boolean;
 const
   AdminRole= 'RDB$ADMIN';
 var
-  Count: Integer;
-  HasRDBAdmin: boolean;
-  i: Integer;
+  Count       :Integer;
+  HasRDBAdmin :Boolean;
+  vCntr       :Integer;
 begin
   HasRDBAdmin:= false;
-  List.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count);
+  {$IFDEF EVS_New}
+  dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, List);
+  {$ELSE}
+  List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
+  {$ENDIF}
+  //List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
   { Wwrap creates role RDB$Admin statement - in FB 2.5+ this role is present
   by default, in lower dbs it isn't. No way to find out in advance when writing
   a script. No support in FB yet for CREATE OR UPDATE ROLE so best
   to do it in execute block with error handling }
-  i:= 0;
-  while i<List.Count do
-  begin
-    if uppercase(List[i]) = AdminRole then
-    begin
+  vCntr:= 0;
+
+  while vCntr<List.Count do begin
+    if uppercase(List[vCntr]) = AdminRole then begin
       // Delete now; recreate at beginning with line endings
-      HasRDBAdmin:= true;
-      List.Delete(i);
-    end
-    else
-    begin
+      HasRDBAdmin := True;
+      List.Delete(vCntr);
+    end else begin
       // Normal role
-      List[i]:= 'Create Role ' + List[i] + ';';
-      inc(i);
+      List[vCntr] := 'Create Role ' + List[vCntr] + ';';
+      Inc(vCntr);
     end;
   end;
-  if HasRDBAdmin then
-  begin
+
+  if HasRDBAdmin then begin
     // Insert special role at beginning for easy editing
     List.Insert(0, '-- use set term for isql, FlameRobin etc. Execute block supported since FB 2.0');
     List.Insert(1, 'set term !! ;'); //temporarily change terminator
@@ -149,7 +151,7 @@ var
   ModuleName, EntryPoint, Params: string;
 begin
   FunctionsList:= TStringList.Create;
-  FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otUDF, Count);
+  FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otUDF, Count);
   // Get functions in dependency order:
   dmSysTables.SortDependencies(FunctionsList);
   List.Clear;
@@ -179,7 +181,7 @@ var
   Description,Message: string; {not actually used here}
   i: Integer;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otExceptions, Count);
+  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otExceptions, Count);
   for i:= 0 to List.Count - 1 do
   begin
     dmSysTables.GetExceptionInfo(dbIndex, List[i],
@@ -196,7 +198,7 @@ var
   Count: Integer;
   i: Integer;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otGenerators, Count);
+  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otGenerators, Count);
   for i:= 0 to List.Count - 1 do
     List[i]:= 'Create Generator ' + List[i] + ' ;';
   Result:= List.Count > 0;
@@ -216,7 +218,7 @@ var
   CheckConstraint: string;
   DefaultValue: string;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otDomains, Count);
+  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otDomains, Count);
   // Get domains in dependency order (if dependencies can exist between domains)
   dmSysTables.SortDependencies(List);
   for i:= 0 to List.Count - 1 do
@@ -391,7 +393,7 @@ begin
   TablesList:= TStringList.Create;
   TableScript:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
+    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
     List.Clear;
     for i:= 0 to TablesList.Count - 1 do
     begin
@@ -419,7 +421,7 @@ begin
   ProceduresList:= TStringList.Create;
   ProcedureScript:= TStringList.Create;
   try
-    ProceduresList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otStoredProcedures, Count);
+    ProceduresList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otStoredProcedures, Count);
     // Get procedures in dependency order:
     dmSysTables.SortDependencies(ProceduresList);
     List.Clear;
@@ -456,7 +458,7 @@ begin
   ViewsList:= TStringList.Create;
   ViewsBodyList:= TStringList.Create;
   try
-    ViewsList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otViews, Count);
+    ViewsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otViews, Count);
     // Get procedures in dependency order:
     dmSysTables.SortDependencies(ViewsList);
     List.Clear;
@@ -489,7 +491,7 @@ begin
   TriggersList:= TStringList.Create;
   TriggerScript:= TStringList.Create;
   try
-    TriggersList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otTriggers, Count);
+    TriggersList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTriggers, Count);
     List.Clear;
     for i:= 0 to TriggersList.Count - 1 do
     begin
@@ -520,7 +522,7 @@ begin
   TablesList:= TStringList.Create;
   FieldsList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
+    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
     List.Clear;
     for i:= 0 to TablesList.Count - 1 do
     begin
@@ -626,7 +628,7 @@ var
 begin
   TablesList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
+    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
     // Get tables in dependency order - probably won't matter much in this case:
     dmSysTables.SortDependencies(TablesList);
     List.Clear;

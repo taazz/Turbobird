@@ -35,10 +35,10 @@ var
   fmCreateUser: TfmCreateUser;
 
 implementation
-
+uses main, SysTables;
 { TfmCreateUser }
 
-uses SysTables;
+
 
 procedure TfmCreateUser.cxGrantRoleChange(Sender: TObject);
 begin
@@ -49,7 +49,7 @@ procedure TfmCreateUser.Init(dbIndex: Integer);
 var
   Count: Integer;
 begin
-  cbRoles.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count);
+  cbRoles.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
 end;
 
 initialization

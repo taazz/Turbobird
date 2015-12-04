@@ -5,6 +5,20 @@ If you want to add popup menus for tables, views etc, please set the Tag
 property of the popup menu to the right value.
 }
 
+//JKoz extensions
+// 1) Only the database node should hold database specific information in its data variable.
+// 2) Add support for node type.
+// 3) change popup filtering by incorprating the node type logic or absorbing the existing logic to node type.
+// 4) Convert all the code from the click events to actions make sure that no logic is lost in the process.
+// 5) Create a new main menu with all the menus present in the application everything must be accesible from the menu first and then
+//    from anywhere else
+//
+// group 01 : Data Changes.
+//   Item 0001 : move all public variables to private and replace them with properties if required.
+//   Item 0002 : ??
+// group 02 : Data Changes.
+//   item 0001 : make sure that the metadata are cached in the application and do not requery the database continuasly.
+
 {$mode objfpc}{$H+}
 
 interface
@@ -13,27 +27,44 @@ uses
   Classes, SysUtils, IBConnection, sqldb, sqldblib, memds, FileUtil, LResources,
   Forms, Controls, Graphics, Dialogs, Menus, ComCtrls, Reg, QueryWindow, Grids,
   ExtCtrls, Buttons, StdCtrls, ActnList, TableManage, dbugintf, turbocommon, importtable,
-  IniFiles;
+  IniFiles, uTBTypes;
 
 {$i turbocommon.inc}
 
 type
-  TDatabaseRec = record
-    Index        :Integer;
-    RegRec       :TRegisteredDatabase;
-    OrigRegRec   :TRegisteredDatabase;
-    IBConnection :TIBConnection;
-    SQLTrans     :TSQLTransaction;
-  end;
+  //TDatabaseRec = record
+  //  Index        :Integer;
+  //  RegRec       :TRegisteredDatabase;
+  //  OrigRegRec   :TRegisteredDatabase;
+  //  IBConnection :TIBConnection;
+  //  SQLTrans     :TSQLTransaction;
+  //end;
 
   { TfmMain }
 
   TfmMain = class(TForm)
-    actDBRegister :TAction;
-    ActionList1 :TActionList;
+    actExit                 :TAction;
+    actFontEditor           :TAction;
+    actAbout                :TAction;
+    actRefreshDatabase      :TAction;
+    actRefresh              :TAction;
+    actRegisterDB           :TAction;
+    actRestoreDB            :TAction;
+    actNewDB                :TAction;
+    ActionList1             :TActionList;
     editorFontDialog        :TFontDialog;
     Image1                  :TImage;
     ImageList1              :TImageList;
+    MainMenu2               :TMainMenu;
+    MenuItem1               :TMenuItem;
+    MenuItem2               :TMenuItem;
+    MenuItem3               :TMenuItem;
+    MenuItem4               :TMenuItem;
+    MenuItem5               :TMenuItem;
+    MenuItem6               :TMenuItem;
+    MenuItem7               :TMenuItem;
+    MenuItem8               :TMenuItem;
+    MenuItem9               :TMenuItem;
     mnOptions               :TMenuItem;
     mnEditorFont            :TMenuItem;
     toolbarImages           :TImageList;
@@ -127,6 +158,14 @@ type
     ToolButton3             :TToolButton;
     tbtnEditorFont          :TToolButton;
     tvMain                  :TTreeView;
+    procedure actExitExecute(Sender :TObject);
+    procedure actFontEditorExecute(Sender :TObject);
+    procedure actAboutExecute(Sender :TObject);
+    procedure actNewDBExecute(Sender :TObject);
+    procedure actRefreshDatabaseExecute(Sender :TObject);
+    procedure actRefreshExecute(Sender :TObject);
+    procedure actRegisterDBExecute(Sender :TObject);
+    procedure actRestoreDBExecute(Sender :TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -192,44 +231,48 @@ type
     procedure lmViewUDFClick(Sender: TObject);
     procedure lmDropTableClick(Sender: TObject);
     procedure lmRecalculateStatisticsClick(Sender: TObject);
-    procedure mnEditorFontClick(Sender: TObject);
-    procedure mnExitClick(Sender: TObject);
-    procedure mnCreateDBClick(Sender: TObject);
-    procedure mnRegDBClick(Sender: TObject);
-    procedure mnAboutClick(Sender: TObject);
     procedure lmEditRegClick(Sender: TObject);
     procedure lmUnregisterDatabaseClick(Sender: TObject);
     procedure lmViewFirst1000Click(Sender: TObject);
     procedure lmNewRoleClick(Sender: TObject);
-    procedure mnRestoreClick(Sender: TObject);
     procedure PageControl1CloseTabClicked(Sender: TObject);
     procedure pmDatabasePopup(Sender: TObject);
     procedure tvMainDblClick(Sender: TObject);
     procedure tvMainExpanded(Sender: TObject; Node: TTreeNode);
     procedure GlobalException(Sender: TObject; E : Exception);
   private
-    FIBConnection: TIBConnection;
-    FSQLTransaction: TSQLTransaction;
-    FCurrentHistoryFile: string;
-    FActivated: Boolean;
-    function FindCustomForm(ATitle: string; AClass: TClass): TComponent;
+    FIBConnection       :TIBConnection;
+    FSQLTransaction     :TSQLTransaction;
+    FCurrentHistoryFile :string;
+    FActivated          :Boolean;
+
+    function FindCustomForm(aTitle: string; aClass: TClass): TComponent;overload;
+    function _FindCustomForm(aTitle: string; aClass: TFormClass): TForm;overload;
     // Show new generator form
     procedure InitNewGen(DatabaseIndex: Integer);
     function GetServerNameNode(ServerName: string): TTreeNode;
     // Remove RegisteredDatabases and clean up memory held by its objects
     procedure ReleaseRegisteredDatabases;
     // Set connection for SQLQuery1 to selected registered database
-    procedure SetConnection(Index: Integer);
+    procedure SetConnection(Index: Integer);overload;
+    procedure SetConnection(aDB:TDatabaseRec);overload;
     procedure SetFocus; override; // solve a bug in Lazarus
   protected
     // This procedure will receive the events that are logged by the connection:
     procedure GetLogEvent(Sender: TSQLConnection; EventType: TDBEventType; Const Msg : String);
+
+
+    //JKOZ : Extensions;
+    function GetSelectedDatabaseNode:TTreeNode;
+    function IsDBNode(Const aNode :TTreeNode):boolean;
   public
     // Array of database connection details as stored in turbobird.reg file
-    RegisteredDatabases: array of TDatabaseRec;
-    Version: string;
-    VersionDate: string;
-    Major, Minor, ReleaseVersion: word;
+    RegisteredDatabases : array of TDatabaseRec; //JKOZ :01.001
+    Version             : string;
+    VersionDate         : string;
+    Major, Minor,
+    ReleaseVersion      : word;
+
     function GetServerName(DBName: string): string;
     function RetrieveInputParamFromSP(Body: string): string;
     // Load registered databases from file and show them in treeview
@@ -246,7 +289,8 @@ type
     function GetConstraintFields(ATableName, AIndexName: string; var List: TStringList): Boolean;
     // Get fields information for specified table
     // Fills SQLQuery1 with details
-    procedure GetFields(DatabaseIndex: Integer; ATableName: string; FieldsList: TStringList);
+    procedure GetFields(DatabaseIndex :Integer; ATableName: string; FieldsList: TStringList);overload; deprecated ' pass the record not the index ';
+    procedure GetFields(aDatabase : TDatabaseRec; ATableName: string; FieldsList: TStringList=nil);overload;
     // Get body of a stored procedure (without SET TERM... clauses)
     // Fills SQLQuery1 with details
     function GetStoredProcBody(DatabaseIndex: Integer; AProcName: string; var SPOwner: string): string;
@@ -278,7 +322,7 @@ type
     function IsUnix: Boolean;
     function Is64bit: Boolean;
     function Is32bit: Boolean;
-    function getConfigurationDirectory: string;
+    function GetConfigurationDirectory :string;
   end;
 
 
@@ -296,11 +340,6 @@ uses CreateDb, ViewView, ViewTrigger, ViewSProc, ViewGen, NewTable, NewGen,
      NewDomain, SysTables, Scriptdb, UserPermissions, BackupRestore, UnitFirebirdServices, CreateUser, ChangePass,
      PermissionManage, CopyTable, About, NewEditField, dbInfo, Comparison;
 
-
-procedure TfmMain.mnExitClick(Sender: TObject);
-begin
-  Close;
-end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
@@ -417,7 +456,7 @@ begin
     ConnectToDBAs(dbIndex) then
   begin
     Title:= RegisteredDatabases[dbIndex].RegRec.Title + ': Database Comparison';
-    fmComparison:= FindCustomForm(Title, TfmComparison) as TfmComparison;
+    fmComparison:= TfmComparison(_FindCustomForm(Title, TfmComparison));
     if fmComparison = nil then
     begin
       fmComparison:= TfmComparison.Create(Application);
@@ -476,7 +515,8 @@ end;
 procedure TfmMain.lmCreateDBClick(Sender: TObject);
 begin
   fmCreateDB.edNewDatabase.Text:= tvMain.Selected.Text + ':';
-  mnCreateDBClick(nil);
+  //mnCreateDBClick(nil);
+  actNewDBExecute(Nil);
 end;
 
 procedure TfmMain.lmDBInfoClick(Sender: TObject);
@@ -612,6 +652,72 @@ begin
   FActivated:= True;
 end;
 
+procedure TfmMain.actRegisterDBExecute(Sender :TObject);
+begin
+  fmReg.NewReg:= True;
+  fmReg.bbReg.Caption:= 'Register';
+  if fmReg.ShowModal = mrOK then
+  begin
+    LoadRegisteredDatabases;
+    fmReg.SaveRegistrations;
+    LoadRegisteredDatabases;
+  end;
+end;
+
+procedure TfmMain.actRestoreDBExecute(Sender :TObject);
+begin
+  fmBackupRestore.Init('', '', '', '');
+  fmBackupRestore.cbOperation.ItemIndex:= 1;
+  fmBackupRestore.cbOperation.Enabled:= False;
+  fmBackupRestore.meLog.Clear;
+  fmBackupRestore.Show;
+end;
+
+procedure TfmMain.actNewDBExecute(Sender :TObject);
+begin
+  if fmCreateDB.ShowModal = mrOk then
+    LoadRegisteredDatabases;
+end;
+
+procedure TfmMain.actRefreshDatabaseExecute(Sender :TObject);
+begin
+  if tvMain.Selected.Expanded then
+    tvMain.Selected.Collapse(False);
+  tvMainExpanded(nil, tvMain.Selected)
+end;
+
+procedure TfmMain.actRefreshExecute(Sender :TObject);
+begin
+  //
+end;
+
+procedure TfmMain.actExitExecute(Sender :TObject);
+begin
+  Close;
+end;
+
+procedure TfmMain.actFontEditorExecute(Sender :TObject);
+var
+  configFile: TIniFile;
+  configFilePath: String;
+begin
+  configFilePath:= ConcatPaths([ExtractFilePath(Application.ExeName), 'config.ini']);
+  configFile:= TIniFile.Create(configFilePath);
+
+  if editorFontDialog.Execute then
+  begin
+    configFile.WriteString('Editor Font', 'font_name', editorFontDialog.Font.Name);
+    configFile.WriteInteger('Editor Font', 'font_size', editorFontDialog.Font.Size);
+  end;
+  configFile.Free;
+end;
+
+procedure TfmMain.actAboutExecute(Sender :TObject);
+begin
+  fmAbout:= TfmAbout.Create(nil);
+  fmAbout.Init;
+  fmAbout.Show;
+end;
 
 (***************  Open System table  **************)
 
@@ -746,7 +852,7 @@ begin
   // So check SavePassword instead of Password itself.
   if (ForceConnectDialog=false) and Rec.SavePassword then
   try
-    fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count);
+    fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
     fmEnterPass.cbRole.ItemIndex:= -1;
     fmEnterPass.cbRole.Text:= '';
     Result:= True; //this works, no need to go through a retry attempt below
@@ -793,7 +899,7 @@ begin
   result := Arch = '32';
 end;
 
-function TfmMain.getConfigurationDirectory: string;
+function TfmMain.GetConfigurationDirectory :string;
 var
   ConfigDir: string;
 begin
@@ -959,7 +1065,7 @@ begin
   SelNode:= tvMain.Selected;
   DBIndex:= PtrInt(SelNode.Parent.Data);
 
-  TableNames:= dmSysTables.GetDBObjectNames(DBIndex, otTables, Count);
+  TableNames:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[DBIndex], otTables, Count);
   fmCreateTrigger.cbTables.Items.CommaText:= TableNames;
   CreateNewTrigger(DBIndex, '');
 end;
@@ -1387,13 +1493,17 @@ end;
 
 procedure TfmMain.SetConnection(Index: Integer);
 begin
-  if FIBConnection <> RegisteredDatabases[Index].IBConnection then
-  begin
-    FIBConnection := RegisteredDatabases[Index].IBConnection;
+  SetConnection(RegisteredDatabases[Index]);
+end;
+
+procedure TfmMain.SetConnection(aDB :TDatabaseRec);
+begin
+  if (FIBConnection <> aDB.IBConnection) then begin
+    FIBConnection := aDB.IBConnection;
     // This used to say FIBConnection.Close which will simply also close all open
     // queries - not a good idea
-    //FIBConnection.Close;
-    FSQLTransaction           := RegisteredDatabases[Index].SQLTrans;
+    // FIBConnection.Close;
+    FSQLTransaction           := aDB.SQLTrans;
     FIBConnection.Transaction := FSQLTransaction;
     SQLQuery1.DataBase        := FIBConnection;
     SQLQuery1.Transaction     := FSQLTransaction;
@@ -1406,8 +1516,7 @@ begin
     inherited SetFocus;
 end;
 
-procedure TfmMain.GetLogEvent(Sender: TSQLConnection; EventType: TDBEventType;
-  const Msg: String);
+procedure TfmMain.GetLogEvent(Sender :TSQLConnection; EventType :TDBEventType; Const Msg :String);
 // Used to log everything sent through the connection
 var
   Source: string;
@@ -1428,6 +1537,22 @@ begin
   end;
 end;
 
+function TfmMain.GetSelectedDatabaseNode :TTreeNode;
+begin
+  Result := tvMain.Selected;
+  if tvMain.Selected.Level >= 1 then begin
+    while Result.Level > 1 do
+      Result := Result.Parent;
+  end;
+  if (Result.Level <> 1) then Result := nil;
+end;
+
+function TfmMain.IsDBNode(Const aNode :TTreeNode) :boolean;
+begin
+  //JKOZ : for now this will do in the future the node's data property will be used for ID
+  Result := aNode.Level = 1; //assigned(aNode.Parent) and (not assigned(aNode.Parent.Parent));
+end;
+
 
 (* Insert SQL query into database history file *)
 
@@ -1445,7 +1570,6 @@ begin
           mdsHistory.SaveToFile(FCurrentHistoryFile);
       end;
     end;
-
   except
     on E: Exception do
     begin
@@ -1674,7 +1798,7 @@ begin
   begin
     fmEnterPass.edPassword.Clear;
     try
-      fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count);
+      fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
     except
     end;
     if fmEnterPass.ShowModal = mrOk then
@@ -1770,11 +1894,13 @@ end;
 procedure TfmMain.lmRegdbClick(Sender: TObject);
 begin
   fmReg.edDatabaseName.Text:= tvMain.Selected.Text + ':';
-  mnRegDBClick(nil);
+  actRegisterDBExecute(Nil);
+  //mnRegDBClick(nil);
 end;
 
 procedure TfmMain.lmRestoreClick(Sender: TObject);
 begin
+  actRestoreDBExecute(Sender);
   fmBackupRestore.Init('', tvMain.Selected.Text +  ':', '', '');
   fmBackupRestore.cbOperation.ItemIndex:= 1;
   fmBackupRestore.cbOperation.Enabled:= False;
@@ -2523,7 +2649,7 @@ const
     ' WHERE r.RDB$RELATION_NAME=''%s'' ' +
     ' ORDER BY r.RDB$FIELD_POSITION;';
 var
-  Rec: TDatabaseRec;
+  vRec: TDatabaseRec;
   FieldName: string;
 begin
   SQLQuery1.Close;
@@ -2531,7 +2657,7 @@ begin
   before changing the query's transaction}
   if (Assigned(FSQLTransaction)) then
     FSQLTransaction.Commit;
-  Rec:= RegisteredDatabases[DatabaseIndex];
+  vRec := RegisteredDatabases[DatabaseIndex];
   SetConnection(DatabaseIndex);
   SQLQuery1.SQL.Text:= format(QueryTemplate,[ATableName]);
   {$IFDEF NEVER}
@@ -2541,11 +2667,67 @@ begin
   SQLQuery1.Open;
   // If FieldsList is nil, don't try to fill results. Calling code probably
   // just wants the query. Let's hope so.
-  if FieldsList <> nil then
-  begin
+  if FieldsList <> nil then begin
     FieldsList.Clear;
-    while not SQLQuery1.EOF do
-    begin
+    SQLQuery1.First;//JKOZ: opening a query does not quaranty that it will be set on the first record (as far as I remember)
+    while not SQLQuery1.EOF do begin
+      FieldName:= Trim(SQLQuery1.FieldByName('field_name').AsString);
+      // Avoid duplicate field names
+      if FieldsList.IndexOf(FieldName) = -1 then
+        FieldsList.Add(FieldName);
+      SQLQuery1.Next;
+    end;
+  end;
+  SQLQuery1.First;
+end;
+
+procedure TfmMain.GetFields(aDatabase :TDatabaseRec; ATableName :string; FieldsList :TStringList);
+const
+  QueryTemplate= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
+    ' r.RDB$DESCRIPTION AS field_description, ' +
+    ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value }+
+    ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
+    ' f.RDB$FIELD_LENGTH AS field_length, ' +
+    ' f.RDB$CHARACTER_LENGTH AS characterlength, ' + {character_length seems a reserved word}
+    ' f.RDB$FIELD_PRECISION AS field_precision, ' +
+    ' f.RDB$FIELD_SCALE AS field_scale, ' +
+    ' f.RDB$FIELD_TYPE as field_type_int, ' +
+    ' f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
+    ' coll.RDB$COLLATION_NAME AS field_collation, ' +
+    ' cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
+    ' f.RDB$computed_source AS computed_source, ' +
+    ' dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
+    ' r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain}+
+    ' FROM RDB$RELATION_FIELDS r ' +
+    ' LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+    ' LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID and f.rdb$character_set_id=coll.rdb$character_set_id ' +
+    ' LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+    ' LEFT JOIN RDB$FIELD_DIMENSIONS dim ON f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME ' +
+    ' WHERE r.RDB$RELATION_NAME=''%s'' ' +
+    ' ORDER BY r.RDB$FIELD_POSITION;';
+var
+  vRec: TDatabaseRec;
+  FieldName: string;
+begin
+  SQLQuery1.Close;
+  {A bit unclear why the transaction needs to be committed but at least do it
+  before changing the query's transaction}
+  if (Assigned(FSQLTransaction)) then
+    FSQLTransaction.Commit;
+  //vRec := RegisteredDatabases[DatabaseIndex];
+  SetConnection(aDatabase);
+  SQLQuery1.SQL.Text:= format(QueryTemplate,[ATableName]);
+  {$IFDEF NEVER}
+  // Left for debugging
+  SendDebug('GetFields: ' + SQLQuery1.SQL.Text);
+  {$ENDIF}
+  SQLQuery1.Open;
+  // If FieldsList is nil, don't try to fill results. Calling code probably
+  // just wants the query. Let's hope so.
+  if FieldsList <> nil then begin
+    FieldsList.Clear;
+    SQLQuery1.First;//JKOZ: opening a query does not quaranty that it will be set on the first record (as far as I remember)
+    while not SQLQuery1.EOF do begin
       FieldName:= Trim(SQLQuery1.FieldByName('field_name').AsString);
       // Avoid duplicate field names
       if FieldsList.IndexOf(FieldName) = -1 then
@@ -2866,7 +3048,7 @@ var
   ATab: TTabSheet;
   ACaption: string;
 begin
-  Rec:= RegisteredDatabases[DatabaseIndex];
+  Rec := RegisteredDatabases[DatabaseIndex];
   ACaption:= Rec.RegRec.Title + ': ' + ATitle;
 
   // Search for already opened query window for the same title
@@ -2875,24 +3057,24 @@ begin
   if Result = nil then
   begin
     // No opened query window
-    Result:= TfmQueryWindow.Create(Application);
-    ATab:= TTabSheet.Create(self);
-    ATab.Parent:= PageControl1;
-    ATab.Caption:= ACaption;
-    Result.Parent:= ATab;
-    Result.Left:= 0;
-    Result.Top:= 0;
-    Result.Align:= alClient;
+    Result := TfmQueryWindow.Create(Application);
+    ATab   := TTabSheet.Create(self);
+    ATab.Parent   := PageControl1;
+    ATab.Caption  := ACaption;
+    Result.Parent := ATab;
+    Result.Left   := 0;
+    Result.Top    := 0;
+    Result.Align  := alClient;
     Result.Font.Name:= 'Arial';
   end
   else // Already opened query window found
-    ATab:= Result.Parent as TTabSheet;
+    ATab := Result.Parent as TTabSheet;
 
   Result.Init(DatabaseIndex);
-  ATab.Tag:= DatabaseIndex;
-  Result.Caption:= ACaption;
+  ATab.Tag := DatabaseIndex;
+  Result.Caption := ACaption;
   Result.Parent.Show;
-  Result.BorderStyle:= bsNone;
+  Result.BorderStyle := bsNone;
   OpenSQLHistory(Rec.RegRec.Title);
   Result.Show;
   fmMain.Show;
@@ -2925,7 +3107,7 @@ begin
       // Tables
       if ANodeText = 'Tables' then
       begin
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otTables, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otTables, Count);
         TableNode:= Node;
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
 
@@ -2944,7 +3126,7 @@ begin
       if ANodeText = 'Generators' then
       begin
         GenNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otGenerators, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otGenerators, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         GenNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -2960,7 +3142,7 @@ begin
       if Node.Text = 'Triggers' then
       begin
         TrigNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otTriggers, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otTriggers, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         TrigNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -2975,7 +3157,7 @@ begin
       if Node.Text = 'Views' then
       begin
         ViewsNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otViews, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otViews, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         ViewsNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -2990,7 +3172,7 @@ begin
       if Node.Text = 'Stored Procedures' then
       begin
         StoredProcNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otStoredProcedures, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otStoredProcedures, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         StoredProcNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3005,7 +3187,7 @@ begin
       if Node.Text = 'Functions' then
       begin
         UDFNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otUDF, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otUDF, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         UDFNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3020,7 +3202,7 @@ begin
       if Node.Text = 'System Tables' then
       begin
         SysTableNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otSystemTables, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otSystemTables, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         SysTableNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3035,7 +3217,7 @@ begin
       if Node.Text = 'Domains' then
       begin
         DomainsNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otDomains, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otDomains, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         DomainsNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3050,7 +3232,7 @@ begin
       if Node.Text = 'Roles' then
       begin
         RoleNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otRoles, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otRoles, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         RoleNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3065,7 +3247,7 @@ begin
       if Node.Text = 'Exceptions' then
       begin
         ExceptionNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otExceptions, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otExceptions, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         ExceptionNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3080,7 +3262,7 @@ begin
       if Node.Text = 'Users' then
       begin
         UserNode:= Node;
-        Objects.CommaText:= dmSysTables.GetDBObjectNames(DBIndex, otUsers, Count);
+        Objects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[DBIndex], otUsers, Count);
         Node.Text:= ANodeText + ' (' + IntToStr(Count) + ')';
         UserNode.DeleteChildren;
         for i:= 0 to Objects.Count - 1 do
@@ -3601,54 +3783,11 @@ begin
     ShowMessage('Error recalculating index statistics: '+Message);
 end;
 
-procedure TfmMain.mnEditorFontClick(Sender: TObject);
-var
-  configFile: TIniFile;
-  configFilePath: String;
-
-begin
-     configFilePath:= ConcatPaths([ExtractFilePath(Application.ExeName), 'config.ini']);
-     configFile:= TIniFile.Create(configFilePath);
-
-     if editorFontDialog.Execute then
-     begin
-        configFile.WriteString('Editor Font', 'font_name', editorFontDialog.Font.Name);
-        configFile.WriteInteger('Editor Font', 'font_size', editorFontDialog.Font.Size);
-
-     end;
-     configFile.Free;
-end;
-
 (********  Create new database  ********)
-
-procedure TfmMain.mnCreateDBClick(Sender: TObject);
-begin
-  if fmCreateDB.ShowModal = mrOk then
-    LoadRegisteredDatabases;
-end;
 
 (**********  Register New database  ***********)
 
-procedure TfmMain.mnRegDBClick(Sender: TObject);
-begin
-  fmReg.NewReg:= True;
-  fmReg.bbReg.Caption:= 'Register';
-  if fmReg.ShowModal = mrOK then
-  begin
-    LoadRegisteredDatabases;
-    fmReg.SaveRegistrations;
-    LoadRegisteredDatabases;
-  end;
-end;
-
 (**********  About  ****************)
-
-procedure TfmMain.mnAboutClick(Sender: TObject);
-begin
-  fmAbout:= TfmAbout.Create(nil);
-  fmAbout.Init;
-  fmAbout.Show;
-end;
 
 (************* Edit Registration  *************)
 
@@ -3731,15 +3870,6 @@ begin
     QWindow.meQuery.Lines.Add('CREATE ROLE role_name;');
     QWindow.Show;
   end;
-end;
-
-procedure TfmMain.mnRestoreClick(Sender: TObject);
-begin
-  fmBackupRestore.Init('', '', '', '');
-  fmBackupRestore.cbOperation.ItemIndex:= 1;
-  fmBackupRestore.cbOperation.Enabled:= False;
-  fmBackupRestore.meLog.Clear;
-  fmBackupRestore.Show;
 end;
 
 procedure TfmMain.PageControl1CloseTabClicked(Sender: TObject);
@@ -4136,32 +4266,46 @@ end;
 
 function TfmMain.FindQueryWindow(ATitle: string): TComponent;
 var
-  i: Integer;
+  vCntr: Integer;
 begin
   Result:= nil;
-  for i:= 0 to Application.ComponentCount- 1 do
-    if Application.Components[i] is TfmQueryWindow then
-      if (Application.Components[i] as TfmQueryWindow).Caption = ATitle then
-        begin
-          Result:= Application.Components[i];
-          Break;
-        end;
+  for vCntr := 0 to Application.ComponentCount - 1 do
+    if Application.Components[vCntr] is TfmQueryWindow then
+      if (Application.Components[vCntr] as TfmQueryWindow).Caption = ATitle then begin
+        Result := Application.Components[vCntr];
+        Break;
+      end;
 end;
 
 (**********************   Find CustomForm   *********************************)
 
-function TfmMain.FindCustomForm(ATitle: string; AClass: TClass): TComponent;
-var
-  i: Integer;
+function TfmMain.FindCustomForm(aTitle: string; aClass: TClass): TComponent;
+//var
+//  i: Integer;
 begin
-  Result:= nil;
-  for i:= 0 to Application.ComponentCount- 1 do
-    if Application.Components[i] is AClass then
-      if (Application.Components[i] as TForm).Caption = ATitle then
-        begin
-          Result:= Application.Components[i];
-          Break;
-        end;
+  //JKoz : all forms are registeres with the screen global object but not all the forms register the application as owner.
+  Result := nil;
+  //for i:= 0 to Application.ComponentCount- 1 do
+  //  if Application.Components[i] is AClass then
+  //    if (Application.Components[i] as TForm).Caption = ATitle then begin
+  //      Result:= Application.Components[i];
+  //      Break;
+  //    end;
+  if aClass.InheritsFrom(TForm) then Result := _FindCustomForm(aTitle, TFormClass(aClass));
+end;
+
+function TfmMain._FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
+var
+  vCntr: Integer;
+begin
+  Result := nil;
+  for vCntr := 0 to Screen.FormCount - 1 do begin
+    if Screen.Forms[vCntr] is aClass then
+      if Screen.Forms[vCntr].Caption = aTitle then begin
+        Result := Screen.Forms[vCntr];
+        Break;
+      end;
+  end;
 end;
 
 (****************  Delete Registration   *************************)
@@ -4287,7 +4431,7 @@ function TfmMain.GetTableNames(dbIndex: Integer): string;
 var
   Count: Integer;
 begin
-  Result:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
+  Result:= dmSysTables.GetDBObjectNames(RegisteredDatabases[dbIndex], otTables, Count);
 end;
 
 initialization

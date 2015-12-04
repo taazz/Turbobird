@@ -662,12 +662,12 @@ begin
         meLog.Lines.Add('');
         meLog.Lines.Add('Checking Missing ' + dbObjects[ord(ObjectType)] + ':');
 
-        List.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, ObjectType, Count);
+        List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
 
         Application.ProcessMessages;
         if FCanceled then
           Exit;
-        ComparedList.CommaText:= dmSysTables.GetDBObjectNames(cbComparedDatabase.ItemIndex, ObjectType, Count);
+        ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
         FDBObjectsList[ord(ObjectType)].Clear;
         FDBExistingObjectsList[ord(ObjectType)].Clear;
         for i:= 0 to List.Count -1 do
@@ -718,14 +718,14 @@ begin
       meLog.Lines.Add('');
       meLog.Lines.Add('Checking Removed ' + dbObjects[ord(ObjectType)] + ':');
 
-      List.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, ObjectType, Count);
+      List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
       {$IFDEF NEVER}
       //Left for debugging
       Senddebug('current '+dbobjects[ord(ObjectType)]+': '+List.CommaText);
       Sleep(40);
       {$ENDIF}
 
-      ComparedList.CommaText:= dmSysTables.GetDBObjectNames(cbComparedDatabase.ItemIndex, ObjectType, Count);
+      ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
       {$IFDEF NEVER}
       //Left for debugging
       Senddebug('compared '+dbobjects[ord(ObjectType)]+': '+ComparedList.CommaText);
@@ -2047,7 +2047,7 @@ begin
   ComparedList:= TStringList.Create;
   TablesList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, otTables, Count);
+    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
 
     meLog.Lines.Add('');
     meLog.Lines.Add('Missing Indices:');
@@ -2112,7 +2112,7 @@ begin
   ComparedList:= TStringList.Create;
   TablesList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, otTables, Count);
+    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
     FExistConstraintsList.Clear;
 
     meLog.Lines.Add('');

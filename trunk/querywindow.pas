@@ -7,9 +7,9 @@ interface
 uses
   Classes, SysUtils, IBConnection, db, sqldb, FileUtil, LResources, Forms,
   Controls, Graphics, Dialogs, ExtCtrls, PairSplitter, StdCtrls, Buttons,
-  DBGrids, Menus, ComCtrls, SynEdit, SynHighlighterSQL, Reg,
-  SynEditTypes, SynCompletion, Clipbrd, grids, DbCtrls, types, LCLType,
-  dbugintf, turbocommon, variants, strutils, IniFiles;
+  DBGrids, Menus, ComCtrls, SynEdit, SynHighlighterSQL, Reg, SynEditTypes,
+  SynCompletion, Clipbrd, grids, DbCtrls, types, LCLType, dbugintf,
+  turbocommon, variants, strutils, IniFiles, uTBTypes;
 
 type
 

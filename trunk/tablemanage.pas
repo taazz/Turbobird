@@ -13,51 +13,51 @@ type
   { TfmTableManage }
 
   TfmTableManage = class(TForm)
-      bbClose: TSpeedButton;
-    bbCreateIndex: TBitBtn;
-    bbDrop: TBitBtn;
-    bbDropConstraint: TBitBtn;
-    bbEdit: TBitBtn;
-    bbNew: TBitBtn;
-    bbNewConstraint: TBitBtn;
-    bbRefresh: TBitBtn;
-    bbRefreshConstraint: TBitBtn;
-    bbRefreshReferences: TBitBtn;
-    bbRefreshIndices: TBitBtn;
-    bbRefreshTriggers: TBitBtn;
-    bbNewTrigger: TBitBtn;
-    bbEditTrigger: TBitBtn;
-    bbDropTrigger: TBitBtn;
-    bbRefreshPermissions: TBitBtn;
-    bbAddUser: TBitBtn;
-    cbIndexType: TComboBox;
-    cbSortType: TComboBox;
-    clbFields: TCheckListBox;
-    cxUnique: TCheckBox;
-    bbEditPermission: TBitBtn;
-    edDrop: TBitBtn;
-    edIndexName: TEdit;
-    GroupBox2: TGroupBox;
-    ImageList1: TImageList;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    PageControl1: TPageControl;
-    sgReferences: TStringGrid;
-    sgTriggers: TStringGrid;
-    sgPermissions: TStringGrid;
-    SQLQuery1: TSQLQuery;
-    SQLQuery2: TSQLQuery;
-    sgFields: TStringGrid;
-    sgIndices: TStringGrid;
-    sgConstraints: TStringGrid;
-    tsReferences: TTabSheet;
-    tsPermissions: TTabSheet;
-    tsTriggers: TTabSheet;
-    tsIndices: TTabSheet;
-    tsConstraints: TTabSheet;
-    tsFields: TTabSheet;
+    bbClose              :TSpeedButton;
+    bbCreateIndex        :TBitBtn;
+    bbDrop               :TBitBtn;
+    bbDropConstraint     :TBitBtn;
+    bbEdit               :TBitBtn;
+    bbNew                :TBitBtn;
+    bbNewConstraint      :TBitBtn;
+    bbRefresh            :TBitBtn;
+    bbRefreshConstraint  :TBitBtn;
+    bbRefreshReferences  :TBitBtn;
+    bbRefreshIndices     :TBitBtn;
+    bbRefreshTriggers    :TBitBtn;
+    bbNewTrigger         :TBitBtn;
+    bbEditTrigger        :TBitBtn;
+    bbDropTrigger        :TBitBtn;
+    bbRefreshPermissions :TBitBtn;
+    bbAddUser            :TBitBtn;
+    cbIndexType          :TComboBox;
+    cbSortType           :TComboBox;
+    clbFields            :TCheckListBox;
+    cxUnique             :TCheckBox;
+    bbEditPermission     :TBitBtn;
+    edDrop               :TBitBtn;
+    edIndexName          :TEdit;
+    GroupBox2            :TGroupBox;
+    ImageList1           :TImageList;
+    Label1               :TLabel;
+    Label2               :TLabel;
+    Label3               :TLabel;
+    Label4               :TLabel;
+    PageControl1         :TPageControl;
+    sgReferences         :TStringGrid;
+    sgTriggers           :TStringGrid;
+    sgPermissions        :TStringGrid;
+    SQLQuery1            :TSQLQuery;
+    SQLQuery2            :TSQLQuery;
+    sgFields             :TStringGrid;
+    sgIndices            :TStringGrid;
+    sgConstraints        :TStringGrid;
+    tsReferences         :TTabSheet;
+    tsPermissions        :TTabSheet;
+    tsTriggers           :TTabSheet;
+    tsIndices            :TTabSheet;
+    tsConstraints        :TTabSheet;
+    tsFields             :TTabSheet;
     procedure bbAddUserClick(Sender: TObject);
     procedure bbCloseClick(Sender: TObject);
     procedure bbCreateIndexClick(Sender: TObject);
@@ -83,8 +83,6 @@ type
     procedure sgFieldsDblClick(Sender: TObject);
     procedure sgPermissionsDblClick(Sender: TObject);
     procedure sgTriggersDblClick(Sender: TObject);
-    procedure tsFieldsContextPopup(Sender: TObject; MousePos: TPoint;
-        var Handled: Boolean);
   private
     FDBIndex: Integer;
     FTableName: string;
@@ -150,13 +148,6 @@ begin
   // Double clicking allows user to edit trigger
   bbEditTriggerClick(Sender);
 end;
-
-procedure TfmTableManage.tsFieldsContextPopup(Sender: TObject;
-    MousePos: TPoint; var Handled: Boolean);
-begin
-
-end;
-
 
 procedure TfmTableManage.bbEditClick(Sender: TObject);
 var
@@ -352,7 +343,7 @@ begin
   fmNewConstraint.edNewName.Text:= 'FK_' + FTableName + '_' + IntToStr(sgConstraints.RowCount);
 
   // Foreign tables
-  fmNewConstraint.cbTables.Items.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, otTables, Count);
+  fmNewConstraint.cbTables.Items.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
   fmNewConstraint.DatabaseIndex:= FDBIndex;
 
   fmNewConstraint.laTable.Caption:= FTableName;

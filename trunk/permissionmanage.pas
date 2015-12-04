@@ -251,7 +251,7 @@ begin
   clbRoles.Clear;
   if cbRolesUser.Text <> '' then
   begin
-    clbRoles.Items.CommaText:= dmSysTables.GetDBObjectNames(FDBIndex, otRoles, Count);
+    clbRoles.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otRoles, Count);
     FRoleList.Clear;
     FRoleList.CommaText:= dmSysTables.GetUserObjects(FDBIndex, cbRolesUser.Text, 13);
     SetLength(FRoleGrant, clbRoles.Count);
@@ -564,15 +564,15 @@ begin
   PageControl1.ActivePageIndex:= 0;
   FDBIndex := dbIndex;
   cbUsers.Text := AUserName;
-  cbTables.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otTables, Count);
-  cbViews.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otViews, Count);
+  cbTables.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
+  cbViews.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otViews, Count);
   cbTables.Text:= ATableName;
   cbProcUsers.Text:= AUserName;
   cbViewsUsers.Text:= AUserName;
 
   // For users, add roles and users
-  cbUsers.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otRoles, Count) + ',' +
-    dmSysTables.GetDBObjectNames(dbIndex, otUsers, Count);
+  cbUsers.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count) + ',' +
+    dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otUsers, Count);
   cbProcUsers.Items.CommaText:= cbUsers.Items.CommaText;
   cbViewsUsers.Items.CommaText:= cbUsers.Items.CommaText;
 
@@ -591,7 +591,7 @@ begin
     cbRolesUser.Text:= AUserName;
     UpdateRolePermissions;
   end;
-  cbRolesUser.Items.CommaText:= dmSysTables.GetDBObjectNames(dbIndex, otUsers, Count);
+  cbRolesUser.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otUsers, Count);
 end;
 
 initialization

@@ -23,7 +23,7 @@ uses
   UserPermissions, TableManage, BackupRestore, CreateUser, ChangePass,
   PermissionManage, SQLHistory, CopyTable, dynlibs, ibase60dyn, dbInfo,
   sysutils, Comparison, Update, topologicalsort, UnitFirebirdServices, 
-  turbocommon, importtable, fileimport, csvdocument, sqldblib, UEvsManagers;
+  turbocommon, importtable, fileimport, csvdocument, sqldblib, uTBTypes;
 
 const
   Major = 1;

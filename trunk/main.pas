@@ -306,8 +306,7 @@ type
     function ShowQueryWindow(DatabaseIndex: Integer; ATitle: string): TfmQueryWindow;
     procedure FillObjectRoot(Node: TTreeNode);
     procedure FillAndShowConstraintsForm(Form: TfmTableManage; ATableName: string; dbIndex: Integer);
-    procedure ShowCompleteQueryWindow(DatabaseIndex: Integer; ATitle, AQueryText: string;
-      OnCommitProcedure: TNotifyEvent = nil);
+    procedure ShowCompleteQueryWindow(DatabaseIndex: Integer; ATitle, AQueryText: string; OnCommitProcedure: TNotifyEvent = nil);
     // Gets fields info and fills TableManage form(!) grids with info
     procedure ViewTableFields(ATableName: string; dbIndex: Integer; AStringGrid: TStringGrid);
     procedure ShowIndicesManagement(AForm: TForm; DatabaseIndex: Integer; ATableName: string);
@@ -4282,18 +4281,20 @@ end;
 (**********************   Find CustomForm   *********************************)
 
 function TfmMain.FindCustomForm(aTitle: string; aClass: TClass): TComponent;
-//var
-//  i: Integer;
+var
+  vCntr: Integer;
 begin
   //JKoz : all forms are registeres with the screen global object but not all the forms register the application as owner.
   Result := nil;
-  //for i:= 0 to Application.ComponentCount- 1 do
-  //  if Application.Components[i] is AClass then
-  //    if (Application.Components[i] as TForm).Caption = ATitle then begin
-  //      Result:= Application.Components[i];
-  //      Break;
-  //    end;
-  if aClass.InheritsFrom(TForm) then Result := _FindCustomForm(aTitle, TFormClass(aClass));
+  if aClass.InheritsFrom(TForm) then Result := _FindCustomForm(aTitle, TFormClass(aClass))
+  else
+    for vCntr:= 0 to Application.ComponentCount- 1 do begin
+      if Application.Components[vCntr] is AClass then
+        if (Application.Components[vCntr] as TForm).Caption = ATitle then begin
+          Result := Application.Components[vCntr];
+          Break;
+        end;
+    end;
 end;
 
 function TfmMain._FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
@@ -4301,12 +4302,13 @@ var
   vCntr: Integer;
 begin
   Result:= nil;
-  for vCntr:= 0 to Screen.FormCount - 1 do
+  for vCntr:= 0 to Screen.FormCount - 1 do begin
     if Screen.Forms[vCntr] is AClass then
       if Screen.Forms[vCntr].Caption = ATitle then begin
         Result:= Screen.Forms[vCntr];
         Break;
       end;
+  end;
 end;
 
 (****************  Delete Registration   *************************)

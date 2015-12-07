@@ -56,66 +56,68 @@ type
   { TfmQueryWindow }
 
   TfmQueryWindow = class(TForm)
-    cxAutoCommit: TCheckBox;
-    FindDialog1: TFindDialog;
-    bbClose: TSpeedButton;
-    FontDialog1: TFontDialog;
-    toolbarImages: TImageList;
-    imTools: TImageList;
-    imTabs: TImageList;
-    lmCloseTab: TMenuItem;
-    lmCopy: TMenuItem;
-    lmPaste: TMenuItem;
-    lmSelectAll: TMenuItem;
-    lmUndo: TMenuItem;
-    MainMenu1: TMainMenu;
-    MenuItem1: TMenuItem;
-    MenuItem10: TMenuItem;
-    lmCut: TMenuItem;
-    lmExport: TMenuItem;
-    lmCommaDelimited: TMenuItem;
-    lmHTML: TMenuItem;
-    lmRedo: TMenuItem;
-    MenuItem2: TMenuItem;
-    lmFind: TMenuItem;
-    lmFindAgain: TMenuItem;
-    MenuItem3: TMenuItem;
-    lmCopyCell: TMenuItem;
-    lmExportAsComma: TMenuItem;
-    lmExportAsHTML: TMenuItem;
-    lmCopyAll: TMenuItem;
-    MenuItem5: TMenuItem;
-    lmRun: TMenuItem;
-    lmRunSelect: TMenuItem;
-    lmRunExec: TMenuItem;
-    lmRunScript: TMenuItem;
-    OpenDialog1: TOpenDialog;
-    pgOutputPageCtl: TPageControl;
-    Panel1: TPanel;
-    pnlOutputPanel: TPanel;
-    pmTab: TPopupMenu;
-    pmMemo: TPopupMenu;
-    pmGrid: TPopupMenu;
-    SaveDialog1: TSaveDialog;
-    Splitter1: TSplitter;
-    meQuery: TSynEdit;
-    SynCompletion1: TSynCompletion;
-    SynSQLSyn1: TSynSQLSyn;
-    ToolBar1: TToolBar;
-    tbNew: TToolButton;
-    tbOpen: TToolButton;
-    tbSave: TToolButton;
-    tbRun: TToolButton;
-    tbCommit: TToolButton;
-    tbRollback: TToolButton;
-    tbCommitRetaining: TToolButton;
-    tbRollbackRetaining: TToolButton;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    tbHistory: TToolButton;
-    ToolButton5: TToolButton;
-    tbMenu: TToolButton;
+    cxAutoCommit :TCheckBox;
+    cxCommitRetaining :TCheckBox;
+    FindDialog1   :TFindDialog;
+    bbClose       :TSpeedButton;
+    FontDialog1   :TFontDialog;
+    Panel2 :TPanel;
+    toolbarImages :TImageList;
+    imTools       :TImageList;
+    imTabs        :TImageList;
+    lmCloseTab    :TMenuItem;
+    lmCopy        :TMenuItem;
+    lmPaste       :TMenuItem;
+    lmSelectAll   :TMenuItem;
+    lmUndo        :TMenuItem;
+    MainMenu1     :TMainMenu;
+    MenuItem1     :TMenuItem;
+    MenuItem10    :TMenuItem;
+    lmCut         :TMenuItem;
+    lmExport      :TMenuItem;
+    lmCommaDelimited  :TMenuItem;
+    lmHTML            :TMenuItem;
+    lmRedo            :TMenuItem;
+    MenuItem2         :TMenuItem;
+    lmFind            :TMenuItem;
+    lmFindAgain       :TMenuItem;
+    MenuItem3         :TMenuItem;
+    lmCopyCell        :TMenuItem;
+    lmExportAsComma   :TMenuItem;
+    lmExportAsHTML    :TMenuItem;
+    lmCopyAll         :TMenuItem;
+    MenuItem5         :TMenuItem;
+    lmRun             :TMenuItem;
+    lmRunSelect       :TMenuItem;
+    lmRunExec         :TMenuItem;
+    lmRunScript       :TMenuItem;
+    OpenDialog1       :TOpenDialog;
+    pgOutputPageCtl   :TPageControl;
+    Panel1            :TPanel;
+    pnlOutputPanel    :TPanel;
+    pmTab             :TPopupMenu;
+    pmMemo            :TPopupMenu;
+    pmGrid            :TPopupMenu;
+    SaveDialog1       :TSaveDialog;
+    Splitter1         :TSplitter;
+    meQuery           :TSynEdit;
+    SynCompletion1    :TSynCompletion;
+    SynSQLSyn1        :TSynSQLSyn;
+    ToolBar1          :TToolBar;
+    tbNew             :TToolButton;
+    tbOpen            :TToolButton;
+    tbSave            :TToolButton;
+    tbRun             :TToolButton;
+    tbCommit          :TToolButton;
+    tbRollback        :TToolButton;
+    tbCommitRetaining :TToolButton;
+    tbRollbackRetaining : TToolButton;
+    ToolButton1         : TToolButton;
+    ToolButton2         : TToolButton;
+    ToolButton3         : TToolButton;
+    tbHistory           : TToolButton;
+    ToolButton5         : TToolButton;
+    tbMenu              : TToolButton;
     procedure bbRunClick(Sender: TObject);
     procedure DBGrid1DblClick(Sender: TObject);
     procedure DBGridTitleClick(column: TColumn);
@@ -147,10 +149,9 @@ type
     procedure meQueryKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 
     procedure SQLScript1Exception(Sender: TObject; Statement: TStrings;
-      TheException: Exception; var Continue: boolean);
-    procedure SynCompletion1CodeCompletion(var Value: string;
-      SourceValue: string; var SourceStart, SourceEnd: TPoint;
-      KeyChar: TUTF8Char; Shift: TShiftState);
+                                  TheException: Exception; var Continue: boolean);
+    procedure SynCompletion1CodeCompletion(var Value: string; SourceValue: string; var SourceStart, SourceEnd: TPoint;
+                                           KeyChar: TUTF8Char; Shift: TShiftState);
     procedure tbCloseClick(Sender: TObject);
     procedure tbCommitClick(Sender: TObject);
     procedure tbCommitRetainingClick(Sender: TObject);
@@ -164,26 +165,26 @@ type
     procedure tbSaveClick(Sender: TObject);
   private
     { private declarations }
-    FDBIndex: Integer; // Index of selected registered database
-    FRegRec: TRegisteredDatabase;
-    FOptions: set of TSynSearchOption;
-    FIBConnection: TIBConnection;
-    FSQLTrans: TSQLTransaction;
-    FCanceled: Boolean;
-    FStartLine: Integer;
-    FQuery: TStringList; //query text
-    FOrigQueryType: TQueryTypes;
-    FFinished: Boolean;
-    FQT: TQueryThread;
-    FQueryPart: string;
-    FTab: TTabSheet;
-    FResultMemo: TMemo;
-    FSQLScript: TSQLScript;
+    FDBIndex       :Integer; // Index of selected registered database
+    FRegRec        :TRegisteredDatabase;
+    FOptions       :set of TSynSearchOption;
+    FIBConnection  :TIBConnection;
+    FSQLTrans      :TSQLTransaction;
+    FCanceled      :Boolean;
+    FStartLine     :Integer;
+    FQuery         :TStringList; //query text
+    FOrigQueryType :TQueryTypes;
+    FFinished      :Boolean;
+    FQT            :TQueryThread;
+    FQueryPart     :string;
+    FTab           :TTabSheet;
+    FResultMemo    :TMemo;
+    FSQLScript     :TSQLScript;
     // Text for caption
-    FAText: string;
-    FModifyCount: Integer;
-    FCounter: Integer;
-    OutputTabsList: TStrings;
+    FAText         :string;
+    FModifyCount   :Integer;
+    FCounter       :Integer;
+    OutputTabsList :TStrings;
 
     // Makes commit button in current tabsheet visible
     procedure EnableCommitButton;
@@ -193,14 +194,11 @@ type
     function GetCurrentSelectQuery: TSQLQuery;
     // Gets both querytype and whether SQL is DML or DDL
     // Investigates QueryList[LookAtIndex] to find out
-    function GetQuerySQLType(QueryList: TStringList; var LookAtIndex: Integer;
-      var IsDDL: Boolean): TQueryTypes;
+    function GetQuerySQLType(QueryList: TStringList; var LookAtIndex: Integer; var IsDDL: Boolean): TQueryTypes;
     procedure NewCommitButton(const Pan: TPanel; var ATab: TTabSheet);
-    procedure RemoveComments(QueryList: TStringList; StartLine: Integer;
-      var RealStartLine: Integer);
+    procedure RemoveComments(QueryList: TStringList; StartLine: Integer; var RealStartLine: Integer);
     procedure RemoveAllSingleLineComments(QueryList: TStringList);
-    procedure RemoveEmptyLines(QueryList: TStringList;
-      var SecondRealStart: Integer; const RealStartLine: Integer);
+    procedure RemoveEmptyLines(QueryList: TStringList; var SecondRealStart: Integer; const RealStartLine: Integer);
     procedure ApplyClick(Sender: TObject);
     procedure EnableApplyButton;
     function GetTableName(SQLText: string): string;
@@ -226,8 +224,8 @@ type
     function GetSQLType(Query: string; var Command: string): string;
     // Tries to split up text into separate queries
     function GetSQLSegment(QueryList: TStringList; StartLine: Integer;
-      var QueryType: TQueryTypes; var EndLine: Integer;
-      var SQLSegment: string; var IsDDL: Boolean): Boolean;
+                           var QueryType: TQueryTypes; var EndLine: Integer;
+                           var SQLSegment: string; var IsDDL: Boolean): Boolean;
     procedure QueryAfterPost(DataSet: TDataSet);
     procedure QueryAfterScroll(DataSet: TDataSet);
     // Run query; use aQueryType to force running as e.g. script or open query
@@ -911,6 +909,7 @@ end;
 procedure TfmQueryWindow.Init(dbIndex: Integer);
 begin
   FDBIndex:= dbIndex;
+  //FIBConnection := fmMain.RegisteredDatabases[dbIndex].IBConnection;
   FRegRec:= fmMain.RegisteredDatabases[dbIndex].RegRec;
 
   // Remove old tabs in case of opening the same QueryWindow
@@ -926,11 +925,11 @@ begin
   // Set connection parameters to FIBConnection
   with fmMain.RegisteredDatabases[dbIndex] do
   begin
-    Self.FIBConnection.DatabaseName:= RegRec.DatabaseName;
-    Self.FIBConnection.UserName:= RegRec.UserName;
-    Self.FIBConnection.Password:= RegRec.Password;
-    Self.FIBConnection.CharSet:= RegRec.Charset;
-    Self.FIBConnection.Role:= RegRec.Role;
+    FIBConnection.DatabaseName := RegRec.DatabaseName;
+    FIBConnection.UserName     := RegRec.UserName;
+    FIBConnection.Password     := RegRec.Password;
+    FIBConnection.CharSet      := RegRec.Charset;
+    FIBConnection.Role         := RegRec.Role;
   end;
 
   // Get current database tables to be highlighted in SQL query editor
@@ -998,14 +997,14 @@ var
   Seltext: string;
 begin
   Result:= false;
-  if assigned(QueryContents) then
+  if Assigned(QueryContents) then
   begin
-    SelText:= trim(meQuery.SelText);
-    if SelTExt<>'' then
-      QueryContents.Text:= SelText
+    SelText := Trim(meQuery.SelText);
+    if SelTExt <> '' then
+      QueryContents.Text := SelText
     else
-      QueryContents.Text:= trim(meQuery.Lines.Text);
-    Result:= true;
+      QueryContents.Text := trim(meQuery.Lines.Text);
+    Result := true;
   end;
 end;
 
@@ -1016,73 +1015,73 @@ function TfmQueryWindow.CreateResultTab(QueryType: TQueryTypes;
   var aSqlQuery: TSQLQuery; var aSQLScript: TSQLScript; var meResult: TMemo;
   AdditionalTitle: string): TTabSheet;
 var
-  ATab: TTabSheet;
-  DBGrid: TDBGrid;
-  DataSource: TDataSource;
-  StatusBar: TStatusBar;
-  Nav: TDBNavigator;
-  Pan: TPanel;
+  ATab       :TTabSheet;
+  DBGrid     :TDBGrid;
+  DataSource :TDataSource;
+  StatusBar  :TStatusBar;
+  Nav        :TDBNavigator;
+  Pan        :TPanel;
 begin
-  ATab:= TTabSheet.Create(nil);
+  ATab := TTabSheet.Create(nil);
   OutputTabsList.AddObject('', ATab);
   BeginUpdateBounds;
-  Result:= ATab;
-  ATab.Parent:= pgOutputPageCtl;
-  pgOutputPageCtl.ActivePage:= ATab; //set focus to new tab
-  ATab.Caption:= 'Result # ' + GetNewTabNum + ' ' + AdditionalTitle;
+  Result := ATab;
+  ATab.Parent := pgOutputPageCtl;
+  pgOutputPageCtl.ActivePage := ATab; //set focus to new tab
+  ATab.Caption := 'Result # ' + GetNewTabNum + ' ' + AdditionalTitle;
   if QueryType = qtSelectable then // Select, need record set result
   begin
     // Query
     // Clean up any existing object to avoid memory leak
     if assigned(aSQLQuery) then
       aSQLQuery.Free;
-    aSqlQuery:= TSQLQuery.Create(self);
-    aSqlQuery.DataBase:= FIBConnection;
-    aSqlQuery.Transaction:= FSQLTrans;
-    aSqlQuery.AfterPost:= @QueryAfterPost; //detect user-edited grid
-    aSqlQuery.AfterScroll:= @QueryAfterScroll;
-    aSqlQuery.Tag:= ATab.TabIndex; //Query points to tabsheet number
+    aSqlQuery := TSQLQuery.Create(self);
+    aSqlQuery.DataBase    := FIBConnection;
+    aSqlQuery.Transaction := FSQLTrans;
+    aSqlQuery.AfterPost   := @QueryAfterPost; //detect user-edited grid
+    aSqlQuery.AfterScroll := @QueryAfterScroll;
+    aSqlQuery.Tag         := ATab.TabIndex; //Query points to tabsheet number
     {Tab points to query object so we can look it up more easily via the
     tab sheet if we need to enable Apply/Commit buttons etc}
-    ATab.Tag:= PtrInt(aSQLQuery);
+    ATab.Tag              := PtrInt(aSQLQuery);
 
     // Status Bar
-    StatusBar:= TStatusBar.Create(ATab);
-    StatusBar.Parent:= ATab;
-    StatusBar.Tag:= aSqlQuery.Tag;
+    StatusBar        := TStatusBar.Create(ATab);
+    StatusBar.Parent := ATab;
+    StatusBar.Tag    := aSqlQuery.Tag;
 
     // Datasource
-    DataSource:= TDataSource.Create(self);
-    DataSource.DataSet:= aSqlQuery;
+    DataSource         := TDataSource.Create(self);
+    DataSource.DataSet := aSqlQuery;
 
     // Panel
-    pan:= TPanel.Create(self);
-    pan.Parent:= ATab;
-    Pan.Height:= 30;
-    Pan.Align:= alTop;
+    pan         := TPanel.Create(self);
+    pan.Parent  := ATab;
+    Pan.Height  := 30;
+    Pan.Align   := alTop;
 
     // Query result Grid
-    DBGrid:= TDBGrid.Create(self);
-    DBGrid.Parent:= ATab;
-    DBGrid.DataSource:= DataSource;
-    DBGrid.Align:= alClient;
-    DBGrid.OnDblClick:= @DBGrid1DblClick;
+    DBGrid            := TDBGrid.Create(self);
+    DBGrid.Parent     := ATab;
+    DBGrid.DataSource := DataSource;
+    DBGrid.Align      := alClient;
+    DBGrid.OnDblClick := @DBGrid1DblClick;
 
-    DBGrid.Tag:= ATab.TabIndex;
-    DBGrid.ReadOnly:= False;
-    DBGrid.AutoEdit:= True;
+    DBGrid.Tag        := ATab.TabIndex;
+    DBGrid.ReadOnly   := False;
+    DBGrid.AutoEdit   := True;
 
-    DBGrid.PopupMenu:= pmGrid;
-    DBGrid.TitleStyle:= tsNative;
-    DBGrid.Options:= DBGrid.Options + [dgAutoSizeColumns, dgHeaderHotTracking, dgHeaderPushedLook, dgAnyButtonCanSelect];
+    DBGrid.PopupMenu  := pmGrid;
+    DBGrid.TitleStyle := tsNative;
+    DBGrid.Options    := DBGrid.Options + [dgAutoSizeColumns, dgHeaderHotTracking, dgHeaderPushedLook, dgAnyButtonCanSelect];
 
-    DBGrid.OnTitleClick:= @DBGridTitleClick;
+    DBGrid.OnTitleClick := @DBGridTitleClick;
 
     // Navigator
-    Nav:= TDBNavigator.Create(self);
-    Nav.Parent:= Pan;
-    Nav.VisibleButtons:= [nbFirst, nbNext, nbPrior, nbLast];
-    Nav.DataSource:= DataSource;
+    Nav                 := TDBNavigator.Create(self);
+    Nav.Parent          := Pan;
+    Nav.VisibleButtons  := [nbFirst, nbNext, nbPrior, nbLast];
+    Nav.DataSource      := DataSource;
 
     // Apply button
     NewApplyButton(Pan, ATab);
@@ -1093,27 +1092,27 @@ begin
   else
   if QueryType in [qtExecute, qtScript] then
   begin
-    meResult:= TMemo.Create(self);
-    meResult.Parent:= ATab;
-    meResult.ReadOnly:= True;
-    meResult.Align:= alClient;
+    meResult          := TMemo.Create(self);
+    meResult.Parent   := ATab;
+    meResult.ReadOnly := True;
+    meResult.Align    := alClient;
     case QueryType of
       qtExecute:
       begin
-        aSqlQuery:= TSQLQuery.Create(self);
-        aSqlQuery.DataBase:= FIBConnection;
-        aSqlQuery.Transaction:= FSQLTrans;
+        aSqlQuery     := TSQLQuery.Create(self);
+        aSqlQuery.DataBase    := FIBConnection;
+        aSqlQuery.Transaction := FSQLTrans;
       end;
       qtScript: // Script
       begin
         // Clean up to avoid memory leak
         if assigned(aSQLScript) then
           aSQLScript.Free;
-        aSQLScript:= TSQLScript.Create(self);
-        aSQLScript.DataBase:= FIBConnection;
-        aSQLScript.Transaction:= FSQLTrans;
-        aSQLScript.CommentsInSQL:= true;
-        aSQLScript.UseSetTerm:= true; //needed if set term is used, e.g. for stored procedures
+        aSQLScript               := TSQLScript.Create(self);
+        aSQLScript.DataBase      := FIBConnection;
+        aSQLScript.Transaction   := FSQLTrans;
+        aSQLScript.CommentsInSQL := true;
+        aSQLScript.UseSetTerm    := true; //needed if set term is used, e.g. for stored procedures
       end;
     end;
   end;
@@ -1137,20 +1136,16 @@ var
 begin
   try
     // Script
-    if (FOrigQueryType = qtScript) then
-    begin // script
+    if (FOrigQueryType = qtScript) then begin // script
       ExecuteScript(FQuery.Text);
       Inc(FModifyCount);
       SqlType:= GetSQLType(FQuery.Text, Command);
       fmMain.AddToSQLHistory(FRegRec.Title, SqlType, FQuery.Text);
       FFinished:= True;
       FQuery.Clear;
-    end
-    else  // normal statement / Multi statements
-    begin
+    end else  begin // normal statement / Multi statements
       Inc(FCounter);
-      if not GetSQLSegment(FQuery, FStartLine, fQueryType, EndLine, FQueryPart, IsDDL) then
-      begin
+      if not GetSQLSegment(FQuery, FStartLine, fQueryType, EndLine, FQueryPart, IsDDL) then begin
         FFinished:= True;
         Exit;
       end;
@@ -1161,8 +1156,7 @@ begin
         FStartLine:= EndLine + 1;
 
       if Trim(FQueryPart) <> '' then   // Select
-      if fQueryType = qtSelectable then
-      begin
+      if fQueryType = qtSelectable then begin
         FTab:= nil;
         try
           fSQLQuery:= TSQLQuery.Create(self);
@@ -1182,13 +1176,11 @@ begin
           // Support for ROWS x TO y at the end of the statement could be
           // added perhaps
 
-          if (pos('select first ',lowercase(FQueryPart))=1) then
-          begin
+          if (pos('select first ',lowercase(FQueryPart))=1) then begin
             // Get rid of the select first x part by copying everything after
             // the third word
             SanitizedSQL:= ExtractWordPos(3, FQueryPart, StdWordDelims, i);
-            if i > 0 then
-            begin
+            if i > 0 then begin
               SanitizedSQL:= 'select ' + trim(copy(FQueryPart, i+length(SanitizedSQL), maxint));
               TempQuery:= TSQLQuery.Create(nil);
               try
@@ -1203,12 +1195,12 @@ begin
           end;
 
           // Create thread to open dataset
-          FQT:= TQueryThread.Create(qaOpen);
-          FQT.Query:= FSQLQuery;
-          FQT.Trans:= FSQLTrans;
+          FQT       := TQueryThread.Create(qaOpen);
+          FQT.Query := FSQLQuery;
+          FQT.Trans := FSQLTrans;
           // FQT.OnTerminate:= @ThreadTerminated;
-          FAText:= FTab.Caption;
-          FTab.Caption:= 'Running..';
+          FAText       := FTab.Caption;
+          FTab.Caption := 'Running..';
           FQT.Resume;
 
           // Wait for the thread to complete
@@ -1222,22 +1214,22 @@ begin
             raise Exception.Create(FQT.ErrorMsg);
 
           FQT.Free;
-          FTab.Caption:= FAText;
-          FTab.ImageIndex:= 0;
+          FTab.Caption    := FAText;
+          FTab.ImageIndex := 0;
           fmMain.AddToSQLHistory(FRegRec.Title, 'SELECT', FQueryPart);
         except
           on e: Exception do
           begin
             if Assigned(FTab) then
               FTab.TabVisible:= False;
-            FTab:= CreateResultTab(qtExecute, FSQLQuery, FSQLScript, FResultMemo);
-            pgOutputPageCtl.ActivePage:= FTab;
+            FTab := CreateResultTab(qtExecute, FSQLQuery, FSQLScript, FResultMemo);
+            pgOutputPageCtl.ActivePage := FTab;
 
-            FResultMemo.Text:= e.message;
+            FResultMemo.Text := e.message;
             FResultMemo.Lines.Add(FQueryPart);
-            FResultMemo.Font.Color:= clRed;
-            FTab.Font.Color:= clRed;
-            FTab.ImageIndex:= 3;
+            FResultMemo.Font.Color := clRed;
+            FTab.Font.Color := clRed;
+            FTab.ImageIndex := 3;
           end;
         end;
       end
@@ -1680,15 +1672,15 @@ begin
   FIBConnection.OnLog:=@GetLogEvent;
   FIBConnection.LogEvents:=[detCustom,detExecute,detCommit,detRollBack];
   {$ENDIF DEBUG}
-  FSQLTrans:= TSQLTransaction.Create(nil);
-  SynCompletion1.ItemList.CommaText:= 'create,table,Select,From,INTEGER,FLOAT';
+  FSQLTrans := TSQLTransaction.Create(nil);
+  SynCompletion1.ItemList.CommaText := 'create,table,Select,From,INTEGER,FLOAT';
   SortSynCompletion;
 
   // Set the editor font from config.ini
-  configFilePath:= ConcatPaths([ExtractFilePath(Application.ExeName), 'config.ini']);
-  configFile:= TIniFile.Create(configFilePath);
-  meQuery.Font.Name:=configFile.ReadString('Editor Font', 'font_name', 'Monospace');
-  meQuery.Font.Size:=configFile.ReadInteger('Editor Font', 'font_size', 11);
+  configFilePath    := ConcatPaths([ExtractFilePath(Application.ExeName), 'config.ini']);
+  configFile        := TIniFile.Create(configFilePath);
+  meQuery.Font.Name := configFile.ReadString('Editor Font', 'font_name', 'Monospace');
+  meQuery.Font.Size := configFile.ReadInteger('Editor Font', 'font_size', 11);
   configFile.Free;
 end;
 

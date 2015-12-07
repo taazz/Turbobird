@@ -291,8 +291,8 @@ type
     function GetConstraintFields(ATableName, AIndexName: string; var List: TStringList): Boolean;
     // Get fields information for specified table
     // Fills SQLQuery1 with details
-    procedure GetFields(DatabaseIndex :Integer; ATableName: string; FieldsList: TStringList);overload; deprecated ' pass the record not the index ';
-    procedure GetFields(aDatabase : TDatabaseRec; ATableName: string; FieldsList: TStringList=nil);overload;
+    procedure Get_Fields(DatabaseIndex :Integer; ATableName: string; FieldsList: TStringList);overload; deprecated ' pass the record not the index ';
+    procedure Get_Fields(aDatabase : TDatabaseRec; ATableName: string; FieldsList: TStringList=nil);overload;
     // Get body of a stored procedure (without SET TERM... clauses)
     // Fills SQLQuery1 with details
     function GetStoredProcBody(DatabaseIndex: Integer; AProcName: string; var SPOwner: string): string;
@@ -392,7 +392,7 @@ begin
         dmSysTables.sqQuery.SQL.Text:= 'grant ' + cbRoles.Text + ' to ' + edUserName.Text;
         dmSysTables.sqQuery.ExecSQL;
       end;
-      dmSysTables.stTrans.Commit;
+      TSQLTransaction(dmSysTables.sqQuery.Transaction).Commit;
       MessageDlg('New user (' + edUserName.Text + ') has been created successfully', mtInformation, [mbOk], 0);
       if not cxGrantRole.Checked then
         ShowMessage('User (' + edUserName.Text + ') will not appear in users list unless you grant it a permission');
@@ -434,7 +434,7 @@ begin
        dmSysTables.sqQuery.SQL.Text:= 'alter user ' + tvMain.Selected.Text +
          ' password ' + QuotedStr(fmChangePass.edPassword.Text);
        dmSysTables.sqQuery.ExecSQL;
-       dmSysTables.stTrans.Commit;
+       TSQLTransaction(dmSysTables.sqQuery.Transaction).Commit;
        MessageDlg('Password has been changed', mtInformation, [mbOk], 0);
     except
       on E: Exception do
@@ -460,15 +460,15 @@ begin
     fmComparison:= TfmComparison(_FindCustomForm(Title, TfmComparison));
     if fmComparison = nil then
     begin
-      fmComparison:= TfmComparison.Create(Application);
-      ATab:= TTabSheet.Create(self);
-      ATab.Parent:= PageControl1;
-      fmComparison.Parent:= ATab;
-      fmComparison.Left:= 0;
-      fmComparison.Top:= 0;
-      fmComparison.BorderStyle:= bsNone;
-      fmComparison.Align:= alClient;
-      fmComparison.Caption:= Title;
+      fmComparison             := TfmComparison.Create(Application);
+      ATab                     := TTabSheet.Create(self);
+      ATab.Parent              := PageControl1;
+      fmComparison.Parent      := ATab;
+      fmComparison.Left        := 0;
+      fmComparison.Top         := 0;
+      fmComparison.BorderStyle := bsNone;
+      fmComparison.Align       := alClient;
+      fmComparison.Caption     := Title;
     end
     else
       ATab:= fmComparison.Parent as TTabSheet;
@@ -1361,7 +1361,7 @@ begin
     Form.edIndexName.Text:= 'IX_' + ATableName + '_' + IntToStr(Form.sgIndices.RowCount);
 
     // Field names
-    GetFields(DatabaseIndex, ATableName, nil);
+    Get_Fields(DatabaseIndex, ATableName, nil);
     with Form, Self.SQLQuery1 do
     begin
       clbFields.Clear;
@@ -2090,7 +2090,7 @@ begin
     ATableName:= SelNode.Text;
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
     QWindow:= ShowQueryWindow(dbIndex, 'Script Table as insert : ' + ATableName);
-    GetFields(dbIndex, ATableName, nil);
+    Get_Fields(dbIndex, ATableName, nil);
     QWindow.meQuery.Lines.Clear;
     QWindow.meQuery.Lines.Add('create procedure InsertTo' + ATableName + ' (');
 
@@ -2334,7 +2334,7 @@ begin
     ATableName:= SelNode.Text;
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
     QWindow:= ShowQueryWindow(dbIndex, 'Script Table as update: ' + ATableName);
-    GetFields(dbIndex, ATableName, nil);
+    Get_Fields(dbIndex, ATableName, nil);
     QWindow.meQuery.Lines.Clear;
     QWindow.meQuery.Lines.Add('create procedure Update' + ATableName + ' (');
 
@@ -2625,7 +2625,7 @@ end;
 
 (********************  Get Fields  **************************)
 
-procedure TfmMain.GetFields(DatabaseIndex: Integer; ATableName: string; FieldsList: TStringList);
+procedure TfmMain.Get_Fields(DatabaseIndex: Integer; ATableName: string; FieldsList: TStringList);
 const
   QueryTemplate= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
     ' r.RDB$DESCRIPTION AS field_description, ' +
@@ -2682,30 +2682,30 @@ begin
   SQLQuery1.First;
 end;
 
-procedure TfmMain.GetFields(aDatabase :TDatabaseRec; ATableName :string; FieldsList :TStringList);
+procedure TfmMain.Get_Fields(aDatabase :TDatabaseRec; ATableName :string; FieldsList :TStringList);
 const
-  QueryTemplate= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
-    ' r.RDB$DESCRIPTION AS field_description, ' +
-    ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value }+
-    ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
-    ' f.RDB$FIELD_LENGTH AS field_length, ' +
-    ' f.RDB$CHARACTER_LENGTH AS characterlength, ' + {character_length seems a reserved word}
-    ' f.RDB$FIELD_PRECISION AS field_precision, ' +
-    ' f.RDB$FIELD_SCALE AS field_scale, ' +
-    ' f.RDB$FIELD_TYPE as field_type_int, ' +
-    ' f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
-    ' coll.RDB$COLLATION_NAME AS field_collation, ' +
-    ' cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
-    ' f.RDB$computed_source AS computed_source, ' +
-    ' dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
-    ' r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain}+
-    ' FROM RDB$RELATION_FIELDS r ' +
-    ' LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
-    ' LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID and f.rdb$character_set_id=coll.rdb$character_set_id ' +
-    ' LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
-    ' LEFT JOIN RDB$FIELD_DIMENSIONS dim ON f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME ' +
-    ' WHERE r.RDB$RELATION_NAME=''%s'' ' +
-    ' ORDER BY r.RDB$FIELD_POSITION;';
+  QueryTemplate = 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
+                  'r.RDB$DESCRIPTION AS field_description, ' +
+                  'r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value }+
+                  'r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
+                  'f.RDB$FIELD_LENGTH AS field_length, ' +
+                  'f.RDB$CHARACTER_LENGTH AS characterlength, ' + {character_length seems a reserved word}
+                  'f.RDB$FIELD_PRECISION AS field_precision, ' +
+                  'f.RDB$FIELD_SCALE AS field_scale, ' +
+                  'f.RDB$FIELD_TYPE as field_type_int, ' +
+                  'f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
+                  'coll.RDB$COLLATION_NAME AS field_collation, ' +
+                  'cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
+                  'f.RDB$computed_source AS computed_source, ' +
+                  'dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
+                  'r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain}+
+                  'FROM RDB$RELATION_FIELDS r ' +
+                  'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+                  'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID and f.rdb$character_set_id=coll.rdb$character_set_id ' +
+                  'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+                  'LEFT JOIN RDB$FIELD_DIMENSIONS dim ON f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME ' +
+                  'WHERE r.RDB$RELATION_NAME=''%s'' ' +
+                  'ORDER BY r.RDB$FIELD_POSITION;';
 var
   vRec: TDatabaseRec;
   FieldName: string;
@@ -2713,11 +2713,10 @@ begin
   SQLQuery1.Close;
   {A bit unclear why the transaction needs to be committed but at least do it
   before changing the query's transaction}
-  if (Assigned(FSQLTransaction)) then
-    FSQLTransaction.Commit;
+  if (Assigned(FSQLTransaction)) then FSQLTransaction.Commit;
   //vRec := RegisteredDatabases[DatabaseIndex];
   SetConnection(aDatabase);
-  SQLQuery1.SQL.Text:= format(QueryTemplate,[ATableName]);
+  SQLQuery1.SQL.Text := Format(QueryTemplate,[ATableName]);
   {$IFDEF NEVER}
   // Left for debugging
   SendDebug('GetFields: ' + SQLQuery1.SQL.Text);
@@ -2729,7 +2728,7 @@ begin
     FieldsList.Clear;
     SQLQuery1.First;//JKOZ: opening a query does not quaranty that it will be set on the first record (as far as I remember)
     while not SQLQuery1.EOF do begin
-      FieldName:= Trim(SQLQuery1.FieldByName('field_name').AsString);
+      FieldName := Trim(SQLQuery1.FieldByName('field_name').AsString);
       // Avoid duplicate field names
       if FieldsList.IndexOf(FieldName) = -1 then
         FieldsList.Add(FieldName);
@@ -2738,7 +2737,7 @@ begin
   end;
   SQLQuery1.First;
 end;
-
+//
 (**********  Get Stored Proc body  ****************)
 
 function TfmMain.GetStoredProcBody(DatabaseIndex: Integer; AProcName: string; var SPOwner: string): string;
@@ -3319,7 +3318,7 @@ var
   ConstraintName: string;
 begin
   try
-    GetFields(dbIndex, ATableName, nil);
+    Get_Fields(dbIndex, ATableName, nil);
 
     // Fill TableInfo grid
     AStringGrid.RowCount:= 1;
@@ -3455,7 +3454,7 @@ begin
         GetConstraintFields(Node.Text, PKIndexName, PKFieldsList);
 
       // Fields
-      GetFields(dbIndex, Node.Text, nil);
+      Get_Fields(dbIndex, Node.Text, nil);
       i:= 1;
       with SQLQuery1 do
       while not EOF do
@@ -4021,52 +4020,42 @@ var
   ParentText: string;
 begin
   Node:= tvMain.Selected;
-  if node <> nil then
-  begin
+  if node <> nil then begin
     case Node.Level of
-      1: // Database level: fill objects;
-      begin
+      1: begin // Database level: fill objects;
         // do nothing
       end;
-      2: // Objects Type Level
-      begin
-        if tvMain.Selected.Text = 'Query Window' then
-        begin
+      2: begin // Objects Type Level
+        if tvMain.Selected.Text = 'Query Window' then begin
           QWindow:= ShowQueryWindow(PtrInt(tvMain.Selected.Parent.Data), 'Query Window');
           QWindow.Show;
-        end
-        else  // Expand object
-        begin
+        end else begin // Expand object
           tvMainExpanded(nil, Node);
           Rec:= RegisteredDatabases[PtrInt(Node.Parent.Data)].RegRec;
         end;
       end;
-      3: // Object Item Level, like tables, procedures....
-      begin
+      3: begin // Object Item Level, like tables, procedures....
         ParentText:= Node.Parent.Text;
         if Pos('(', ParentText) > 0 then
           ParentText:= Trim(Copy(ParentText, 1, Pos('(', ParentText) - 1));
-
         case ParentText of
-          'Tables':
-          begin
+          'Tables': begin
             lmViewFieldsClick(nil);
             lmViewFirst1000Click(nil);
           end;
-          'Generators': lmViewGenClick(nil);
-          'Triggers': lmViewTriggerClick(nil);
-          'Views': lmDisplay1000VClick(nil);
-          'Stored Procedures': lmViewStoredProcedureClick(nil);
-          'Functions': lmViewUDFClick(nil);
-          'System Tables':
-          begin
+          'Generators'        : lmViewGenClick(nil);
+          'Triggers'          : lmViewTriggerClick(nil);
+          'Views'             : lmDisplay1000VClick(nil);
+          'Stored Procedures' : lmViewStoredProcedureClick(nil);
+          'Functions'         : lmViewUDFClick(nil);
+          'System Tables'     : begin
             lmViewFieldsClick(nil); // also works for system tables
             lmOpenSystemTableClick(nil);
           end;
-          'Domains': lmViewDomainClick(nil);
-          'Roles': lmPermissionsClick(nil);
-          'Exceptions': lmScriptExceptionClick(nil);
-          'Users': lmPermissionsClick(nil);
+          'Domains'    :lmViewDomainClick(nil);
+          'Roles'      :lmPermissionsClick(nil);
+          'Exceptions' :lmScriptExceptionClick(nil);
+          'Users'      :lmPermissionsClick(nil);
           else ShowMessage('Error in TurboBird code tVMainDblClick level 3. Please correct.');
         end;
       end;

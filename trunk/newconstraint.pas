@@ -56,7 +56,7 @@ begin
   // Get foreign table fields
   FieldsList:= TStringList.Create;
   try
-    fmMain.GetFields(DatabaseIndex, cbTables.Text, FieldsList);
+    fmMain.Get_Fields(DatabaseIndex, cbTables.Text, FieldsList);
     clxForFields.Clear;
     clxForFields.Items.AddStrings(FieldsList);
   finally

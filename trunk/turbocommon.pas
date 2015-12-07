@@ -7,55 +7,96 @@ SysTables covers functionality for which a db connection is required. }
 interface
 {.$DEFINE EVS_CONTAINERS}
 uses
-  Classes, SysUtils, sqldb {$IFDEF EVS_CONTAINERS},uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs;
+  Classes, SysUtils, sqldb, uTBTypes {$IFDEF EVS_CONTAINERS},uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs;
 
 const
   // Some field types used in e.g. RDB$FIELDS
   // todo: (low priority) perhaps move to enumeration with fixed constant values
-  BlobType = 261;
-  CharType = 14;
+  BlobType    = 261;
+  CharType    = 14;
   CStringType = 40; // probably null-terminated string used for UDFs
   VarCharType = 37;
 
   // Available character set encodings for Firebird.
   // Update this whenever Firebird supports new character sets
-  DefaultFBCharacterSet=42; //Used for GUI controls etc. UTF8 in CharacterSets below.
+  DefaultFBCharacterSet = 42; //Used for GUI controls etc. UTF8 in CharacterSets below.
   // Available character sets as per Firebird 2.5
   FBCharacterSets: array[0..51] of string =  ///Hate hate hate tall pieces of code.
     ('NONE', 'ASCII', 'BIG_5', 'CP943C', 'CYRL', 'DOS437', 'DOS737', 'DOS775', 'DOS850', 'DOS852', 'DOS857', 'DOS858', 'DOS860', 'DOS861', 'DOS862',
      'DOS863', 'DOS864', 'DOS865', 'DOS866', 'DOS869', 'EUCJ_0208', 'GB18030', 'GBK', 'GB_2312', 'ISO8859_1', 'ISO8859_13', 'ISO8859_2', 'ISO8859_3',
      'ISO8859_4','ISO8859_5', 'ISO8859_6', 'ISO8859_7', 'ISO8859_8', 'ISO8859_9', 'KOI8R', 'KOI8U', 'KSC_5601', 'NEXT', 'OCTETS', 'SJIS_0208', 'TIS620',
      'UNICODE_FSS', //obsolete
-     'UTF8', //good default
+     'UTF8',        //good default
      'WIN1250', 'WIN1251', 'WIN1252', 'WIN1253', 'WIN1254', 'WIN1255', 'WIN1256', 'WIN1257', 'WIN1258');
   // Available collations as per Firebird 2.5
   // Pairs of collation names and the character set name
   // that must be used to support this collation
   FBCollations: array[0..147, 0..1] of string =
-    (('ASCII', 'ASCII'), ('BIG_5','BIG_5'), ('BS_BA','WIN1250'), ('CP943C','CP943C'), ('CP943C_UNICODE','CP943C'), ('CS_CZ','ISO8859_2'), ('CYRL','CYRL'),
-     ('DA_DA','ISO8859_1'), ('DB_CSY','DOS852'), ('DB_DAN865','DOS865'), ('DB_DEU437','DOS437'), ('DB_DEU850','DOS850'), ('DB_ESP437','DOS437'), ('DB_ESP850','DOS850'),
-     ('DB_FIN437','DOS437'), ('DB_FRA437','DOS437'), ('DB_FRA850','DOS850'), ('DB_FRC850','DOS850'), ('DB_FRC863','DOS863'), ('DB_ITA437','DOS437'),
-     ('DB_ITA850','DOS850'), ('DB_NLD437','DOS437'), ('DB_NLD850','DOS850'), ('DB_NOR865','DOS865'), ('DB_PLK','DOS852'), ('DB_PTB850','DOS850'),
-     ('DB_PTG860','DOS860'), ('DB_RUS','CYRL'), ('DB_SLO','DOS852'), ('DB_SVE437','DOS437'), ('DB_SVE850','DOS850'), ('DB_TRK','DOS857'), ('DB_UK437','DOS437'),
-     ('DB_UK850','DOS850'), ('DB_US437','DOS437'), ('DB_US850','DOS850'), ('DE_DE','ISO8859_1'), ('DOS437','DOS437'), ('DOS737','DOS737'), ('DOS775','DOS775'),
-     ('DOS850','DOS850'), ('DOS852','DOS852'), ('DOS857','DOS857'), ('DOS858','DOS858'), ('DOS860','DOS860'), ('DOS861','DOS861'), ('DOS862','DOS862'),
-     ('DOS863','DOS863'), ('DOS864','DOS864'), ('DOS865','DOS865'), ('DOS866','DOS866'), ('DOS869','DOS869'), ('DU_NL','ISO8859_1'), ('EN_UK','ISO8859_1'),
-     ('EN_US','ISO8859_1'), ('ES_ES','ISO8859_1'), ('ES_ES_CI_AI','ISO8859_1'), ('EUCJ_0208','EUCJ_0208'), ('FI_FI','ISO8859_1'), ('FR_CA','ISO8859_1'),
-     ('FR_FR','ISO8859_1'), ('FR_FR_CI_AI','ISO8859_1'), ('GB18030','GB18030'), ('GB18030_UNICODE','GB18030'), ('GBK','GBK'), ('GBK_UNICODE','GBK'),
-     ('GB_2312','GB_2312'), ('ISO8859_1','ISO8859_1'), ('ISO8859_13','ISO8859_13'), ('ISO8859_2','ISO8859_2'), ('ISO8859_3','ISO8859_3'), ('ISO8859_4','ISO8859_4'),
-     ('ISO8859_5','ISO8859_5'), ('ISO8859_6','ISO8859_6'), ('ISO8859_7','ISO8859_7'), ('ISO8859_8','ISO8859_8'), ('ISO8859_9','ISO8859_9'), ('ISO_HUN','ISO8859_2'),
-     ('ISO_PLK','ISO8859_2'), ('IS_IS','ISO8859_1'), ('IT_IT','ISO8859_1'), ('KOI8R','KOI8R'), ('KOI8R_RU','KOI8R'), ('KOI8U','KOI8U'), ('KOI8U_UA','KOI8U'),
-     ('KSC_5601','KSC_5601'), ('KSC_DICTIONARY','KSC_5601'), ('LT_LT','ISO8859_13'), ('NEXT','NEXT'), ('NONE','NONE'), ('NO_NO','ISO8859_1'), ('NXT_DEU','NEXT'),
-     ('NXT_ESP','NEXT'), ('NXT_FRA','NEXT'), ('NXT_ITA','NEXT'), ('NXT_US','NEXT'), ('OCTETS','OCTETS'), ('PDOX_ASCII','DOS437'), ('PDOX_CSY','DOS852'),
-     ('PDOX_CYRL','CYRL'), ('PDOX_HUN','DOS852'), ('PDOX_INTL','DOS437'), ('PDOX_ISL','DOS861'), ('PDOX_NORDAN4','DOS865'), ('PDOX_PLK','DOS852'),
-     ('PDOX_SLO','DOS852'), ('PDOX_SWEDFIN','DOS437'), ('PT_BR','ISO8859_1'), ('PT_PT','ISO8859_1'), ('PXW_CSY','WIN1250'), ('PXW_CYRL','WIN1251'),
-     ('PXW_GREEK','WIN1253'), ('PXW_HUN','WIN1250'), ('PXW_HUNDC','WIN1250'), ('PXW_INTL','WIN1252'), ('PXW_INTL850','WIN1252'), ('PXW_NORDAN4','WIN1252'),
-     ('PXW_PLK','WIN1250'), ('PXW_SLOV','WIN1250'), ('PXW_SPAN','WIN1252'), ('PXW_SWEDFIN','WIN1252'), ('PXW_TURK','WIN1254'), ('SJIS_0208','SJIS_0208'),
-     ('SV_SV','ISO8859_1'), ('TIS620','TIS620'), ('TIS620_UNICODE','TIS620'), ('UCS_BASIC','UTF8'), ('UNICODE','UTF8'), ('UNICODE_CI','UTF8'), ('UNICODE_CI_AI','UTF8'),
-     ('UNICODE_FSS','UNICODE_FSS'), ('UTF8','UTF8'), ('WIN1250','WIN1250'), ('WIN1251','WIN1251'), ('WIN1251_UA','WIN1251'), ('WIN1252','WIN1252'),
-     ('WIN1253','WIN1253'), ('WIN1254','WIN1254'), ('WIN1255','WIN1255'), ('WIN1256','WIN1256'), ('WIN1257','WIN1257'), ('WIN1257_EE','WIN1257'),
-     ('WIN1257_LT','WIN1257'), ('WIN1257_LV','WIN1257'), ('WIN1258','WIN1258'), ('WIN_CZ','WIN1250'), ('WIN_CZ_CI_AI','WIN1250'), ('WIN_PTBR','WIN1252')
-    );
+    (('ASCII', 'ASCII'), ('BIG_5','BIG_5'), ('BS_BA','WIN1250'), ('CP943C','CP943C'), ('CP943C_UNICODE','CP943C'), ('CS_CZ','ISO8859_2'),
+     ('CYRL','CYRL'), ('DA_DA','ISO8859_1'), ('DB_CSY','DOS852'), ('DB_DAN865','DOS865'), ('DB_DEU437','DOS437'), ('DB_DEU850','DOS850'),
+     ('DB_ESP437','DOS437'), ('DB_ESP850','DOS850'), ('DB_FIN437','DOS437'), ('DB_FRA437','DOS437'), ('DB_FRA850','DOS850'), ('DB_FRC850','DOS850'),
+     ('DB_FRC863','DOS863'), ('DB_ITA437','DOS437'), ('DB_ITA850','DOS850'), ('DB_NLD437','DOS437'), ('DB_NLD850','DOS850'), ('DB_NOR865','DOS865'),
+     ('DB_PLK','DOS852'), ('DB_PTB850','DOS850'), ('DB_PTG860','DOS860'), ('DB_RUS','CYRL'), ('DB_SLO','DOS852'), ('DB_SVE437','DOS437'),
+     ('DB_SVE850','DOS850'), ('DB_TRK','DOS857'), ('DB_UK437','DOS437'), ('DB_UK850','DOS850'), ('DB_US437','DOS437'), ('DB_US850','DOS850'),
+     ('DE_DE','ISO8859_1'), ('DOS437','DOS437'), ('DOS737','DOS737'), ('DOS775','DOS775'), ('DOS850','DOS850'), ('DOS852','DOS852'), ('DOS857','DOS857'),
+     ('DOS858','DOS858'), ('DOS860','DOS860'), ('DOS861','DOS861'), ('DOS862','DOS862'), ('DOS863','DOS863'), ('DOS864','DOS864'), ('DOS865','DOS865'),
+     ('DOS866','DOS866'), ('DOS869','DOS869'), ('DU_NL','ISO8859_1'), ('EN_UK','ISO8859_1'), ('EN_US','ISO8859_1'), ('ES_ES','ISO8859_1'),
+     ('ES_ES_CI_AI','ISO8859_1'), ('EUCJ_0208','EUCJ_0208'), ('FI_FI','ISO8859_1'), ('FR_CA','ISO8859_1'), ('FR_FR','ISO8859_1'),
+     ('FR_FR_CI_AI','ISO8859_1'), ('GB18030','GB18030'), ('GB18030_UNICODE','GB18030'), ('GBK','GBK'), ('GBK_UNICODE','GBK'), ('GB_2312','GB_2312'),
+     ('ISO8859_1','ISO8859_1'), ('ISO8859_13','ISO8859_13'), ('ISO8859_2','ISO8859_2'), ('ISO8859_3','ISO8859_3'), ('ISO8859_4','ISO8859_4'),
+     ('ISO8859_5','ISO8859_5'), ('ISO8859_6','ISO8859_6'), ('ISO8859_7','ISO8859_7'), ('ISO8859_8','ISO8859_8'), ('ISO8859_9','ISO8859_9'),
+     ('ISO_HUN','ISO8859_2'), ('ISO_PLK','ISO8859_2'), ('IS_IS','ISO8859_1'), ('IT_IT','ISO8859_1'), ('KOI8R','KOI8R'), ('KOI8R_RU','KOI8R'),
+     ('KOI8U','KOI8U'), ('KOI8U_UA','KOI8U'), ('KSC_5601','KSC_5601'), ('KSC_DICTIONARY','KSC_5601'), ('LT_LT','ISO8859_13'), ('NEXT','NEXT'),
+     ('NONE','NONE'), ('NO_NO','ISO8859_1'), ('NXT_DEU','NEXT'), ('NXT_ESP','NEXT'), ('NXT_FRA','NEXT'), ('NXT_ITA','NEXT'), ('NXT_US','NEXT'),
+     ('OCTETS','OCTETS'), ('PDOX_ASCII','DOS437'), ('PDOX_CSY','DOS852'), ('PDOX_CYRL','CYRL'), ('PDOX_HUN','DOS852'), ('PDOX_INTL','DOS437'),
+     ('PDOX_ISL','DOS861'), ('PDOX_NORDAN4','DOS865'), ('PDOX_PLK','DOS852'), ('PDOX_SLO','DOS852'), ('PDOX_SWEDFIN','DOS437'), ('PT_BR','ISO8859_1'),
+     ('PT_PT','ISO8859_1'), ('PXW_CSY','WIN1250'), ('PXW_CYRL','WIN1251'), ('PXW_GREEK','WIN1253'), ('PXW_HUN','WIN1250'), ('PXW_HUNDC','WIN1250'),
+     ('PXW_INTL','WIN1252'), ('PXW_INTL850','WIN1252'), ('PXW_NORDAN4','WIN1252'), ('PXW_PLK','WIN1250'), ('PXW_SLOV','WIN1250'), ('PXW_SPAN','WIN1252'),
+     ('PXW_SWEDFIN','WIN1252'), ('PXW_TURK','WIN1254'), ('SJIS_0208','SJIS_0208'), ('SV_SV','ISO8859_1'), ('TIS620','TIS620'), ('TIS620_UNICODE','TIS620'),
+     ('UCS_BASIC','UTF8'), ('UNICODE','UTF8'), ('UNICODE_CI','UTF8'), ('UNICODE_CI_AI','UTF8'),('UNICODE_FSS', 'UNICODE_FSS'), ('UTF8', 'UTF8'),
+     ('WIN1250', 'WIN1250'), ('WIN1251', 'WIN1251'), ('WIN1251_UA', 'WIN1251'), ('WIN1252', 'WIN1252'),('WIN1253', 'WIN1253'), ('WIN1254', 'WIN1254'),
+     ('WIN1255', 'WIN1255'), ('WIN1256', 'WIN1256'), ('WIN1257', 'WIN1257'), ('WIN1257_EE', 'WIN1257'),('WIN1257_LT', 'WIN1257'), ('WIN1257_LV', 'WIN1257'),
+     ('WIN1258', 'WIN1258'), ('WIN_CZ', 'WIN1250'), ('WIN_CZ_CI_AI','WIN1250'), ('WIN_PTBR', 'WIN1252'));
+
+
+  cFldName        = 'field_name';
+  cFldDescription = 'field_description';
+  cFldDefSource   = 'field_default_source';
+  cFldNullFlag    = 'field_not_null_constraint';
+  cFldLength      = 'field_length';
+  cFldPrecision   = 'field_precision';
+  cFldScale       = 'field_scale';
+  cFldType        = 'field_type_int';
+  cFldSubType     = 'field_sub_type';
+  cFldCollation   = 'field_collation';
+  cFldCharset     = 'field_charset';
+  cFldComputedSrc = 'computed_source';
+  cArrUpBound     = 'array_upper_bound';
+  cFldSource      = 'field_source';
+  cFldCharLength  = 'characterlength';
+
+  cTmplFields     = 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
+                    'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
+                    'r.RDB$DEFAULT_SOURCE AS '        + cFldDefSource   + ', ' + {SQL source for default value}
+                    'r.RDB$NULL_FLAG AS '             + cFldNullFlag    + ', ' +
+                    'f.RDB$FIELD_LENGTH AS '          + cFldLength      + ', ' +
+                    'f.RDB$CHARACTER_LENGTH AS '      + cFldCharLength  + ', ' + {character_length seems a reserved word}
+                    'f.RDB$FIELD_PRECISION AS '       + cFldPrecision   + ', ' +
+                    'f.RDB$FIELD_SCALE AS '           + cFldScale       + ', ' +
+                    'f.RDB$FIELD_TYPE AS '            + cfldType        + ', ' +
+                    'f.RDB$FIELD_SUB_TYPE AS '        + cFldSubType     + ', ' +
+                    'coll.RDB$COLLATION_NAME AS '     + cFldCollation   + ', ' +
+                    'cset.RDB$CHARACTER_SET_NAME AS ' + cFldCharset     + ', ' +
+                    'f.RDB$computed_source AS '       + cFldComputedSrc + ', ' +
+                    'dim.RDB$UPPER_BOUND AS '         + cArrUpBound     + ', ' +
+                    'r.RDB$FIELD_SOURCE AS '          + cFldSource      + ' '  + {domain if field based on domain}
+                    'FROM RDB$RELATION_FIELDS r '     +
+                    'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME '             +
+                    'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
+                    'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+                    'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
+                    'WHERE r.RDB$RELATION_NAME= %S '+
+                    'ORDER BY r.RDB$FIELD_POSITION;';
 
 type
   // Types of objects in database
@@ -66,19 +107,20 @@ type
                   otUDF {User-Defined functions},
                   otSystemTables,
                   otDomains {excludes system domains},
-                  otRoles, otExceptions, otUsers, otIndexes, otConstraints );
+                  otRoles, otExceptions, otUsers, otIndexes, otConstraints{, otFields} );
 
-  //TEvsPoolContainer = class({$IFDEF EVS_CONTAINERS} TEvsStack {$ELSE} TStack {$ENDIF})
-  //end;
+  { TEvsQuery }
+
+  // allows to destroy owned transaction when the query is destroyed.
+  TEvsQuery = class(TSQLQuery)
+  public
+    destructor Destroy; override;
+  end;
 
   { TEvsCustomComponentPool }
 
   TEvsCustomComponentPool = class(TObject)
   private
-    //JKOZ :
-    //  TODO 0001 : extend to support soft max value as well.
-    //               hard max value = no more than FMaxValue will ever be created if more are requested then nil is returned.
-    //               Soft max Value = max value = the size of the pool when the pool is full every component returned to it will be destroyed.
     FContainer  :{$IFDEF EVS_CONTAINERS} TEvsStack {$ELSE} TStack {$ENDIF};
     FLazyCreate :Boolean; //default false
     FMaxCount   :Integer; //default 10
@@ -88,6 +130,7 @@ type
     {$ENDIF}
     FAquired :Integer;  //init 0
     FClass   :TComponentClass; //default TComponent
+    //FDestroying : Boolean;
     function GetCount :Integer;virtual;
     procedure SetLazyCreate(aValue :Boolean);virtual;
   protected
@@ -142,9 +185,8 @@ procedure GetFieldType(FieldQuery: TSQLQuery; var FieldType: string; var FieldSi
 
 // Returns field type DDL given a RDB$FIELD_TYPE value as well
 // as subtype/length/scale (use -1 for empty/unknown values)
-function GetFBTypeName(Index: Integer;
-  SubType: integer=-1; FieldLength: integer=-1; Precision: integer=-1;
-  Scale: integer=-1): string;
+function GetFBTypeName(Index: Integer; SubType: integer=-1; FieldLength: integer=-1;
+                       Precision: integer=-1; Scale: integer=-1): string;
 
 // Tries to guess if an RDB$RELATION_FIELDS.RDB$FIELD_SOURCE domain name for a column is system-generated.
 function IsFieldDomainSystemGenerated(FieldSource: string): boolean;
@@ -155,9 +197,18 @@ function IsPrimaryIndexSystemGenerated(IndexName: string): boolean;
 // Given TIBConnection parameters, sets transaction isolation level
 procedure SetTransactionIsolation(Params: TStringList);
 
+{ Using a pool Manager return an existing query or create a new and return it.
+  The procedure initializes the transaction to the one passed or creates a new only
+  for the new query. }
+function GetQuery(const aConnection : TSQLConnection; const aTransaction:TSQLTransaction=nil):TSQLQuery;overload;
+function GetQuery(const aConnection : TSQLConnection; const aSQLCmd :string; const aParams:Array of const; const aTransaction:TSQLTransaction=nil):TSQLQuery;
 
-function GetQuery(const aConnection : TSQLConnection; const aTransaction:TSQLTransaction=nil):TSQLQuery;
+{
+ If there is empty space in the pool the query is returned there if not the returned item is destroyed
+ including the transaction that might own.}
 procedure ReleaseQuery(const aQuery : TSQLQuery);
+
+function SQLExecute(const aDB :TDatabaseRec; const aCommand:string; aParams:Array of const) :Boolean;
 
 implementation
 const
@@ -197,11 +248,29 @@ function GetQuery(const aConnection :TSQLConnection; const aTransaction :TSQLTra
 begin
   Result := TSQLQuery(QueryPool.Aquire);
   Result.DataBase := aConnection;
-  if Assigned(aTransaction) then Result.Transaction := aConnection.Transaction;
-  if not assigned(Result.Transaction) then begin
+  Result.Transaction := aTransaction;
+  if not Assigned(Result.Transaction) then begin
     Result.Transaction := TSQLTransaction.Create(Result);
+    SetTransactionIsolation(TSQLTransaction(Result.Transaction).Params);
     Result.Transaction.DataBase := aConnection;
     Result.Tag := TransactionOwned;
+  end;
+end;
+
+function GetQuery(const aConnection :TSQLConnection; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TSQLTransaction) :TSQLQuery;
+begin
+  Result := GetQuery(aConnection, aTransaction);
+  try
+    if aSQLCmd <> '' then begin
+      Result.sql.Text := Format(aSQLCmd, aParams);
+      Result.Open;
+    end;
+  except
+    On E:Exception do begin //make sure no memory leak in case of an exception.
+      ReleaseQuery(Result);
+      Result := nil;
+      raise E;
+    end;
   end;
 end;
 
@@ -209,6 +278,8 @@ procedure ReleaseQuery(const aQuery :TSQLQuery);
 var
   vTmp :TSQLTransaction;
 begin
+  if aQuery.Active then aQuery.Close;
+  if aQuery.Transaction.Active then TSQLTransaction(aQuery.Transaction).Rollback;//if the transaction is maded here active then it should roll back.
   if aQuery.Tag = TransactionOwned then begin
     vTmp := TSQLTransaction(aQuery.Transaction);
     aQuery.Transaction := Nil;
@@ -216,6 +287,22 @@ begin
     vTmp.Free;
   end;
   QueryPool.Return(aQuery);
+end;
+
+function SQLExecute(const aDB :TDatabaseRec; const aCommand :string; aParams :Array of const) :Boolean;
+var
+  vQry : TSQLQuery;
+begin
+  Result := False;
+  vQry := GetQuery(aDB.IBConnection,aCommand,aParams);
+  try
+    vQry.SQL.Text := Format(aCommand, aParams);
+    vQry.ExecSQL;
+    TSQLTransaction(vQry.Transaction).Commit;
+  finally
+    ReleaseQuery(vQry);
+  end;
+  Result := True;
 end;
 
 procedure GetFieldType(FieldQuery: TSQLQuery; var FieldType: string; var FieldSize: integer);
@@ -267,22 +354,22 @@ begin
     // See also
     // http://firebirdsql.org/manual/migration-mssql-data-types.html
     // http://stackoverflow.com/questions/12070162/how-can-i-get-the-table-description-fields-and-types-from-firebird-with-dbexpr
-    BlobType : Result:= 'BLOB';
-    14 : Result:= 'CHAR';
-    CStringType : Result:= 'CSTRING'; // probably null-terminated string used for UDFs
-    12 : Result:= 'DATE';
-    11 : Result:= 'D_FLOAT';
-    16 : Result:= 'BIGINT'; // Further processed below
-    27 : Result:= 'DOUBLE PRECISION';
-    10 : Result:= 'FLOAT';
-    8  : Result:= 'INTEGER'; // further processed below
-    9  : Result:= 'QUAD'; // ancient VMS 64 bit datatype; see also IB6 Language Reference RDB$FIELD_TYPE
-    7  : Result:= 'SMALLINT'; // further processed below
-    13 : Result:= 'TIME';
-    35 : Result:= 'TIMESTAMP';
-    VarCharType : Result:= 'VARCHAR';
+    BlobType    : Result := 'BLOB';
+    14          : Result := 'CHAR';
+    CStringType : Result := 'CSTRING'; // probably null-terminated string used for UDFs
+    12          : Result := 'DATE';
+    11          : Result := 'D_FLOAT';
+    16          : Result := 'BIGINT'; // Further processed below
+    27          : Result := 'DOUBLE PRECISION';
+    10          : Result := 'FLOAT';
+    8           : Result := 'INTEGER'; // further processed below
+    9           : Result := 'QUAD'; // ancient VMS 64 bit datatype; see also IB6 Language Reference RDB$FIELD_TYPE
+    7           : Result := 'SMALLINT'; // further processed below
+    13          : Result := 'TIME';
+    35          : Result := 'TIMESTAMP';
+    VarCharType : Result := 'VARCHAR';
   else
-    Result:= 'Unknown Type';
+    Result := 'Unknown Type';
   end;
   // Subtypes for numeric types
   if Index in [7, 8, 16] then
@@ -290,9 +377,9 @@ begin
     if SubType = 0 then {integer}
     begin
       case Index of
-        7: Result:= 'SMALLINT';
-        8: Result:= 'INTEGER';
-        16: Result:= 'BIGINT';
+        7: Result  := 'SMALLINT';
+        8: Result  := 'INTEGER';
+        16: Result := 'BIGINT';
       end;
     end
     else
@@ -323,6 +410,14 @@ end;
 function IsPrimaryIndexSystemGenerated(IndexName: string): boolean;
 begin
   result:= (pos('RDB$PRIMARY',uppercase(Trim(IndexName)))=1);
+end;
+
+{ TEvsQuery }
+
+destructor TEvsQuery.Destroy;
+begin
+  if (Transaction <> nil) and (Tag = TransactionOwned) then Transaction.Free;
+  inherited Destroy;
 end;
 
 {$REGION ' TEvsThreadedComponentPool '}
@@ -434,13 +529,14 @@ end;
 function TEvsCustomComponentPool.Get :TComponent;
 begin
   Result := TComponent(FContainer.Pop);
+  //if FDestroying then Exit;
   if not Assigned(Result) and ((FAquired < FMaxCount) or FSoftMax) then Result := CreateNew;
   if Assigned(Result) then Inc(FAquired);
 end;
 
 function TEvsCustomComponentPool.CreateNew :TComponent;
 begin
-  Result := TComponentClass.Create(Nil);
+  Result := FClass.Create(Nil);
 end;
 
 procedure TEvsCustomComponentPool.FillPool;
@@ -455,7 +551,7 @@ var
   vRes : TComponent;
 begin
   repeat
-    vRes := TComponent(Get);
+    vRes := TComponent(FContainer.Pop);
     if Assigned(vRes) then vRes.Free;
   until vRes = nil;
 end;
@@ -466,8 +562,10 @@ begin
   FMaxCount   := aMaxCount;
   FLazyCreate := aLazyCreate;
   FSoftMax    := True;
+  FClass      := aClass;
   FContainer  := {$IFDEF EVS_CONTAINERS} TEvsStack.Create {$ELSE} TStack.Create {$ENDIF};
   if not FLazyCreate then FillPool;
+  //FDestroying := False;
 end;
 
 destructor TEvsCustomComponentPool.Destroy;
@@ -490,8 +588,8 @@ end;
 {$ENDREGION}
 
 initialization
-  QueryPool := TEvsCustomComponentPool.Create(10, True, TSQLQuery);
-  QueryPool.SoftMax := True;
+  QueryPool := TEvsCustomComponentPool.Create(10, True, TEvsQuery);
+  QueryPool.SoftMax := True; //create as many controls as requested only keep alive fmaxCount controls.
 finalization
   QueryPool.Free;//no access is possible at this point.
 end.

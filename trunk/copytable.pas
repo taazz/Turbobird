@@ -64,17 +64,18 @@ end;
 
 procedure TfmCopyTable.cbSourceTableChange(Sender: TObject);
 var
-  List: TStringList;
-  Line: string;
+  vList :TStringList;
+  vLine :string;
 begin
-  List:= TStringList.Create;
+  vList:= TStringList.Create;
   try
-    fmMain.GetFields(FSourceIndex, cbSourceTable.Text, List);
-    Line:= List.CommaText;
+    dmSysTables.GetTableFields(FSourceIndex, cbSourceTable.Text, [], vList);
+    //fmMain.GetFields(FSourceIndex, cbSourceTable.Text, vList);
+    vLine := vList.CommaText;
   finally
-    List.Free;
+    vList.Free;
   end;
-  syScript.Lines.Text:= 'select ' + Line;
+  syScript.Lines.Text:= 'select ' + vLine;
   syScript.Lines.Add(' from ' + cbSourceTable.Text);
 end;
 

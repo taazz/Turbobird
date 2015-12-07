@@ -6,7 +6,7 @@ unit Scriptdb;
 interface
 
 uses
-  Classes, SysUtils, turbocommon, uTBTypes, dialogs;
+  Classes, SysUtils, turbocommon, uTBTypes, dialogs, sqldb;
 
 
 // Scripts all roles; changes List to contain the CREATE ROLE SQL statements
@@ -252,49 +252,48 @@ end;
 procedure ScriptTableAsCreate(dbIndex: Integer; ATableName: string; ScriptList: TStringList);
 var
   i: Integer;
-  PKeyIndexName: string;
-  PKFieldsList: TStringList;
-  FieldLine: string;
-  Skipped: Boolean;
-  BlobSubType: string;
-  ConstraintName: string;
-  CalculatedList: TStringList; // for calculated fields
-  DefaultValue: string;
+  PKeyIndexName  :string;
+  PKFieldsList   :TStringList;
+  FieldLine      :string;
+  Skipped        :Boolean;
+  BlobSubType    :string;
+  ConstraintName :string;
+  CalculatedList :TStringList; // for calculated fields
+  DefaultValue   :string;
+  vFields        :TSQLQuery;
 begin
-  fmMain.GetFields(dbIndex, ATableName, nil);
+  vFields  := GetQuery(fmMain.RegisteredDatabases[dbIndex].IBConnection, cTmplFields, [aTableName]);
+  //fmMain.GetFields(dbIndex, ATableName, nil);
   ScriptList.Clear;
   ScriptList.Add('create table ' + ATableName + ' (');
   CalculatedList:= TStringList.Create;
-
   try
     // Fields
-    with fmMain.SQLQuery1 do
-    while not EOF do
-    begin
+    //with vFields do
+    while not EOF do begin
       Skipped:= False;
-      if (FieldByName('computed_source').AsString = '') then
+      if (vFields.FieldByName('computed_source').AsString = '') then
       begin
         // Field Name
-        FieldLine:= Trim(FieldByName('Field_Name').AsString) + ' ';
+        FieldLine:= Trim(vFields.FieldByName('Field_Name').AsString) + ' ';
 
-        if (FieldByName('field_source').IsNull) or
-          (trim(FieldByName('field_source').AsString)='') or
-          (IsFieldDomainSystemGenerated(trim(FieldByname('field_source').AsString))) then
+        if (vFields.FieldByName(cFldSource).IsNull) or
+          (Trim(vFields.FieldByName(cFldSource).AsString)='') or
+          (IsFieldDomainSystemGenerated(Trim(vFields.FieldByname(cFldSource).AsString))) then
         begin
           // Field type is not based on a domain but a standard SQL type
           // Field type
-          FieldLine:= FieldLine + GetFBTypeName(FieldByName('field_type_int').AsInteger,
-            FieldByName('field_sub_type').AsInteger,
-            FieldByName('field_length').AsInteger,
-            FieldByName('field_precision').AsInteger,
-            FieldByName('field_scale').AsInteger);
+          FieldLine := FieldLine + GetFBTypeName(vFields.FieldByName(cfldType).AsInteger,
+          vFields.FieldByName(cFldSubType).AsInteger,
+          vFields.FieldByName(cFldLength).AsInteger,
+          vFields.FieldByName(cFldPrecision).AsInteger,
+          vFields.FieldByName(cFldScale).AsInteger);
 
-          if (FieldByName('field_type_int').AsInteger) in [CharType, CStringType, VarCharType] then
-            FieldLine:= FieldLine + '(' + FieldByName('characterlength').AsString + ') ';
+          if (vFields.FieldByName(cfldType).AsInteger) in [CharType, CStringType, VarCharType] then
+            FieldLine:= FieldLine + '(' + vFields.FieldByName(cFldCharLength).AsString + ') ';
 
-          if (FieldByName('field_type_int').AsInteger = BlobType) then
-          begin
-            BlobSubType:= fmMain.GetBlobSubTypeName(FieldByName('field_sub_type').AsInteger);
+          if (vFields.FieldByName(cfldType).AsInteger = BlobType) then begin
+            BlobSubType:= fmMain.GetBlobSubTypeName(vFields.FieldByName(cFldSubType).AsInteger);
             if BlobSubType<>'' then
               FieldLine:= FieldLine + ' ' + BlobSubType;
           end;
@@ -302,38 +301,34 @@ begin
           // Rudimentary support for array datatypes (only covers 0 dimension types):
           {todo: (low priority) expand to proper array type detection though arrays are
            virtually unused}
-          if not(FieldByName('array_upper_bound').IsNull) then
-            FieldLine:= FieldLine + ' [' + FieldByName('array_upper_bound').AsString + '] ';
-        end
-        else
-        begin
+          if not(vFields.FieldByName(cArrUpBound).IsNull) then
+            FieldLine := FieldLine + ' [' + vFields.FieldByName(cArrUpBound).AsString + '] ';
+        end else begin
           // Field is based on a domain
-          FieldLine:= FieldLine + ' ' + trim(FieldByName('field_source').AsString);
+          FieldLine := FieldLine + ' ' + trim(vFields.FieldByName(cFldSource).AsString);
         end;
         // Default value
-        DefaultValue:= Trim(FieldByName('field_default_source').AsString);
+        DefaultValue := Trim(vFields.FieldByName(cFldDefSource).AsString);
         if DefaultValue <> '' then
         begin
           if pos('default', LowerCase(DefaultValue)) <> 1 then
-            DefaultValue:= ' default ' + QuotedStr(DefaultValue);
-          FieldLine:= FieldLine + ' ' + DefaultValue;
+            DefaultValue := ' default ' + QuotedStr(DefaultValue);
+          FieldLine := FieldLine + ' ' + DefaultValue;
         end;
 
         // Null/Not null
-        if FieldByName('field_not_null_constraint').AsString = '1' then
-           FieldLine:= FieldLine + ' not null ';
-      end
-      else
-      begin
+        if vFields.FieldByName(cFldNullFlag).AsString = '1' then
+           FieldLine := FieldLine + ' not null ';
+      end else begin
         Skipped:= True;
       end;
 
       // Computed Fields
-      if FieldByName('computed_source').AsString <> '' then
+      if vFields.FieldByName(cFldComputedSrc).AsString <> '' then
         CalculatedList.Add('ALTER TABLE ' + ATableName + ' ADD ' +
-          Trim(FieldByName('Field_Name').AsString) + ' COMPUTED BY ' + FieldByName('computed_source').AsString + ';');
+          Trim(vFields.FieldByName(cFldName).AsString) + ' COMPUTED BY ' + vFields.FieldByName(cFldComputedSrc).AsString + ';');
 
-      Next;
+      vFields.Next;
 
       if not Skipped then
       begin
@@ -347,14 +342,13 @@ begin
       ScriptList[ScriptList.Count - 1]:= Copy(ScriptList[ScriptList.Count - 1], 1,
         Length(ScriptList[ScriptList.Count - 1]) - 1);
 
-    fmMain.SQLQuery1.Close;
+    vFields.Close;
 
     // Primary Keys
     PKFieldsList:= TStringList.Create;
     try
       PKeyIndexName:= fmMain.GetPrimaryKeyIndexName(dbIndex, ATableName, ConstraintName);
-      if PKeyIndexName <> '' then
-      begin
+      if PKeyIndexName <> '' then begin
         fmMain.GetConstraintFields(ATableName, PKeyIndexName, PKFieldsList);
         // Follow isql -x (not FlameRobin) by omitting system-generated
         // constraint names and let the system generate its own names
@@ -378,6 +372,7 @@ begin
     ScriptList.Add(CalculatedList.Text);
   finally
     CalculatedList.Free;
+    ReleaseQuery(vFields)
   end;
 end;
 

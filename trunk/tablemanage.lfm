@@ -1,7 +1,7 @@
 object fmTableManage: TfmTableManage
-  Left = 377
+  Left = 414
   Height = 448
-  Top = 118
+  Top = 172
   Width = 819
   ActiveControl = PageControl1
   Anchors = [akTop, akLeft, akRight]
@@ -1275,9 +1275,9 @@ object fmTableManage: TfmTableManage
     end
   end
   object bbClose: TSpeedButton
-    Left = 791
+    Left = 787
     Height = 24
-    Top = 0
+    Top = 3
     Width = 27
     Anchors = [akTop, akRight]
     Color = clForm

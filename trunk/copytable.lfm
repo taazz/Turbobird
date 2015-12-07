@@ -1,35 +1,35 @@
 object fmCopyTable: TfmCopyTable
-  Left = 356
-  Height = 480
-  Top = 139
+  Left = 456
+  Height = 521
+  Top = 189
   Width = 511
   Caption = 'Copy Table'
-  ClientHeight = 480
+  ClientHeight = 521
   ClientWidth = 511
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '1.2.6.0'
+  LCLVersion = '1.4.4.0'
   object Label1: TLabel
     Left = 9
-    Height = 16
+    Height = 13
     Top = 19
-    Width = 108
+    Width = 82
     Caption = 'Source Database'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 9
-    Height = 16
+    Height = 13
     Top = 40
-    Width = 82
+    Width = 62
     Caption = 'Soruce Table'
     ParentColor = False
   end
   object laSourceDatabase: TLabel
     Left = 183
-    Height = 16
+    Height = 13
     Top = 16
-    Width = 114
+    Width = 96
     Caption = 'Source Database'
     Font.Style = [fsBold]
     ParentColor = False
@@ -37,54 +37,54 @@ object fmCopyTable: TfmCopyTable
   end
   object Label3: TLabel
     Left = 9
-    Height = 16
+    Height = 13
     Top = 72
-    Width = 138
+    Width = 103
     Caption = 'Destination Database'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 16
-    Height = 16
+    Height = 13
     Top = 128
-    Width = 113
+    Width = 83
     Caption = 'Destination Table'
     ParentColor = False
   end
   object cbSourceTable: TComboBox
     Left = 183
-    Height = 25
+    Height = 21
     Top = 40
     Width = 217
-    ItemHeight = 16
+    ItemHeight = 13
     OnChange = cbSourceTableChange
     Style = csDropDownList
     TabOrder = 0
   end
   object cbDestDatabase: TComboBox
     Left = 183
-    Height = 25
+    Height = 21
     Top = 72
     Width = 217
-    ItemHeight = 16
+    ItemHeight = 13
     OnChange = cbDestDatabaseChange
     Style = csDropDownList
     TabOrder = 1
   end
   object cbDestTable: TComboBox
     Left = 183
-    Height = 25
+    Height = 21
     Top = 128
     Width = 217
-    ItemHeight = 16
+    ItemHeight = 13
     Style = csDropDownList
     TabOrder = 2
   end
   object laDatabase: TLabel
     Left = 188
-    Height = 12
+    Height = 13
     Top = 112
-    Width = 109
+    Width = 103
     Caption = 'Destination Database'
     Font.Height = -11
     ParentColor = False
@@ -93,7 +93,7 @@ object fmCopyTable: TfmCopyTable
   object bbCopy: TBitBtn
     Left = 16
     Height = 40
-    Top = 440
+    Top = 481
     Width = 115
     Anchors = [akLeft, akBottom]
     Caption = 'Copy'
@@ -235,7 +235,7 @@ object fmCopyTable: TfmCopyTable
   object bbClose: TBitBtn
     Left = 136
     Height = 40
-    Top = 440
+    Top = 481
     Width = 114
     Anchors = [akLeft, akBottom]
     Caption = '&Close'
@@ -258,15 +258,15 @@ object fmCopyTable: TfmCopyTable
   end
   object Label5: TLabel
     Left = 9
-    Height = 16
+    Height = 13
     Top = 184
-    Width = 227
+    Width = 170
     Caption = 'select statement from Source Table'
     ParentColor = False
   end
   inline syScript: TSynEdit
     Left = 0
-    Height = 228
+    Height = 269
     Top = 208
     Width = 511
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -793,7 +793,6 @@ object fmCopyTable: TfmCopyTable
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
     RightEdge = 65
     ScrollBars = ssAutoBoth
-    SelectedColor.FrameEdges = sfeAround
     SelectedColor.BackPriority = 50
     SelectedColor.ForePriority = 50
     SelectedColor.FramePriority = 50
@@ -801,23 +800,17 @@ object fmCopyTable: TfmCopyTable
     SelectedColor.ItalicPriority = 50
     SelectedColor.UnderlinePriority = 50
     SelectedColor.StrikeOutPriority = 50
-    IncrementColor.FrameEdges = sfeAround
-    HighlightAllColor.FrameEdges = sfeAround
     BracketHighlightStyle = sbhsBoth
     BracketMatchColor.Background = clNone
     BracketMatchColor.Foreground = clNone
-    BracketMatchColor.FrameEdges = sfeAround
     BracketMatchColor.Style = [fsBold]
     FoldedCodeColor.Background = clNone
     FoldedCodeColor.Foreground = clGray
     FoldedCodeColor.FrameColor = clGray
-    FoldedCodeColor.FrameEdges = sfeAround
     MouseLinkColor.Background = clNone
     MouseLinkColor.Foreground = clBlue
-    MouseLinkColor.FrameEdges = sfeAround
     LineHighlightColor.Background = clNone
     LineHighlightColor.Foreground = clNone
-    LineHighlightColor.FrameEdges = sfeAround
     inline TSynGutterPartList
       object TSynGutterMarks
         Width = 24
@@ -828,7 +821,6 @@ object fmCopyTable: TfmCopyTable
         MouseActions = <>
         MarkupInfo.Background = clBtnFace
         MarkupInfo.Foreground = clNone
-        MarkupInfo.FrameEdges = sfeAround
         DigitCount = 2
         ShowOnlyLineNumbersMultiplesOf = 1
         ZeroStart = False
@@ -845,7 +837,6 @@ object fmCopyTable: TfmCopyTable
         MouseActions = <>
         MarkupInfo.Background = clWhite
         MarkupInfo.Foreground = clGray
-        MarkupInfo.FrameEdges = sfeAround
       end
       object TSynGutterCodeFolding
         MouseActions = <        
@@ -876,7 +867,6 @@ object fmCopyTable: TfmCopyTable
           end>
         MarkupInfo.Background = clNone
         MarkupInfo.Foreground = clGray
-        MarkupInfo.FrameEdges = sfeAround
         MouseActionsExpanded = <        
           item
             ClickCount = ccAny
@@ -905,29 +895,14 @@ object fmCopyTable: TfmCopyTable
     DefaultFilter = 'SQL Files (*.sql)|*.sql'
     Enabled = False
     CommentAttri.Foreground = clTeal
-    CommentAttri.FrameEdges = sfeAround
-    DataTypeAttri.FrameEdges = sfeAround
-    DefaultPackageAttri.FrameEdges = sfeAround
-    ExceptionAttri.FrameEdges = sfeAround
-    FunctionAttri.FrameEdges = sfeAround
     IdentifierAttri.Foreground = 16718385
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.FrameEdges = sfeAround
     NumberAttri.Foreground = 3421238
-    NumberAttri.FrameEdges = sfeAround
-    PLSQLAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    SQLPlusAttri.FrameEdges = sfeAround
     StringAttri.Foreground = 1052833
-    StringAttri.FrameEdges = sfeAround
     SymbolAttri.Foreground = 526434
-    SymbolAttri.FrameEdges = sfeAround
     TableNameAttri.Foreground = clNavy
-    TableNameAttri.FrameEdges = sfeAround
     TableNameAttri.Style = [fsBold]
-    VariableAttri.FrameEdges = sfeAround
     SQLDialect = sqlSybase
-    left = 440
-    top = 264
+    left = 152
+    top = 236
   end
 end

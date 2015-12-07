@@ -771,8 +771,8 @@ begin
       if FCanceled then
         Exit;
 
-      dmSysTables.GetTableFields(FDBIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], FieldsList);
-      dmSysTables.GetTableFields(cbComparedDatabase.ItemIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], ComparedList);
+      dmSysTables.GetTableFields(FDBIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], [], FieldsList);
+      dmSysTables.GetTableFields(cbComparedDatabase.ItemIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], [], ComparedList);
 
       // Get missing fields
       for j:= 0 to FieldsList.Count - 1 do
@@ -1266,8 +1266,8 @@ begin
         Break;
 
       // Read all table fields
-      dmSysTables.GetTableFields(FDBIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], FieldsList);
-      dmSysTables.GetTableFields(cbComparedDatabase.ItemIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], ComparedList);
+      dmSysTables.GetTableFields(FDBIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], [], FieldsList);
+      dmSysTables.GetTableFields(cbComparedDatabase.ItemIndex, FDBExistingObjectsList[ord(otTables)].Strings[i], [], ComparedList);
 
       // Get missing fields
       for j:= 0 to ComparedList.Count - 1 do

@@ -13,16 +13,16 @@ type
   { TfmNewGen }
 
   TfmNewGen = class(TForm)
-    bbCreateGen: TBitBtn;
-    BitBtn1: TBitBtn;
-    cbTables: TComboBox;
-    cbFields: TComboBox;
-    cxTrigger: TCheckBox;
-    edGenName: TEdit;
-    gbTrigger: TGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
+    bbCreateGen :TBitBtn;
+    BitBtn1     :TBitBtn;
+    cbTables    :TComboBox;
+    cbFields    :TComboBox;
+    cxTrigger   :TCheckBox;
+    edGenName   :TEdit;
+    gbTrigger   :TGroupBox;
+    Label1      :TLabel;
+    Label2      :TLabel;
+    Label3      :TLabel;
     procedure bbCreateGenClick(Sender: TObject);
     procedure cbTablesChange(Sender: TObject);
     procedure cxTriggerChange(Sender: TObject);
@@ -92,15 +92,16 @@ var
 begin
   if cbTables.ItemIndex <> -1 then
   begin
-    fmMain.GetFields(FDBIndex, cbTables.Text, nil);
+    //fmMain.GetFields(FDBIndex, cbTables.Text, nil);
+    dmSysTables.GetTableFields(FDBIndex, cbTables.Text, [7,8,16], cbFields.Items);
     cbFields.Clear;
     while not fmMain.SQLQuery1.EOF do
     begin
-      FType:= GetFBTypeName(fmMain.SQLQuery1.FieldByName('field_type_int').AsInteger,
-        fmMain.SQLQuery1.FieldByName('field_sub_type').AsInteger,
-        fmMain.SQLQuery1.FieldByName('field_length').AsInteger,
-        fmMain.SQLQuery1.FieldByName('field_precision').AsInteger,
-        fmMain.SQLQuery1.FieldByName('field_scale').AsInteger);
+      FType:= GetFBTypeName(fmMain.SQLQuery1.FieldByName(cfldType).AsInteger,
+                            fmMain.SQLQuery1.FieldByName(cFldSubType).AsInteger,
+                            fmMain.SQLQuery1.FieldByName(cFldLength).AsInteger,
+                            fmMain.SQLQuery1.FieldByName(cFldPrecision).AsInteger,
+                            fmMain.SQLQuery1.FieldByName(cFldScale).AsInteger);
 
       // Only show field name if they are numeric/suitable for generators
       // In practice, integer type fields are probably always used

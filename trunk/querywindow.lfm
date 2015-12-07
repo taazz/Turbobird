@@ -1,7 +1,7 @@
 object fmQueryWindow: TfmQueryWindow
-  Left = 258
+  Left = 489
   Height = 601
-  Top = 106
+  Top = 214
   Width = 720
   ActiveControl = Panel1
   Caption = 'fmQueryWindow'
@@ -17,7 +17,7 @@ object fmQueryWindow: TfmQueryWindow
   OnShow = FormShow
   PopupMenu = pmTab
   Position = poScreenCenter
-  LCLVersion = '1.4.2.0'
+  LCLVersion = '1.4.4.0'
   object Panel1: TPanel
     Left = 0
     Height = 64
@@ -185,15 +185,35 @@ object fmQueryWindow: TfmQueryWindow
         Caption = 'ToolButton1'
         Style = tbsSeparator
       end
-      object cxAutoCommit: TCheckBox
+      object Panel2: TPanel
         Left = 436
-        Height = 17
+        Height = 40
         Top = 2
-        Width = 81
-        Caption = 'Auto Commit'
-        Checked = True
-        State = cbChecked
+        Width = 170
+        Caption = 'Panel2'
+        ClientHeight = 40
+        ClientWidth = 170
         TabOrder = 0
+        object cxAutoCommit: TCheckBox
+          Left = 0
+          Height = 17
+          Top = 0
+          Width = 81
+          Caption = 'Auto Commit'
+          Checked = True
+          State = cbChecked
+          TabOrder = 0
+        end
+        object cxCommitRetaining: TCheckBox
+          Left = 0
+          Height = 17
+          Top = 20
+          Width = 103
+          Caption = 'Commit Retaining'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
+        end
       end
     end
     object bbClose: TSpeedButton
@@ -245,7 +265,7 @@ object fmQueryWindow: TfmQueryWindow
   object Splitter1: TSplitter
     Cursor = crVSplit
     Left = 0
-    Height = 12
+    Height = 4
     Top = 326
     Width = 720
     Align = alTop
@@ -253,17 +273,17 @@ object fmQueryWindow: TfmQueryWindow
   end
   object pnlOutputPanel: TPanel
     Left = 0
-    Height = 263
-    Top = 338
+    Height = 271
+    Top = 330
     Width = 720
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 263
+    ClientHeight = 271
     ClientWidth = 720
     TabOrder = 3
     object pgOutputPageCtl: TPageControl
       Left = 0
-      Height = 263
+      Height = 271
       Top = 0
       Width = 720
       Align = alClient

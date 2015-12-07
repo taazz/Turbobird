@@ -7,7 +7,7 @@ unit SysTables;
 interface
 
 uses
-  Classes, SysUtils, sqldb, IBConnection, FileUtil, LResources, Forms, Controls,
+  Classes, SysUtils, sqldb, db, IBConnection, FileUtil, LResources, Forms, Controls,
   Dialogs, dbugintf, turbocommon, uTBTypes;
 
 type
@@ -18,11 +18,11 @@ type
     sqQuery: TSQLQuery;
   private
     { private declarations }
+    ibcDatabase : TIBConnection; //Remove both.
+    stTrans     : TSQLTransaction;
   protected
     procedure OpenQuery(aObjectType: TObjectType);
   public
-    ibcDatabase : TIBConnection; //Remove both.
-    stTrans     : TSQLTransaction;
     // Fills array with composite (multikey) foreign key constraint names
     // and field count for specified table
     // Then use GetCompositeFKConstraint to check this array for a specified
@@ -34,7 +34,7 @@ type
     // Gets list of object names that have type specified by TVIndex
     // Returns count of objects in Count
     //function GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;overload;deprecated;
-    function GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; var aCount: Integer): string;overload;
+    function GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; var aCount: Integer): string;overload; deprecated;
     procedure GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; aList:TStrings);overload;
 
     // Recalculates index statistics for all fields in database
@@ -100,12 +100,11 @@ type
       var DefaultValue, CharacterSet, Collation, Description : string): Boolean;
 
     function GetDatabaseInfo(dbIndex: Integer; var DatabaseName, CharSet, CreationDate, ServerTime: string;
-      var ODSVerMajor, ODSVerMinor, Pages, PageSize: Integer;
-      var ProcessList: TStringList; var ErrorMsg: string): Boolean;
+                             var ODSVerMajor, ODSVerMinor, Pages, PageSize: Integer;
+                             var ProcessList: TStringList; var ErrorMsg: string): Boolean;
 
     // Gets index info for a certain database+table
-    function GetIndices(dbIndex: Integer; ATableName: string; PrimaryIndexName: string;
-      var List: TStringList): Boolean;
+    function GetIndices(dbIndex: Integer; ATableName: string; PrimaryIndexName: string; var List: TStringList): Boolean;
 
     // Gets all index info for a certain database
     function GetAllIndices(dbIndex: Integer; List, TablesList: TStringList): Boolean;
@@ -117,8 +116,11 @@ type
       var FieldsList: TStringList; var ConstraintName: string; var Unique, Ascending, IsPrimary: Boolean): Boolean;
 
     // Gets field names for table
-    procedure GetTableFields(dbIndex: Integer; ATableName: string; FieldsList: TStringList);overload; deprecated;//jkoz use the one with the DatabaseRec parameter
-    procedure GetTableFields(aDB: TDatabaseRec; ATableName: string; FieldsList: TStringList);overload;
+    procedure GetTableFields(dbIndex :Integer; aTableName :string; FieldTypes : array of Integer; FieldsList :TStrings);overload; deprecated;//jkoz use the one with the DatabaseRec parameter
+    procedure GetTableFields(aDB :TDatabaseRec; aTableName :string; aFieldTypes : array of Integer; aFieldList :TStrings);overload;
+    procedure GetTableFields(aDB :TDatabaseRec; aTablename, aCondition :string; aFieldList :TStrings);overload;
+
+    procedure GetTableNames(aDB :TDatabaseRec; aList:TStrings);
 
     function GetConstraintsOfTable(ATableName: string; var SqlQuery: TSQLQuery; ConstraintsList: TStringList=nil): Boolean;
 
@@ -130,7 +132,7 @@ var
 
 implementation
 
-uses Main,topologicalsort;
+uses Main, topologicalsort;
 
 function DecToBin(Dec, Len: Byte): string;
 var
@@ -177,21 +179,20 @@ begin
   // todo: first step: do not close, reopen connection if we're using the correct
   // connection/transaction already
   //JKOZ : there is no way to use the wrong connection/transaction it uses the objects in the databaserec.
-  with aDB do begin
-    if not IBConnection.Connected then begin
-      IBConnection.DatabaseName:= aDB.RegRec.DatabaseName;
-      IBConnection.UserName:= aDB.RegRec.UserName;
-      IBConnection.Password:= aDB.RegRec.Password;
-      IBConnection.Role:= aDB.RegRec.Role;
-      IBConnection.CharSet:= aDB.RegRec.Charset;
-      IBConnection.Connected := True;
-    end;
-    sqQuery.Close;
-    ibcDatabase := IBConnection;
-    stTrans:= SQLTrans;
-    sqQuery.DataBase:= ibcDatabase;
-    sqQuery.Transaction:= stTrans;
+  if not aDB.IBConnection.Connected then begin
+    aDB.IBConnection.DatabaseName := aDB.RegRec.DatabaseName;
+    aDB.IBConnection.UserName     := aDB.RegRec.UserName;
+    aDB.IBConnection.Password     := aDB.RegRec.Password;
+    aDB.IBConnection.Role         := aDB.RegRec.Role;
+    aDB.IBConnection.CharSet      := aDB.RegRec.Charset;
+    aDB.IBConnection.Connected    := True;
   end;
+  sqQuery.Close;
+  ibcDatabase := aDB.IBConnection;
+  if aDB.SQLTrans.Active then aDB.SQLTrans.Active := False;
+  stTrans := aDB.SQLTrans;
+  sqQuery.DataBase    := ibcDatabase;
+  sqQuery.Transaction := stTrans;
 end;
 
 (*****  GetDBObjectNames, like Table names, Triggers, Generators, etc according to TVIndex  ****)
@@ -202,16 +203,16 @@ end;
 //end;
 
 function TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; var aCount :Integer) :string;
-var
-  vList :TStringList;
+//var
+//  vList :TStringList;
 begin
-  vList := TStringList.Create;
-  try
-    {$IFDEF EVS_New}
-    GetDBObjectNames(aDatabase, aObjectType, vList);
-    {$ELSE}
-    OpenQuery(aObjectType);
+  //vList := TStringList.Create;
+  //try
     Init(aDatabase);
+    {$IFDEF EVS_New}
+    //GetDBObjectNames(aDatabase, aObjectType, vList);
+  OpenQuery(aObjectType);
+    {$ELSE}
     sqQuery.Close;
     if aObjectType         = otTables then // Tables
       sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
@@ -240,18 +241,18 @@ begin
 
     sqQuery.Open;
     sqQuery.First;
-    while not sqQuery.EOF do begin
-      Result := Result + Trim(sqQuery.Fields[0].AsString);
-      sqQuery.Next;
-      if not sqQuery.EOF then Result:= Result + ',';
-    end;
     {$ENDIF}
-    aCount := vList.Count;// sqQuery.RecordCount;
-    Result := vList.CommaText;
-    //sqQuery.Close;
-  finally
-    vList.Free;
+  while not sqQuery.EOF do begin
+    Result := Result + Trim(sqQuery.Fields[0].AsString);
+    sqQuery.Next;
+    if not sqQuery.EOF then Result:= Result + ',';
   end;
+  aCount := sqQuery.RecordCount;
+  sqQuery.Close;
+  stTrans.Rollback;
+  //finally
+  //  vList.Free;
+  //end;
 end;
 
 procedure TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; aList :TStrings);
@@ -292,8 +293,10 @@ begin
   aList.Clear;
   while not sqQuery.EOF do begin
     aList.Add(Trim(sqQuery.Fields[0].AsString));
+    sqQuery.Next;
   end;
   sqQuery.Close;
+  stTrans.Rollback;//no long leaved transactions please.
 end;
 
 function TdmSysTables.RecalculateIndexStatistics(dbIndex: integer): boolean;
@@ -567,24 +570,24 @@ function TdmSysTables.GetConstraintsOfTable(ATableName: string; var SqlQuery: TS
    ConstraintsList: TStringList = nil): Boolean;
 begin
   SqlQuery.Close;
-  SQLQuery.SQL.Text:='select '+
-  'trim(rc.rdb$constraint_name) as ConstName, '+
-  'trim(rfc.rdb$const_name_uq) as KeyName, '+
-  'trim(rc2.rdb$relation_name) as CurrentTableName, '+
-  'trim(flds_pk.rdb$field_name) as CurrentFieldName, '+
-  'trim(rc.rdb$relation_name) as OtherTableName, '+
-  'trim(flds_fk.rdb$field_name) as OtherFieldName, '+
-  'trim(rfc.rdb$update_rule) as UpdateRule, '+
-  'trim(rfc.rdb$delete_rule) as DeleteRule '+
-  'from rdb$relation_constraints AS rc '+
-  'inner join rdb$ref_constraints as rfc on (rc.rdb$constraint_name = rfc.rdb$constraint_name) '+
-  'inner join rdb$index_segments as flds_fk on (flds_fk.rdb$index_name = rc.rdb$index_name) ' +
-  'inner join rdb$relation_constraints as rc2 on (rc2.rdb$constraint_name = rfc.rdb$const_name_uq) ' +
-  'inner join rdb$index_segments as flds_pk on ' +
-  '((flds_pk.rdb$index_name = rc2.rdb$index_name) and (flds_fk.rdb$field_position = flds_pk.rdb$field_position)) ' +
-  'where rc.rdb$constraint_type = ''FOREIGN KEY'' '+
-  'and rc2.rdb$relation_name = ''' + UpperCase(ATableName) + ''' '+
-  'order by rc.rdb$constraint_name, flds_fk.rdb$field_position ';
+  SQLQuery.SQL.Text := 'select '+
+                       'trim(rc.rdb$constraint_name) as ConstName, '+
+                       'trim(rfc.rdb$const_name_uq) as KeyName, '+
+                       'trim(rc2.rdb$relation_name) as CurrentTableName, '+
+                       'trim(flds_pk.rdb$field_name) as CurrentFieldName, '+
+                       'trim(rc.rdb$relation_name) as OtherTableName, '+
+                       'trim(flds_fk.rdb$field_name) as OtherFieldName, '+
+                       'trim(rfc.rdb$update_rule) as UpdateRule, '+
+                       'trim(rfc.rdb$delete_rule) as DeleteRule '+
+                       'from rdb$relation_constraints AS rc '+
+                       'inner join rdb$ref_constraints as rfc on (rc.rdb$constraint_name = rfc.rdb$constraint_name) '+
+                       'inner join rdb$index_segments as flds_fk on (flds_fk.rdb$index_name = rc.rdb$index_name) ' +
+                       'inner join rdb$relation_constraints as rc2 on (rc2.rdb$constraint_name = rfc.rdb$const_name_uq) ' +
+                       'inner join rdb$index_segments as flds_pk on ' +
+                       '((flds_pk.rdb$index_name = rc2.rdb$index_name) and (flds_fk.rdb$field_position = flds_pk.rdb$field_position)) ' +
+                       'where rc.rdb$constraint_type = ''FOREIGN KEY'' '+
+                       'and rc2.rdb$relation_name = ''' + UpperCase(ATableName) + ''' '+
+                       'order by rc.rdb$constraint_name, flds_fk.rdb$field_position ';
   SqlQuery.Open;
   Result:= SqlQuery.RecordCount > 0;
   with SqlQuery do
@@ -637,6 +640,8 @@ begin
 end;
 
 procedure TdmSysTables.OpenQuery(aObjectType :TObjectType);
+var
+  vSQL : string;
 begin
   sqQuery.Close;
   if aObjectType         = otTables then // Tables
@@ -665,6 +670,7 @@ begin
     sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
 
   // Save the result list as comma delimited string
+  vSQL := sqQuery.SQL.Text;
   sqQuery.Open;
   sqQuery.First;
 end;
@@ -1082,27 +1088,27 @@ function TdmSysTables.GetFieldInfo(dbIndex: Integer; TableName, FieldName: strin
 begin
   Init(dbIndex);
   sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
-    ' r.RDB$DESCRIPTION AS field_description, ' +
-    ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL text for default value}+
-    ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
-    ' f.RDB$FIELD_LENGTH AS field_length, ' +
-    ' f.RDB$Character_LENGTH AS characterlength, ' + {character_length seems a reserved word }
-    ' f.RDB$FIELD_PRECISION AS field_precision, ' +
-    ' f.RDB$FIELD_SCALE AS field_scale, ' +
-    ' f.RDB$FIELD_TYPE as field_type_int, ' +
-    ' f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
-    ' coll.RDB$COLLATION_NAME AS field_collation, ' +
-    ' cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
-    ' f.RDB$computed_source AS computed_source, ' +
-    ' dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
-    ' r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain} +
-    ' FROM RDB$RELATION_FIELDS r ' +
-    ' LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
-    ' LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID and f.rdb$character_set_id=coll.rdb$character_set_id ' +
-    ' LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
-    ' LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
-    ' WHERE r.RDB$RELATION_NAME=''' + TableName + '''  and Trim(r.RDB$FIELD_NAME) = ''' + UpperCase(FieldName) + ''' ' +
-    ' ORDER BY r.RDB$FIELD_POSITION ';
+                     'r.RDB$DESCRIPTION AS field_description, ' +
+                     'r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL text for default value}+
+                     'r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
+                     'f.RDB$FIELD_LENGTH AS field_length, ' +
+                     'f.RDB$Character_LENGTH AS characterlength, ' + {character_length seems a reserved word }
+                     'f.RDB$FIELD_PRECISION AS field_precision, ' +
+                     'f.RDB$FIELD_SCALE AS field_scale, ' +
+                     'f.RDB$FIELD_TYPE as field_type_int, ' +
+                     'f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
+                     'coll.RDB$COLLATION_NAME AS field_collation, ' +
+                     'cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
+                     'f.RDB$computed_source AS computed_source, ' +
+                     'dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
+                     'r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain} +
+                     'FROM RDB$RELATION_FIELDS r ' +
+                     'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+                     'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID and f.rdb$character_set_id=coll.rdb$character_set_id ' +
+                     'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+                     'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
+                     'WHERE r.RDB$RELATION_NAME=''' + TableName + '''  and Trim(r.RDB$FIELD_NAME) = ''' + UpperCase(FieldName) + ''' ' +
+                     'ORDER BY r.RDB$FIELD_POSITION ';
   sqQuery.Open;
   Result:= sqQuery.RecordCount > 0;
   if Result then
@@ -1116,91 +1122,85 @@ begin
       begin
         // Field type is not based on a domain but a standard SQL type
         FieldType:= GetFBTypeName(FieldByName('field_type_int').AsInteger,
-          FieldByName('field_sub_type').AsInteger,
-          FieldByName('field_length').AsInteger,
-          FieldByName('field_precision').AsInteger,
-          FieldByName('field_scale').AsInteger);
+                                  FieldByName('field_sub_type').AsInteger,
+                                  FieldByName('field_length').AsInteger,
+                                  FieldByName('field_precision').AsInteger,
+                                  FieldByName('field_scale').AsInteger);
         // Array should really be [lowerbound:upperbound] (if dimension is 0)
         // but for now don't bother as arrays are not supported anyway
         // Assume 0 dimension, 1 lower bound; just fill in upper bound
         if not(FieldByName('array_upper_bound').IsNull) then
-          FieldType := FieldType +
-            ' [' +
-            FieldByName('array_upper_bound').AsString +
-            ']';
+          FieldType := FieldType + ' [' +
+                       FieldByName('array_upper_bound').AsString + ']';
         if FieldByName('field_type_int').AsInteger = VarCharType then
           FieldSize:= FieldByName('characterlength').AsInteger
         else
           FieldSize:= FieldByName('field_length').AsInteger;
-      end
-      else
-      begin
+      end else begin
         // Field is based on a domain
-        FieldType:= trim(FieldByName('field_source').AsString);
+        FieldType := Trim(FieldByName('field_source').AsString);
         // Reset other value to avoid strange values
-        FieldSize:= 0;
+        FieldSize := 0;
       end;
-      FieldScale:= FieldByName('field_scale').AsInteger;
-      NotNull:= (FieldByName('field_not_null_constraint').AsString = '1');
-      Collation:= trim(FieldByName('field_collation').AsString);
-      CharacterSet:= trim(FieldByName('field_charset').AsString);
+
+      FieldScale   := FieldByName('field_scale').AsInteger;
+      NotNull      := (FieldByName('field_not_null_constraint').AsString = '1');
+      Collation    := trim(FieldByName('field_collation').AsString);
+      CharacterSet := trim(FieldByName('field_charset').AsString);
       // Note: no trim here - defaultvalue could be an empty string
-      DefaultValue:= FieldByName('field_default_source').AsString;
-      Description:= trim(FieldByName('field_description').AsString);
+      DefaultValue := FieldByName('field_default_source').AsString;
+      Description  := trim(FieldByName('field_description').AsString);
     end;
   end;
   sqQuery.Close;
 end;
 
-function TdmSysTables.GetDatabaseInfo(dbIndex: Integer; var DatabaseName,
-  CharSet, CreationDate, ServerTime: string; var ODSVerMajor, ODSVerMinor,
-  Pages, PageSize: Integer; var ProcessList: TStringList; var ErrorMsg: string
-  ): Boolean;
+function TdmSysTables.GetDatabaseInfo(dbIndex: Integer; var DatabaseName, CharSet, CreationDate, ServerTime: string;
+                                      var ODSVerMajor, ODSVerMinor, Pages, PageSize: Integer; var ProcessList: TStringList;
+                                      var ErrorMsg: string) :Boolean;
 begin
   try
     Init(dbIndex);
     stTrans.Commit;
-    sqQuery.SQL.Text:= 'select * from RDB$DATABASE';
+    sqQuery.SQL.Text := 'select * from RDB$DATABASE';
     sqQuery.Open;
-    CharSet:= sqQuery.fieldbyName('RDB$Character_Set_Name').AsString;
+    CharSet := sqQuery.fieldbyName('RDB$Character_Set_Name').AsString;
     sqQuery.Close;
 
     sqQuery.SQL.Text:= 'select * from MON$DATABASE';
     sqQuery.Open;
-    DatabaseName:= sqQuery.FieldByName('MON$Database_Name').AsString;
-    PageSize:= sqQuery.FieldByName('MON$Page_Size').AsInteger;
-    ODSVerMajor:= sqQuery.FieldByName('MON$ODS_Major').AsInteger;
-    ODSVerMinor:= sqQuery.FieldByName('MON$ODS_Minor').AsInteger;
-    CreationDate:= Trim(sqQuery.FieldByName('MON$Creation_Date').AsString);
-    Pages:= sqQuery.FieldByName('MON$Pages').AsInteger;
+    DatabaseName := sqQuery.FieldByName('MON$Database_Name').AsString;
+    PageSize     := sqQuery.FieldByName('MON$Page_Size').AsInteger;
+    ODSVerMajor  := sqQuery.FieldByName('MON$ODS_Major').AsInteger;
+    ODSVerMinor  := sqQuery.FieldByName('MON$ODS_Minor').AsInteger;
+    CreationDate := Trim(sqQuery.FieldByName('MON$Creation_Date').AsString);
+    Pages        := sqQuery.FieldByName('MON$Pages').AsInteger;
     sqQuery.Close;
 
     // Attached clients
     sqQuery.SQL.Text:= 'select * from MON$ATTACHMENTS';
-    if ProcessList = nil then
-      ProcessList:= TStringList.Create;
+    if ProcessList = nil then ProcessList:= TStringList.Create;
     sqQuery.Open;
     with sqQuery do
-    while not EOF do
-    begin
+    while not EOF do begin
       ProcessList.Add('Host: ' + Trim(FieldByName('MON$Remote_Address').AsString) +
-        '   User: ' + Trim(FieldByName('Mon$User').AsString)  +
-        '   Process: ' + Trim(FieldByName('Mon$Remote_Process').AsString));
+                      ' User: ' + Trim(FieldByName('Mon$User').AsString)  +
+                      ' Process: ' + Trim(FieldByName('Mon$Remote_Process').AsString));
       Next;
     end;
     sqQuery.Close;
 
     // Server time
-    sqQuery.SQL.Text:= 'select current_timestamp from RDB$Database';
+    sqQuery.SQL.Text := 'select current_timestamp from RDB$Database';
     sqQuery.Open;
-    ServerTime:= sqQuery.Fields[0].AsString;
+    ServerTime := sqQuery.Fields[0].AsString;
     sqQuery.Close;
-    Result:= True;
+    Result := True;
   except
     on E: Exception do
     begin
-      ErrorMsg:= E.Message;
-      Result:= False;
+      ErrorMsg := E.Message;
+      Result := False;
     end;
   end;
 end;
@@ -1211,14 +1211,13 @@ begin
   Init(dbIndex);
   sqQuery.Close;
   sqQuery.SQL.Text:= 'SELECT * FROM RDB$INDICES WHERE RDB$RELATION_NAME=''' + UpperCase(ATableName) +
-    ''' AND RDB$FOREIGN_KEY IS NULL';
+                     ''' AND RDB$FOREIGN_KEY IS NULL';
   sqQuery.Open;
   Result:= sqQuery.RecordCount > 0;
   with sqQuery do
   if Result then
   begin
-    while not Eof do
-    begin
+    while not Eof do begin
       if UpperCase(Trim(PrimaryIndexName)) <> Trim(Fields[0].AsString) then
         List.Add(Trim(Fields[0].AsString));
       Next;
@@ -1239,13 +1238,10 @@ begin
   sqQuery.Open;
   Result:= sqQuery.RecordCount > 0;
   List.Clear;
-  if TablesList <> nil then
-    TablesList.Clear;
+  if TablesList <> nil then TablesList.Clear;
   with sqQuery do
-  if Result then
-  begin
-    while not Eof do
-    begin
+  if Result then begin
+    while not Eof do begin
       List.Add(Trim(Fields[0].AsString));
       if TablesList <> nil then
         TablesList.Add(Trim(FieldByName('RDB$Relation_Name').AsString));
@@ -1260,14 +1256,13 @@ begin
   Init(dbIndex);
   sqQuery.Close;
   sqQuery.SQL.Text:= 'select RDB$Index_name, RDB$Constraint_Name from RDB$RELATION_CONSTRAINTS ' +
-    'where RDB$Relation_Name = ''' + UpperCase(ATableName) + ''' and RDB$Constraint_Type = ''PRIMARY KEY'' ';
+                     'where RDB$Relation_Name = ''' + UpperCase(ATableName) +
+                     ''' and RDB$Constraint_Type = ''PRIMARY KEY'' ';
   sqQuery.Open;
-  if sqQuery.RecordCount > 0 then
-  begin
+  if sqQuery.RecordCount > 0 then begin
     Result:= Trim(sqQuery.Fields[0].AsString);
     ConstraintName:= Trim(sqQuery.Fields[1].AsString);
-  end
-  else
+  end else
     Result:= '';
   sqQuery.Close;
 end;
@@ -1278,37 +1273,36 @@ begin
   Init(dbIndex);
   sqQuery.Close;
   sqQuery.SQL.Text:= 'SELECT RDB$Indices.*, RDB$INDEX_SEGMENTS.RDB$FIELD_NAME AS field_name, ' + LineEnding +
-     'RDB$INDICES.RDB$DESCRIPTION AS description, ' + LineEnding +
-     '(RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION + 1) AS field_position, ' + LineEnding +
-     'RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE as IndexType, ' + LineEnding +
-     'RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_Name as ConstraintName' + LineEnding +
-     'FROM RDB$INDEX_SEGMENTS ' + LineEnding +
-     'LEFT JOIN RDB$INDICES ON RDB$INDICES.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME ' + LineEnding +
-     'LEFT JOIN RDB$RELATION_CONSTRAINTS ON RDB$RELATION_CONSTRAINTS.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME '
-     + LineEnding +
-     ' WHERE UPPER(RDB$INDICES.RDB$RELATION_NAME)=''' + UpperCase(ATablename) + '''         -- table name ' + LineEnding +
-     '  AND UPPER(RDB$INDICES.RDB$INDEX_NAME)=''' + UpperCase(AIndexName) + ''' ' + LineEnding +
-     'ORDER BY RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION;';
+                     'RDB$INDICES.RDB$DESCRIPTION AS description, ' + LineEnding +
+                     '(RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION + 1) AS field_position, ' + LineEnding +
+                     'RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE as IndexType, ' + LineEnding +
+                     'RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_Name as ConstraintName' + LineEnding +
+                     'FROM RDB$INDEX_SEGMENTS ' + LineEnding +
+                     'LEFT JOIN RDB$INDICES ON RDB$INDICES.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME ' + LineEnding +
+                     'LEFT JOIN RDB$RELATION_CONSTRAINTS ON RDB$RELATION_CONSTRAINTS.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME '
+                     + LineEnding +
+                     ' WHERE UPPER(RDB$INDICES.RDB$RELATION_NAME)=''' + UpperCase(ATablename) + '''         -- table name ' + LineEnding +
+                     '  AND UPPER(RDB$INDICES.RDB$INDEX_NAME)=''' + UpperCase(AIndexName) + ''' ' + LineEnding +
+                     'ORDER BY RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION;';
   sqQuery.Open;
   Result:= sqQuery.FieldCount > 0;
   if Result then
   begin
-    Unique:= sqQuery.FieldByName('RDB$Unique_Flag').AsString = '1';
-    Ascending:= sqQuery.FieldByName('RDB$Index_Type').AsString <> '1';
-    IsPrimary:= Trim(sqQuery.FieldByName('IndexType').AsString) = 'PRIMARY KEY';
-    ConstraintName:= Trim(sqQuery.FieldByName('ConstraintName').AsString);
+    Unique         := sqQuery.FieldByName('RDB$Unique_Flag').AsString = '1';
+    Ascending      := sqQuery.FieldByName('RDB$Index_Type').AsString <> '1';
+    IsPrimary      := Trim(sqQuery.FieldByName('IndexType').AsString) = 'PRIMARY KEY';
+    ConstraintName := Trim(sqQuery.FieldByName('ConstraintName').AsString);
   end;
   FieldsList.Clear;
   if Result then
-  while not sqQuery.EOF do
-  begin
+  while not sqQuery.EOF do begin
     FieldsList.Add(Trim(sqQuery.FieldByName('field_name').AsString));
     sqQuery.Next;
   end;
   sqQuery.Close;
 end;
 
-procedure TdmSysTables.GetTableFields(dbIndex: Integer; ATableName: string; FieldsList: TStringList);
+procedure TdmSysTables.GetTableFields(dbIndex :Integer; aTableName :string; FieldTypes :array of Integer; FieldsList :TStrings);
 //var
 //  FieldName: string;
 begin
@@ -1346,45 +1340,130 @@ begin
   //  sqQuery.Next;
   //end;
   //sqQuery.Close;
-  GetTableFields(fmMain.RegisteredDatabases[dbIndex], ATableName, FieldsList);
+  GetTableFields(fmMain.RegisteredDatabases[dbIndex], ATableName, FieldTypes, FieldsList);
 end;
 
-procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; ATableName :string; FieldsList :TStringList);
+procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; aTableName :string; aFieldTypes :array of Integer; aFieldList :TStrings);
 var
-  FieldName: string;
-begin
-  Init(aDB);
-  sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
-      ' r.RDB$DESCRIPTION AS field_description, ' +
-      ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value}+
-      ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
-      ' f.RDB$FIELD_LENGTH AS field_length, ' +
-      ' f.RDB$FIELD_PRECISION AS field_precision, ' +
-      ' f.RDB$FIELD_SCALE AS field_scale, ' +
-      ' f.RDB$FIELD_TYPE as field_type_int, ' +
-      ' f.RDB$FIELD_SUB_TYPE AS field_sub_type, ' +
-      ' coll.RDB$COLLATION_NAME AS field_collation, ' +
-      ' cset.RDB$CHARACTER_SET_NAME AS field_charset, ' +
-      ' f.RDB$computed_source AS computed_source, ' +
-      ' dim.RDB$UPPER_BOUND AS array_upper_bound, ' +
-      ' r.RDB$FIELD_SOURCE AS field_source ' {domain if field based on domain} +
-      ' FROM RDB$RELATION_FIELDS r ' +
-      ' LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
-      ' LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
-      ' LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
-      ' LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
-      ' WHERE r.RDB$RELATION_NAME=''' + ATableName + '''  ' +
-      ' ORDER BY r.RDB$FIELD_POSITION;';
-  sqQuery.Open;
-  FieldsList.Clear;
-  while not sqQuery.EOF do
+  FieldName :string;
+  vFldType  :TField;
+  vSubType  :TField;
+  vQry      :TSQLQuery;
+
+  function FieldAccepted:Boolean;
+  var
+    vCntr :Integer;
   begin
-    FieldName:= Trim(sqQuery.FieldByName('field_name').AsString);
-    if FieldsList.IndexOf(FieldName) = -1 then
-      FieldsList.Add(FieldName);
-    sqQuery.Next;
+    Result := True;
+    if Length(aFieldTypes) > 0 then begin
+      //jkoz : extend it to support subtypes in the mix, for now only subtype 0 is supported.
+      for vCntr := 0 to Length(aFieldTypes) -1 do begin
+        if (vFldType.AsInteger = aFieldTypes[vCntr]) and (vSubType.AsInteger = 0) then Exit;
+      end;
+      Result := False;
+    end;
   end;
-  sqQuery.Close;
+
+begin
+  vQry := GetQuery(aDB.IBConnection); //Init(aDB);
+  try
+    vQry.SQL.Text := 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
+                     'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
+                     'r.RDB$DEFAULT_SOURCE AS '        + cFldDefSource   + ', ' + {SQL source for default value}
+                     'r.RDB$NULL_FLAG AS '             + cFldNullFlag     + ', ' +
+                     'f.RDB$FIELD_LENGTH AS '          + cFldLength      + ', ' +
+                     'f.RDB$FIELD_PRECISION AS '       + cFldPrecision   + ', ' +
+                     'f.RDB$FIELD_SCALE AS '           + cFldScale       + ', ' +
+                     'f.RDB$FIELD_TYPE AS '            + cfldType        + ', ' +
+                     'f.RDB$FIELD_SUB_TYPE AS '        + cFldSubType     + ', ' +
+                     'coll.RDB$COLLATION_NAME AS '     + cFldCollation   + ', ' +
+                     'cset.RDB$CHARACTER_SET_NAME AS ' + cFldCharset     + ', ' +
+                     'f.RDB$computed_source AS '       + cFldComputedSrc + ', ' +
+                     'dim.RDB$UPPER_BOUND AS '         + cArrUpBound     + ', ' +
+                     'r.RDB$FIELD_SOURCE AS '          + cFldSource      + ' '  + {domain if field based on domain}
+                     'FROM RDB$RELATION_FIELDS r ' +
+                     'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+                     'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
+                     'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+                     'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
+                     'WHERE r.RDB$RELATION_NAME=''' + aTableName + '''  ' +
+                     'ORDER BY r.RDB$FIELD_POSITION;';
+    vQry.Open;
+    try
+      vFldType := vQry.FieldByName(cfldType);
+      vSubType := vQry.FieldByName(cFldSubType);
+      aFieldList.Clear;
+      vQry.First;
+      while not vQry.EOF do begin
+        if FieldAccepted then begin
+          FieldName := Trim(vQry.FieldByName(cFldName).AsString);
+          if aFieldList.IndexOf(FieldName) = -1 then aFieldList.Add(FieldName);
+        end;
+        vQry.Next;
+      end;
+    finally
+      vQry.Close;
+    end;
+  finally
+    ReleaseQuery(vQry);
+  end;
+end;
+
+procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; aTablename, aCondition :string; aFieldList :TStrings);
+var
+  vFieldName :string;
+  vFldType  :TField;
+  vQry      :TSQLQuery;
+
+  function ConditionStr(aCond :string):string;
+  begin
+    Result := ' ';
+    if aCond <> '' then Result := ' AND (' + aCondition + ') ';
+  end;
+
+begin
+  //Init(aDB);
+  vQry := GetQuery(aDB.IBConnection);
+  try
+    vQry.SQL.Text := 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
+                     'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
+                     'r.RDB$DEFAULT_SOURCE AS '        + cFldDefSource   + ', ' + {SQL source for default value}
+                     'r.RDB$NULL_FLAG AS '             + cFldNullFlag     + ', ' +
+                     'f.RDB$FIELD_LENGTH AS '          + cFldLength      + ', ' +
+                     'f.RDB$FIELD_PRECISION AS '       + cFldPrecision   + ', ' +
+                     'f.RDB$FIELD_SCALE AS '           + cFldScale       + ', ' +
+                     'f.RDB$FIELD_TYPE AS '            + cfldType        + ', ' +
+                     'f.RDB$FIELD_SUB_TYPE AS '        + cFldSubType     + ', ' +
+                     'coll.RDB$COLLATION_NAME AS '     + cFldCollation   + ', ' +
+                     'cset.RDB$CHARACTER_SET_NAME AS ' + cFldCharset     + ', ' +
+                     'f.RDB$computed_source AS '       + cFldComputedSrc + ', ' +
+                     'dim.RDB$UPPER_BOUND AS '         + cArrUpBound     + ', ' +
+                     'r.RDB$FIELD_SOURCE AS '          + cFldSource      + ' '  + {domain if field based on domain}
+                     'FROM RDB$RELATION_FIELDS r '     +
+                     'LEFT JOIN RDB$FIELDS f ON r.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME ' +
+                     'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
+                     'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
+                     'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
+                     'WHERE r.RDB$RELATION_NAME= ' + QuotedStr(ATableName) + ConditionStr(aCondition) +
+                     'ORDER BY r.RDB$FIELD_POSITION;';
+    vQry.Open;
+    vFldType := vQry.FieldByName(cfldType);
+    aFieldList.Clear;
+    vQry.First;
+    while not vQry.EOF do begin
+      vFieldName := Trim(vQry.FieldByName(cFldName).AsString);
+      if aFieldList.IndexOf(vFieldName) = -1 then aFieldList.Add(vFieldName);
+      vQry.Next;
+    end;
+    vQry.Close;
+  finally
+    ReleaseQuery(vQry);
+  end;
+end;
+
+procedure TdmSysTables.GetTableNames(aDB :TDatabaseRec; aList :TStrings);
+begin
+
 end;
 
 initialization

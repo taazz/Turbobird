@@ -328,18 +328,14 @@ end;
 procedure TfmTableManage.bbNewConstraintClick(Sender: TObject);
 var
   Count: Integer;
-  FieldsList: TStringList;
+  //FieldsList: TStringList;
 begin
   // Get current fields
-  FieldsList:= TStringList.Create;
-  try
-    fmMain.GetFields(FDBIndex, FTableName, FieldsList);
-    fmNewConstraint.clxOnFields.Clear;
-    fmNewConstraint.clxOnFields.Items.AddStrings(FieldsList);
-  finally
-    FieldsList.Free;
-  end;
-  fmMain.SQLQuery1.Close;
+  fmNewConstraint.clxOnFields.Clear;
+  dmSysTables.GetTableFields(FDBIndex, FTableName, [], fmNewConstraint.clxOnFields.Items);
+  //fmNewConstraint.clxOnFields.Items.AddStrings(FieldsList);
+
+  //fmMain.SQLQuery1.Close;
   fmNewConstraint.edNewName.Text:= 'FK_' + FTableName + '_' + IntToStr(sgConstraints.RowCount);
 
   // Foreign tables

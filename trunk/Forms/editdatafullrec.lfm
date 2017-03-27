@@ -1,0 +1,80 @@
+object fmEditDataFullRec: TfmEditDataFullRec
+  Left = 494
+  Height = 300
+  Top = 317
+  Width = 593
+  ActiveControl = bbSave
+  Caption = 'Edit Data Full Record'
+  ClientHeight = 300
+  ClientWidth = 593
+  OnClose = FormClose
+  Position = poScreenCenter
+  LCLVersion = '1.4.4.0'
+  object Label1: TLabel
+    Left = 258
+    Height = 15
+    Top = 27
+    Width = 47
+    Caption = 'Record #'
+    ParentColor = False
+  end
+  object laPos: TLabel
+    Left = 326
+    Height = 15
+    Top = 27
+    Width = 6
+    Caption = '0'
+    Font.Color = 11610912
+    ParentColor = False
+    ParentFont = False
+  end
+  object DBNavigator1: TDBNavigator
+    Left = 8
+    Height = 25
+    Top = 16
+    Width = 241
+    BevelOuter = bvNone
+    ChildSizing.EnlargeHorizontal = crsScaleChilds
+    ChildSizing.EnlargeVertical = crsScaleChilds
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 100
+    ClientHeight = 25
+    ClientWidth = 241
+    DataSource = Datasource1
+    Options = []
+    TabOrder = 0
+  end
+  object bbSave: TBitBtn
+    Left = 493
+    Height = 30
+    Top = 16
+    Width = 75
+    Caption = 'Save'
+    OnClick = bbSaveClick
+    TabOrder = 1
+  end
+  object Datasource1: TDataSource
+    DataSet = sqEditTable
+    left = 408
+    top = 128
+  end
+  object sqEditTable: TMDOQuery
+    AfterScroll = sqEditTableAfterScroll
+    BooleanFields = False
+    BufferChunks = 1000
+    CachedUpdates = False
+    LoadDefaults = False
+    left = 208
+    top = 116
+  end
+  object sqEditTableOLD: TSQLQuery
+    FieldDefs = <>
+    AutoCalcFields = False
+    AfterScroll = sqEditTableAfterScroll
+    Params = <>
+    left = 412
+    top = 76
+  end
+end

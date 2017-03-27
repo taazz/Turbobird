@@ -1,14 +1,67 @@
 object dmSysTables: TdmSysTables
   OldCreateOrder = False
   Height = 174
-  HorizontalOffset = 627
-  VerticalOffset = 351
+  HorizontalOffset = 682
+  VerticalOffset = 387
   Width = 313
-  object sqQuery: TSQLQuery
+  object MDOQuery: TMDOQuery
+    Database = MDODatabase1
+    Transaction = MDOTransaction
+    BooleanFields = False
+    BufferChunks = 1000
+    CachedUpdates = False
+    LoadDefaults = False
+    left = 148
+    top = 12
+  end
+  object MDODatabase1: TMDODatabase
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = '127.0.0.1:D:\data\firebird\employee.fdb'
+    IdleTimer = 0
+    Params.Strings = (
+      'user_name=evosi'
+      'password=isove'
+      'sql_role_name=admin'
+    )
+    SQLDialect = 3
+    TraceFlags = []
+    UserName = 'evosi'
+    Password = 'isove'
+    left = 56
+    top = 20
+  end
+  object IBConnection1: TIBConnection
+    Connected = False
+    LoginPrompt = False
+    DatabaseName = 'd:\data\firebird\employee.fdb'
+    KeepConnection = False
+    Password = 'isove'
+    UserName = 'evosi'
+    CharSet = 'utf8'
+    HostName = '127.0.0.1'
+    LogEvents = []
+    Role = 'admin'
+    left = 164
+    top = 84
+  end
+  object MDOTransaction: TMDOTransaction
+    Active = False
+    AutoCommit = False
+    DefaultDatabase = MDODatabase1
+    Params.Strings = (
+      'read_committed'
+      'rec_version'
+      'nowait'
+    )
+    left = 52
+    top = 74
+  end
+  object QryMain: TSQLQuery
     FieldDefs = <>
     AutoCalcFields = False
     Params = <>
-    left = 216
-    top = 32
+    left = 240
+    top = 16
   end
 end

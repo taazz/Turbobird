@@ -1,0 +1,106 @@
+object fmEnterPass: TfmEnterPass
+  Left = 1327
+  Height = 171
+  Top = 281
+  Width = 377
+  ActiveControl = edUser
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Connect to Database As'
+  ClientHeight = 171
+  ClientWidth = 377
+  OnActivate = FormActivate
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '1.4.4.0'
+  object Label1: TLabel
+    Left = 13
+    Height = 15
+    Top = 72
+    Width = 50
+    Caption = 'Password'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 13
+    Height = 15
+    Top = 44
+    Width = 23
+    Caption = 'User'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 16
+    Height = 15
+    Top = 104
+    Width = 23
+    Caption = 'Role'
+    ParentColor = False
+  end
+  object edPassword: TEdit
+    Left = 89
+    Height = 23
+    Top = 72
+    Width = 272
+    EchoMode = emPassword
+    PasswordChar = '*'
+    TabOrder = 1
+  end
+  object BitBtn1: TBitBtn
+    Left = 200
+    Height = 30
+    Top = 136
+    Width = 75
+    Caption = '&OK'
+    Color = clForm
+    Default = True
+    Kind = bkOK
+    OnClick = BitBtn1Click
+    TabOrder = 3
+  end
+  object BitBtn2: TBitBtn
+    Left = 279
+    Height = 30
+    Top = 136
+    Width = 82
+    Cancel = True
+    Caption = 'Cancel'
+    Color = clForm
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 4
+  end
+  object edUser: TEdit
+    Left = 89
+    Height = 23
+    Top = 39
+    Width = 272
+    TabOrder = 0
+  end
+  object cbRole: TComboBox
+    Left = 89
+    Height = 23
+    Top = 104
+    Width = 272
+    ItemHeight = 15
+    TabOrder = 2
+  end
+  object Label4: TLabel
+    Left = 13
+    Height = 15
+    Top = 9
+    Width = 48
+    Caption = 'Database'
+    ParentColor = False
+  end
+  object lbDatabaseName: TLabel
+    Left = 89
+    Height = 15
+    Top = 9
+    Width = 48
+    Caption = 'Database'
+    Font.Color = clGray
+    ParentColor = False
+    ParentFont = False
+  end
+end

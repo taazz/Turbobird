@@ -1,0 +1,203 @@
+object frFontEdit: TfrFontEdit
+  Left = 0
+  Height = 369
+  Top = 0
+  Width = 414
+  ClientHeight = 369
+  ClientWidth = 414
+  TabOrder = 0
+  DesignLeft = 506
+  DesignTop = 219
+  object lbFontName: TListBox
+    Left = 12
+    Height = 144
+    Top = 60
+    Width = 175
+    ItemHeight = 0
+    OnSelectionChange = lbFontNameSelectionChange
+    TabOrder = 0
+  end
+  object lblFontName: TLabel
+    Left = 15
+    Height = 15
+    Top = 9
+    Width = 30
+    Caption = 'Font :'
+    ParentColor = False
+  end
+  object lblStyle: TLabel
+    Left = 198
+    Height = 15
+    Top = 9
+    Width = 58
+    Caption = 'Font Style :'
+    ParentColor = False
+  end
+  object lbStyle: TListBox
+    Left = 194
+    Height = 144
+    Top = 60
+    Width = 131
+    Items.Strings = (
+      'Regular'
+      'Italic'
+      'Bold'
+      'Bold Italic'
+    )
+    ItemHeight = 15
+    TabOrder = 1
+  end
+  object lblSize: TLabel
+    Left = 334
+    Height = 15
+    Top = 9
+    Width = 26
+    Caption = 'Size :'
+    ParentColor = False
+  end
+  object lbSize: TListBox
+    Left = 332
+    Height = 144
+    Top = 60
+    Width = 69
+    Items.Strings = (
+      '8'
+      '9'
+      '10'
+      '11'
+      '12'
+      '14'
+      '16'
+      '18'
+      '20'
+      '22'
+      '24'
+      '26'
+      '28'
+      '36'
+      '48'
+      '72'
+    )
+    ItemHeight = 15
+    ItemIndex = 2
+    TabOrder = 2
+  end
+  object edFontName: TEdit
+    Left = 13
+    Height = 23
+    Top = 30
+    Width = 174
+    OnChange = edFontNameChange
+    OnExit = edFontNameExit
+    TabOrder = 3
+    Text = 'edFontName'
+  end
+  object edStyle: TEdit
+    Left = 194
+    Height = 23
+    Top = 30
+    Width = 131
+    TabOrder = 4
+    Text = 'edStyle'
+  end
+  object edSize: TEdit
+    Left = 332
+    Height = 23
+    Top = 30
+    Width = 69
+    MaxLength = 5
+    TabOrder = 5
+    Text = '10'
+  end
+  object grpEffects: TCheckGroup
+    Left = 13
+    Height = 85
+    Top = 220
+    Width = 174
+    AutoFill = True
+    Caption = ' Effects '
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 65
+    ClientWidth = 170
+    Items.Strings = (
+      'Strikeout'
+      'Underline'
+    )
+    TabOrder = 6
+    Data = {
+      020000000202
+    }
+  end
+  object grpSample: TGroupBox
+    Left = 194
+    Height = 85
+    Top = 220
+    Width = 207
+    Caption = ' Sample '
+    ChildSizing.LeftRightSpacing = 4
+    ChildSizing.TopBottomSpacing = 1
+    ChildSizing.HorizontalSpacing = 2
+    ClientHeight = 65
+    ClientWidth = 203
+    TabOrder = 7
+    object lblSample: TLabel
+      Left = 4
+      Height = 63
+      Top = 1
+      Width = 195
+      Align = alClient
+      Caption = 'The quick brown fox jumps over the lazy dog'
+      ParentColor = False
+      WordWrap = True
+    end
+  end
+  object cmbColor: TColorBox
+    Left = 12
+    Height = 22
+    Top = 332
+    Width = 175
+    ItemHeight = 16
+    TabOrder = 8
+  end
+  object Label5: TLabel
+    Left = 15
+    Height = 15
+    Top = 311
+    Width = 35
+    Caption = 'Color :'
+    ParentColor = False
+  end
+  object cmbScript: TComboBox
+    Left = 194
+    Height = 23
+    Top = 332
+    Width = 207
+    ItemHeight = 15
+    TabOrder = 9
+    Text = 'cmbScript'
+    Visible = False
+  end
+  object Label6: TLabel
+    Left = 196
+    Height = 15
+    Top = 311
+    Width = 36
+    Caption = 'Script :'
+    ParentColor = False
+    Visible = False
+  end
+  object FontDialog1: TFontDialog
+    Font.Height = -13
+    MinFontSize = 0
+    MaxFontSize = 0
+    left = 272
+    top = 168
+  end
+end

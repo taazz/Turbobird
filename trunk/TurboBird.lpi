@@ -11,6 +11,9 @@
       <Title Value="TurboBird"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <VersionInfo>
@@ -18,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="1114"/>
+      <BuildNr Value="1258"/>
       <StringTable ProductVersion="0.9"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -28,7 +31,7 @@
           <Version Value="11"/>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../Synapse/source/lib"/>
+            <OtherUnitFiles Value="Forms;Frames"/>
             <UnitOutputDirectory Value="Bin"/>
           </SearchPaths>
           <Parsing>
@@ -78,352 +81,387 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="6">
+    <RequiredPackages Count="8">
       <Item1>
-        <PackageName Value="laz_synapse"/>
+        <PackageName Value="mdolaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="MemDSLaz"/>
+        <PackageName Value="LazControls"/>
       </Item2>
       <Item3>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="laz_synapse"/>
       </Item3>
       <Item4>
-        <PackageName Value="SynEdit"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="MemDSLaz"/>
       </Item4>
       <Item5>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item5>
       <Item6>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SynEdit"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item6>
+      <Item7>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="LCL"/>
+      </Item8>
     </RequiredPackages>
-    <Units Count="44">
+    <Units Count="49">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="main.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmMain"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit1>
-      <Unit2>
-        <Filename Value="createdb.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCreateDB"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="reg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmReg"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Reg"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="querywindow.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmQueryWindow"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="QueryWindow"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="viewview.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmViewView"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ViewView"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="viewtrigger.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmViewTrigger"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ViewTrigger"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="viewsproc.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmViewSProc"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ViewSProc"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="viewgen.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmViewGen"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ViewGen"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="newtable.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmNewTable"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewTable"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="newgen.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmNewGen"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewGen"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="enterpass.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmEnterPass"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="EnterPass"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="about.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmAbout"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="About"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="createtrigger.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCreateTrigger"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="CreateTrigger"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="edittable.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmEditTable"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="EditTable"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="callproc.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCallProc"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="CallProc"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="editdatafullrec.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmEditDataFullRec"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="EditDataFullRec"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="udfinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmUDFInfo"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UDFInfo"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="viewdomain.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmViewDomain"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="ViewDomain"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="newdomain.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmNewDomain"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewDomain"/>
-      </Unit19>
-      <Unit20>
         <Filename Value="systables.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="dmSysTables"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="SysTables"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="newconstraint.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmNewConstraint"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewConstraint"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="neweditfield.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmNewEditField"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewEditField"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="calen.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCalen"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Calen"/>
-      </Unit23>
-      <Unit24>
+      </Unit1>
+      <Unit2>
         <Filename Value="scriptdb.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Scriptdb"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="userpermissions.pas"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="topologicalsort.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmUserPermissions"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="unitfirebirdservices.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UnitFirebirdServices"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="turbocommon.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="fileimport.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="csvdocument.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CsvDocument"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="utbtypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTBTypes"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="utbconfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utbConfig"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="utbfirebird.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTBFirebird"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="utbdbregistry.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utbDBRegistry"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="Frames/ufrfonteditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frFontEdit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="ufrFontEditor"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="Forms/utboptionsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="UserPermissions"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="tablemanage.pas"/>
+        <UnitName Value="uTBOptionsform"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="Forms/viewdomain.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmTableManage"/>
+        <ComponentName Value="fmViewDomain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="TableManage"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="backuprestore.pas"/>
+        <UnitName Value="ViewDomain"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="Forms/about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmAbout"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="About"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="Forms/backuprestore.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmBackupRestore"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BackupRestore"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="createuser.pas"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="Forms/calen.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCreateUser"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="CreateUser"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="changepass.pas"/>
+        <UnitName Value="Calen"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="Forms/callproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmChangePass"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CallProc"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="Forms/changepass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
         <UnitName Value="ChangePass"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="permissionmanage.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmPermissionManage"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="PermissionManage"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="sqlhistory.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmSQLHistory"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="SQLHistory"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="copytable.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmCopyTable"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="CopyTable"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="dbinfo.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmDBInfo"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="dbInfo"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="comparison.pas"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="Forms/comparison.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmComparison"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Comparison"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="Forms/copytable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmCopyTable"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CopyTable"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="Forms/createdb.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmCreateDB"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CreateDb"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="Forms/createuser.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmCreateUser"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CreateUser"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="Forms/dbinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+        <UnitName Value="dbInfo"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="Forms/editdatafullrec.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmEditDataFullRec"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="EditDataFullRec"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="Forms/edittable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmEditTable"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="EditTable"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="Forms/enterpass.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmEnterPass"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="EnterPass"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="Forms/importtable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmImportTable"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="Forms/main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="Forms/newconstraint.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmNewConstraint"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewConstraint"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="Forms/newdomain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmNewDomain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewDomain"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="Forms/neweditfield.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmNewEditField"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewEditField"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="Forms/newgen.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmNewGen"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewGen"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="Forms/newtable.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmNewTable"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewTable"/>
       </Unit34>
       <Unit35>
-        <Filename Value="update.pas"/>
+        <Filename Value="Forms/permissionmanage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmPermissionManage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="PermissionManage"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="Forms/querywindow.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmQueryWindow"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="QueryWindow"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="Forms/reg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmReg"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Reg"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="Forms/sqlhistory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmSQLHistory"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="SQLHistory"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="Forms/tablemanage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmTableManage"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TableManage"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="Forms/udfinfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmUDFInfo"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UDFInfo"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="Forms/update.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fmUpdate"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Update"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="topologicalsort.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="unitfirebirdservices.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="UnitFirebirdServices"/>
-      </Unit37>
-      <Unit38>
-        <Filename Value="turbocommon.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit38>
-      <Unit39>
-        <Filename Value="turbocommon.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit39>
-      <Unit40>
-        <Filename Value="importtable.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="fmImportTable"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit40>
-      <Unit41>
-        <Filename Value="fileimport.pas"/>
-        <IsPartOfProject Value="True"/>
       </Unit41>
       <Unit42>
-        <Filename Value="csvdocument.pas"/>
+        <Filename Value="Forms/userpermissions.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmUserPermissions"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UserPermissions"/>
       </Unit42>
       <Unit43>
-        <Filename Value="utbtypes.pas"/>
+        <Filename Value="Forms/viewgen.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uTBTypes"/>
+        <ComponentName Value="fmViewGen"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ViewGen"/>
       </Unit43>
+      <Unit44>
+        <Filename Value="Forms/viewsproc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmViewSProc"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ViewSProc"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="Forms/viewtrigger.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmViewTrigger"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ViewTrigger"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="Forms/viewview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmViewView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ViewView"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="Forms/createtrigger.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmCreateTrigger"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CreateTrigger"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="Forms/connectas.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmConnectAs"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="ConnectAs"/>
+      </Unit48>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../Synapse/source/lib"/>
+      <OtherUnitFiles Value="Frames;Forms"/>
       <UnitOutputDirectory Value="Bin"/>
     </SearchPaths>
     <CodeGeneration>
@@ -446,7 +484,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="5">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -462,6 +500,12 @@
       <Item5>
         <Name Value="EIBDatabaseError"/>
       </Item5>
+      <Item6>
+        <Name Value="EMDOFirebirdError"/>
+      </Item6>
+      <Item7>
+        <Name Value="Exception"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

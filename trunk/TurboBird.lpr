@@ -16,14 +16,11 @@ uses
   cmem,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Controls, memdslaz, main, CreateDb, Reg, QueryWindow, ViewView,
-  ViewTrigger, ViewSProc, ViewGen, NewTable, NewGen, EnterPass, About,
-  CreateTrigger, EditTable, CallProc, EditDataFullRec, UDFInfo, ViewDomain,
-  NewDomain, SysTables, NewConstraint, NewEditField, Calen, Scriptdb,
-  UserPermissions, TableManage, BackupRestore, CreateUser, ChangePass,
-  PermissionManage, SQLHistory, CopyTable, dynlibs, ibase60dyn, dbInfo,
-  sysutils, Comparison, Update, topologicalsort, UnitFirebirdServices, 
-  turbocommon, importtable, fileimport, csvdocument, sqldblib, uTBTypes;
+  Forms, Controls, mdolaz, memdslaz, lazcontrols, dynlibs, ibase60dyn, sysutils, sqldblib, SysTables, Scriptdb, topologicalsort, utbConfig,
+  fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, turbocommon, csvdocument, uTBDBRegistry, dbInfo, main, QueryWindow, Reg, UDFInfo, About,
+  BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec, EditTable, EnterPass, NewConstraint,
+  NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions, uTBOptionsform, ViewDomain, ViewGen,
+  ViewSProc, ViewTrigger, ViewView, ufrFontEditor;
 
 const
   Major   = 1;
@@ -45,11 +42,11 @@ const
 {$R *.res}
 
 var
-  SAbout: TfmAbout;
-  ErrorMessage: string;
-  IBaseLibraryHandle : TLibHandle;
+  SAbout             :TfmAbout;
+  ErrorMessage       :string;
+  IBaseLibraryHandle :TLibHandle;
   {$IFDEF UNIX}
-  SLib: TSQLDBLibraryLoader;
+  SLib : TSQLDBLibraryLoader;
   {$ENDIF}
 begin
   Application.Initialize;
@@ -73,8 +70,7 @@ begin
   SetHeapTraceOutput('heap.trc');
   {$ENDIF DEBUG}
   IBaseLibraryHandle:= LoadLibrary(fbclib);
-
-  // search for all compatible FireBird libraries in Windows
+// search for all compatible FireBird libraries in Windows
   {$IFDEF Windows}
   if IBaseLibraryHandle = NilHandle then
     IBaseLibraryHandle:= LoadLibrary(seclib);
@@ -103,7 +99,9 @@ begin
   SAbout.BitBtn1.Visible:= False;
   SAbout.Show;
   Application.ProcessMessages;
+  Application.ExceptionDialog := aedOkMessageBox;
   SAbout.Update;
+  Application.CreateForm(TdmSysTables, dmSysTables);
   Application.CreateForm(TfmMain, fmMain);
   fmMain.Version:= Format('%d.%d.%d', [Major, Minor, Release]);
   fmMain.StatusBar1.Panels[1].Text:= 'Version: ' + fmMain.Version;
@@ -111,24 +109,24 @@ begin
   fmMain.Major:= Major;
   fmMain.Minor:= Minor;
   fmMain.ReleaseVersion:= Release;
-  Application.CreateForm(TfmCreateDB, fmCreateDB);
-  Application.CreateForm(TfmReg, fmReg);
-  Application.CreateForm(TfmNewGen, fmNewGen);
-  Application.CreateForm(TfmEnterPass, fmEnterPass);
-  Application.CreateForm(TfmCreateTrigger, fmCreateTrigger);
-  Application.CreateForm(TfmEditTable, fmEditTable);
-  Application.CreateForm(TfmCallProc, fmCallProc);
-  Application.CreateForm(TfmEditDataFullRec, fmEditDataFullRec);
-  Application.CreateForm(TfmNewDomain, fmNewDomain);
-  Application.CreateForm(TdmSysTables, dmSysTables);
-  Application.CreateForm(TfmNewConstraint, fmNewConstraint);
-  Application.CreateForm(TfmCalen, fmCalen);
-  Application.CreateForm(TfmBackupRestore, fmBackupRestore);
-  Application.CreateForm(TfmCreateUser, fmCreateUser);
-  Application.CreateForm(TfmChangePass, fmChangePass);
-  Application.CreateForm(TfmSQLHistory, fmSQLHistory);
-  Application.CreateForm(TfmCopyTable, fmCopyTable);
   SAbout.Free;
+  //Application.CreateForm(TfmCreateDB, fmCreateDB);
+  //Application.CreateForm(TfmReg, fmReg);
+  //Application.CreateForm(TfmNewGen, fmNewGen);
+  //Application.CreateForm(TfmEnterPass, fmEnterPass);
+  //Application.CreateForm(TfmCreateTrigger, fmCreateTrigger);
+  //Application.CreateForm(TfmEditTable, fmEditTable);
+  //Application.CreateForm(TfmCallProc, fmCallProc);
+  //Application.CreateForm(TfmEditDataFullRec, fmEditDataFullRec);
+  //Application.CreateForm(TfmNewDomain, fmNewDomain);
+  //Application.CreateForm(TdmSysTables, dmSysTables);
+  //Application.CreateForm(TfmNewConstraint, fmNewConstraint);
+  //Application.CreateForm(TfmCalen, fmCalen);
+  //Application.CreateForm(TfmBackupRestore, fmBackupRestore);
+  //Application.CreateForm(TfmCreateUser, fmCreateUser);
+  //Application.CreateForm(TfmChangePass, fmChangePass);
+  //Application.CreateForm(TfmSQLHistory, fmSQLHistory);
+  //Application.CreateForm(TfmCopyTable, fmCopyTable);
   InitialiseIBase60;
   Application.Run;
   ReleaseIBase60;

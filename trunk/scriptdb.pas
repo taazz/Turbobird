@@ -6,7 +6,7 @@ unit Scriptdb;
 interface
 
 uses
-  Classes, SysUtils, turbocommon, uTBTypes, dialogs, sqldb;
+  Classes, SysUtils, turbocommon, uTBTypes, dialogs, MDOQuery, sqldb;
 
 
 // Scripts all roles; changes List to contain the CREATE ROLE SQL statements
@@ -151,7 +151,7 @@ var
   ModuleName, EntryPoint, Params: string;
 begin
   FunctionsList:= TStringList.Create;
-  FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otUDF, Count);
+  FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], uTBTypes.otUDFs, Count);
   // Get functions in dependency order:
   dmSysTables.SortDependencies(FunctionsList);
   List.Clear;
@@ -260,9 +260,10 @@ var
   ConstraintName :string;
   CalculatedList :TStringList; // for calculated fields
   DefaultValue   :string;
-  vFields        :TSQLQuery;
+  //vFields        :TSQLQuery;
+  vFields        :TMDOQuery;
 begin
-  vFields  := GetQuery(fmMain.RegisteredDatabases[dbIndex].IBConnection, cTmplFields, [aTableName]);
+  vFields  := GetQuery(fmMain.RegisteredDatabases[dbIndex].Conn, cTmplFields, [aTableName]);
   //fmMain.GetFields(dbIndex, ATableName, nil);
   ScriptList.Clear;
   ScriptList.Add('create table ' + ATableName + ' (');
@@ -270,8 +271,8 @@ begin
   try
     // Fields
     //with vFields do
-    while not EOF do begin
-      Skipped:= False;
+    while not vFields.EOF do begin
+      Skipped := False;
       if (vFields.FieldByName('computed_source').AsString = '') then
       begin
         // Field Name
@@ -332,7 +333,7 @@ begin
 
       if not Skipped then
       begin
-        if not EOF then
+        if not vFields.EOF then
           FieldLine:= FieldLine + ',';
         ScriptList.Add(FieldLine);
       end;
@@ -513,6 +514,7 @@ var
   FieldsList: TStringList;
   Line: string;
   ConstraintName: string;
+
 begin
   TablesList:= TStringList.Create;
   FieldsList:= TStringList.Create;
@@ -523,12 +525,10 @@ begin
     begin
       PKName:= fmMain.GetPrimaryKeyIndexName(dbIndex, TablesList[i], ConstraintName);
 
-      if fmMain.GetIndices(TablesList[i], dmSysTables.sqQuery) then
-      with dmSysTables.sqQuery do
-      while not EOF do
-      begin
-        if PKName <> Trim(FieldByName('RDB$Index_name').AsString) then
-        begin
+      if fmMain.GetIndices(TablesList[i], dmSysTables.MDOQuery) then
+      with dmSysTables.MDOQuery do
+      while not EOF do begin
+        if PKName <> Trim(FieldByName('RDB$Index_name').AsString) then begin
           Line:= 'create ';
           if FieldByName('RDB$Unique_Flag').AsString = '1' then
             Line:= Line + 'Unique ';
@@ -537,14 +537,14 @@ begin
 
           Line:= Line + 'index ' + Trim(FieldByName('RDB$Index_name').AsString) + ' on ' + TablesList[i];
 
-          fmMain.GetIndexFields(TablesList[i], Trim(FieldByName('RDB$Index_Name').AsString), fmMain.SQLQuery1, FieldsList);
+          fmMain.GetIndexFields(TablesList[i], Trim(FieldByName('RDB$Index_Name').AsString), fmMain.qryMain, FieldsList);
           Line:= Line + ' (' + FieldsList.CommaText + ') ;';
           List.Add(Line);
         end;
         Next;
       end;
     end;
-    dmSysTables.sqQuery.Close;
+    dmSysTables.MDOQuery.Close;
     Result:= List.Count > 0;
   finally
     TablesList.Free;
@@ -621,7 +621,7 @@ var
   end;
 
 begin
-  TablesList:= TStringList.Create;
+  TablesList := TStringList.Create;
   try
     TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otTables, Count);
     // Get tables in dependency order - probably won't matter much in this case:
@@ -630,12 +630,12 @@ begin
     for TableCounter:= 0 to TablesList.Count - 1 do
     with dmSysTables do
     begin
-      GetTableConstraints(TablesList[TableCounter], sqQuery);
+      GetTableConstraints(TablesList[TableCounter], MDOQuery);
       FillCompositeFKConstraints(TablesList[TableCounter],ConstraintArray);
       CompositeConstraint:= '';
-      while not sqQuery.EOF do
+      while not mdoQuery.EOF do
       begin
-        ConstraintName:= sqQuery.FieldByName('ConstName').AsString;
+        ConstraintName:= MDOQuery.FieldByName('ConstName').AsString;
         CompositeCount:= GetCompositeFKConstraint(ConstraintName, ConstraintArray);
         if CompositeCount>0 then
         begin
@@ -645,8 +645,8 @@ begin
             // A new constraint just started
             CompositeConstraint:= ConstraintName;
             CompositeCounter:= 1;
-            CompositeClauseFK:= sqQuery.FieldByName('CurrentFieldName').AsString+', ';
-            CompositeClauseRef:= sqQuery.FieldByName('OtherFieldName').AsString+', ';
+            CompositeClauseFK:= MDOQuery.FieldByName('CurrentFieldName').AsString+', ';
+            CompositeClauseRef:= MDOQuery.FieldByName('OtherFieldName').AsString+', ';
           end
           else
           begin
@@ -654,43 +654,41 @@ begin
             if CompositeCounter=CompositeCount then
             begin
               // Last record for this constraint, so write out
-              CompositeClauseFK:= CompositeClauseFK + sqQuery.FieldByName('CurrentFieldName').AsString;
-              CompositeClauseRef:= CompositeClauseRef + sqQuery.FieldByName('OtherFieldName').AsString;
+              CompositeClauseFK:= CompositeClauseFK + MDOQuery.FieldByName('CurrentFieldName').AsString;
+              CompositeClauseRef:= CompositeClauseRef + MDOQuery.FieldByName('OtherFieldName').AsString;
               WriteResult(TablesList[TableCounter],
                 ConstraintName,
                 CompositeClauseFK,
                 CompositeClauseRef,
-                Trim(sqQuery.FieldByName('OtherTableName').AsString),
-                Trim(sqQuery.FieldByName('DeleteRule').AsString),
-                Trim(sqQuery.FieldByName('UpdateRule').AsString),
+                Trim(MDOQuery.FieldByName('OtherTableName').AsString),
+                Trim(MDOQuery.FieldByName('DeleteRule').AsString),
+                Trim(MDOQuery.FieldByName('UpdateRule').AsString),
                 List);
             end
             else
             begin
               // In middle of clause, so keep adding
-              CompositeClauseFK:= CompositeClauseFK + sqQuery.FieldByName('CurrentFieldName').AsString + ', ';
-              CompositeClauseRef:= CompositeClauseRef + sqQuery.FieldByName('OtherFieldName').AsString + ', ';
+              CompositeClauseFK:= CompositeClauseFK + MDOQuery.FieldByName('CurrentFieldName').AsString + ', ';
+              CompositeClauseRef:= CompositeClauseRef + MDOQuery.FieldByName('OtherFieldName').AsString + ', ';
             end;
           end;
-        end
-        else
-        begin
+        end else begin
           // Normal, non-composite foreign key which we can write out based on one record in the query
           // We're using fieldbyname here instead of fields[x] because of maintainability and probably
           // low performance impact.
           // If performance is an issue, define field variables outside the loop and reference them instead
           WriteResult(TablesList[TableCounter],
             ConstraintName,
-            Trim(sqQuery.FieldByName('CurrentFieldName').AsString),
-            Trim(sqQuery.FieldByName('OtherFieldName').AsString),
-            Trim(sqQuery.FieldByName('OtherTableName').AsString),
-            Trim(sqQuery.FieldByName('DeleteRule').AsString),
-            Trim(sqQuery.FieldByName('UpdateRule').AsString),
+            Trim(MDOQuery.FieldByName('CurrentFieldName').AsString),
+            Trim(MDOQuery.FieldByName('OtherFieldName').AsString),
+            Trim(MDOQuery.FieldByName('OtherTableName').AsString),
+            Trim(MDOQuery.FieldByName('DeleteRule').AsString),
+            Trim(MDOQuery.FieldByName('UpdateRule').AsString),
             List);
         end;
-        sqQuery.Next;
+        MDOQuery.Next;
       end;
-      sqQuery.Close;
+      MDOQuery.Close;
     end;
     Result:= List.Count > 0;
   finally

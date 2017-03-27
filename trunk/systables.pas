@@ -7,132 +7,167 @@ unit SysTables;
 interface
 
 uses
-  Classes, SysUtils, sqldb, db, IBConnection, FileUtil, LResources, Forms, Controls,
-  Dialogs, dbugintf, turbocommon, uTBTypes;
-
+  Classes, SysUtils, sqldb, db, IBConnection, FileUtil, {LResources,} Forms, Controls,
+  Dialogs, MDOQuery, MDODatabase, dbugintf, turbocommon, uTBTypes;
+{ TODO -oJKOZ -cCode Hierarchy : Convert this datamodule to a plugin and move all external data and meta data access code here. }
+{ TODO -oJKOZ -cDB Support : Move from sqldb to MDO objects, better array support. IBX4laz requires fpc3 and laz 1.6 }
 type
+  TEvsIBConnection = class(TIBConnection)
+    //Password
+  end;
 
   { TdmSysTables }
 
   TdmSysTables = class(TDataModule)
-    sqQuery: TSQLQuery;
+    IBConnection1 :TIBConnection;
+    MDODatabase1 :TMDODatabase;
+    //MDODatabase1 :TMDODatabase;
+    MDOQuery :TMDOQuery;
+    MDOTransaction :TMDOTransaction;
+    QryMain :TSQLQuery;
   private
     { private declarations }
-    ibcDatabase : TIBConnection; //Remove both.
-    stTrans     : TSQLTransaction;
+    ibcDatabase : TMDODatabase; //Remove both.
+    stTrans     : TMDOTransaction;// TSQLTransaction;
   protected
-    procedure OpenQuery(aObjectType: TObjectType);
+    procedure OpenQuery(aObjectType: TObjectType);                                                                                                     //CHECK
   public
+    { public declarations }
     // Fills array with composite (multikey) foreign key constraint names
     // and field count for specified table
     // Then use GetCompositeFKConstraint to check this array for a specified
     // constraint name
-    procedure FillCompositeFKConstraints(const TableName: string; var ConstraintsArray: TConstraintCounts);
+    procedure FillCompositeFKConstraints(const TableName: string; var ConstraintsArray: TConstraintCounts);                                            //CHECK
     // Initialize unit to work with specified database
-    procedure Init(dbIndex: Integer);overload;deprecated;//jkoz use the one with the TDatabaseRec param.
-    procedure Init(aDB: TDatabaseRec);overload;//jkoz use the one with the TDatabaseRec param.
+    procedure Init(dbIndex: Integer);overload;deprecated;//jkoz use the one with the TDBInfo param.                                                    //CHECK
+    procedure Init(aDB: TDBInfo);overload;                                                                                                             //CHECK
     // Gets list of object names that have type specified by TVIndex
     // Returns count of objects in Count
-    //function GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;overload;deprecated;
-    function GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; var aCount: Integer): string;overload; deprecated;
-    procedure GetDBObjectNames(aDatabase: TDatabaseRec; aObjectType: TObjectType; aList:TStrings);overload;
+    //function GetDBObjectNames(DatabaseIndex: integer; ObjectType: TObjectType; var Count: Integer): string;overload;deprecated 'pass the record not the index';
+    function GetServerVersion:string;                                                                                                                  //CHECK JK
+    //Find the names of the database objects;
+    //aDatabase, holds the Connect information for the database to query.
+    //aObjectType, filters the names to a specific group of objects.
+    //aCount, holds the number of names returned.
+    //the function return a CSV string with the names.
+    function GetDBObjectNames(const aDatabase: TDBInfo; aObjectType: TObjectType; var aCount: Integer): string;overload; //deprecated;                 //CHECK
+    //Find the names of the database objects;
+    //aDatabase   : holds the Connect information for the database to query.
+    //aObjectType : filters the names to a specific group of objects.
+    //aList       : is the stringlist that the procedure populates with the object names.
+    //The function returns the number of objects retreived.
+    function GetDBObjectNames(const aDatabase: TDBInfo; aObjectType: TObjectType; aList:TStrings):integer;overload;                                    //CHECK
 
     // Recalculates index statistics for all fields in database
     // Useful when a large amount of inserts/deletes may have changed the statistics
     // and indexes are not as efficient as they could be.
-    function RecalculateIndexStatistics(dbIndex: integer): boolean;
+    function RecalculateIndexStatistics(dbIndex: integer): boolean;                                                                                    //CHECK
 
     // Returns object list (list of object names, i.e. tables, views) sorted by dependency
     // Limits sorting within one category (e.g. views)
-    procedure SortDependencies(var ObjectList: TStringList);
+    procedure SortDependencies(var ObjectList: TStringList);                                                                                           //CHECK
     // Gets information on specified trigger
-    function GetTriggerInfo(DatabaseIndex: Integer; ATriggername: string;
+    function GetTriggerInfo(DatabaseIndex: Integer; ATriggername: string;                                                                              //CHECK
       var AfterBefore, OnTable, Event, Body: string; var TriggerEnabled: Boolean;
       var TriggerPosition: Integer): Boolean;
     // Scripts all check constraints for a database's tables as alter table
     // statement, adding the SQL to List
-    function ScriptCheckConstraints(dbIndex: Integer; List: TStrings): boolean;
+    function ScriptCheckConstraints(dbIndex: Integer; List: TStrings): boolean;                                                                        //CHECK
     // Script trigger creation for specified trigger
-    function ScriptTrigger(dbIndex: Integer; ATriggerName: string; List: TStrings;
-      AsCreate: Boolean = False): Boolean;
+    function ScriptTrigger(dbIndex: Integer; ATriggerName: string; List: TStrings;                                                                     //CHECK
+                           AsCreate: Boolean = False): Boolean;
     // Used e.g. in scripting foreign keys
-    function GetTableConstraints(ATableName: string; var SqlQuery: TSQLQuery;
-      ConstraintsList: TStringList = nil): Boolean;
+    function GetTableConstraints(ATableName: string; var SqlQuery: TSQLQuery;                                                                          //CHECK
+                                 ConstraintsList: TStringList = nil): Boolean;
+    function GetTableConstraints(const aTableName: string; var aSqlQry: TMDOQuery;                                                                     //CHECK
+                                 ConstraintsList: TStringList = nil): Boolean;
 
-    function GetAllConstraints(dbIndex: Integer; ConstraintsList, TablesList: TStringList): Boolean;
+    function GetAllConstraints(dbIndex: Integer; ConstraintsList, TablesList: TStringList): Boolean;                                                   //CHECK
 
     // Returns non-0 if foreign key constraint has a composite index (multiple fields)
     // Returns 0 otherwise
     // Expects array that has been filled by FillCompositeFKConstraints
-    function GetCompositeFKConstraint(const ConstraintName: string; ConstraintsArray: TConstraintCounts): integer;
+    function GetCompositeFKConstraint(const ConstraintName: string; ConstraintsArray: TConstraintCounts): integer;                                     //CHECK
 
-    function GetConstraintInfo(dbIndex: integer; ATableName, ConstraintName: string; var KeyName,
+    function GetConstraintInfo(dbIndex: integer; ATableName, ConstraintName: string; var KeyName,                                                      //CHECK
         CurrentTableName, CurrentFieldName, OtherTableName, OtherFieldName, UpdateRule, DeleteRule: string): Boolean;
 
     // Gets information about exception.
     // Returns CREATE EXCEPTION statement in SQLQuery, or
     // CREATE OR ALTER EXCEPTION if CreateOrAlter is true
-    function GetExceptionInfo(dbIndex: integer; ExceptionName: string; var Msg, Description, SqlQuery: string; CreateOrAlter: boolean): Boolean;
+    function GetExceptionInfo(dbIndex: integer; ExceptionName: string; var Msg, Description, SqlQuery: string; CreateOrAlter: boolean): Boolean;       //CHECK
     // Gets information about domain
-    procedure GetDomainInfo(dbIndex: integer; DomainName: string; var DomainType: string;
+    procedure GetDomainInfo(dbIndex: integer; DomainName: string; var DomainType: string;                                                              //CHECK
       var DomainSize: Integer; var DefaultValue: string; var CheckConstraint: string; var CharacterSet: string; var Collation: string);
-    function GetConstraintForeignKeyFields(AIndexName: string; SqlQuery: TSQLQuery): string;
+    function GetConstraintForeignKeyFields(AIndexName: string; SqlQuery: TSQLQuery): string;deprecated 'use the MDOQuery method';                      //CHECK
+    function GetConstraintForeignKeyFields(AIndexName: string; aSqlQry: TMDOQuery): string;                                                            //CHECK
 
-    function GetDBUsers(dbIndex: Integer; ObjectName: string = ''): string;
-    function GetDBObjectsForPermissions(dbIndex: Integer; AObjectType: Integer = -1): string;
-    function GetObjectUsers(dbIndex: Integer; ObjectName: string): string;
-    function GetUserObjects(dbIndex: Integer; UserName: string; AObjectType: Integer = -1): string;
+    function GetDBUsers(aDBIndex: Integer; ObjectName: string = ''): string;                                                                           //CHECK
+    function GetDBUsers(adb: TDBInfo; ObjectName: string = ''): string;                                                                                //CHECK
+    function GetDBObjectsForPermissions(dbIndex: Integer; AObjectType: Integer = -1): string;                                                          //CHECK
+    function GetObjectUsers(dbIndex: Integer; ObjectName: string): string;                                                                             //CHECK
+    function GetUserObjects(dbIndex: Integer; UserName: string; AObjectType: Integer = -1): string;                                                    //CHECK
     // Get permissions that specified user has for indicated object
-    function GetObjectUserPermission(dbIndex: Integer; ObjectName, UserName: string; var ObjType: Integer): string;
+    function GetObjectUserPermission(dbIndex: Integer; ObjectName, UserName: string; var ObjType: Integer): string;                                    //CHECK
 
     // Add field types into List
-    procedure GetBasicTypes(List: TStrings);
+    procedure GetBasicTypes(List: TStrings);                                                                                                           //CHECK
     // Gets domain types; used in addition to basic types for GUI selections
     procedure GetDomainTypes(dbIndex: Integer; List: TStrings);
-    function GetDefaultTypeSize(dbIndex: Integer; TypeName: string): Integer;
-    function GetDomainTypeSize(dbIndex: Integer; DomainTypeName: string): Integer;
+    function GetDefaultTypeSize(dbIndex: Integer; TypeName: string): Integer;                                                                          //CHECK
+    function GetDomainTypeSize(dbIndex: Integer; DomainTypeName: string): Integer;                                                                     //CHECK
 
     // Gets details of field for given database/table/field
-    function GetFieldInfo(dbIndex: Integer; TableName, FieldName: string;
-      var FieldType: string;
-      var FieldSize: integer; var FieldScale: integer;
-      var NotNull: Boolean;
-      var DefaultValue, CharacterSet, Collation, Description : string): Boolean;
+    function GetFieldInfo(dbIndex: Integer; TableName, FieldName: string; var FieldType: string;                                                       //CHECK
+                          var FieldSize: integer; var FieldScale: integer; var NotNull: Boolean;
+                          var DefaultValue, CharacterSet, Collation, Description : string): Boolean;
 
-    function GetDatabaseInfo(dbIndex: Integer; var DatabaseName, CharSet, CreationDate, ServerTime: string;
+    function GetDatabaseInfo(dbIndex: Integer; var DatabaseName, CharSet, CreationDate, ServerTime: string;                                            //CHECK
                              var ODSVerMajor, ODSVerMinor, Pages, PageSize: Integer;
                              var ProcessList: TStringList; var ErrorMsg: string): Boolean;
 
     // Gets index info for a certain database+table
-    function GetIndices(dbIndex: Integer; ATableName: string; PrimaryIndexName: string; var List: TStringList): Boolean;
+    function GetIndices(dbIndex: Integer; ATableName: string; PrimaryIndexName: string; var List: TStringList): Boolean;                               //CHECK
 
     // Gets all index info for a certain database
-    function GetAllIndices(dbIndex: Integer; List, TablesList: TStringList): Boolean;
+    function GetAllIndices(dbIndex: Integer; List, TablesList: TStringList): Boolean;                                                                  //CHECK
 
     // Gets index names associated with a primary key
-    function GetPrimaryKeyIndexName(dbIndex: Integer; ATableName: string; var ConstraintName: string): string;
+    function GetPrimaryKeyIndexName(dbIndex: Integer; ATableName: string; var ConstraintName: string): string;                                         //CHECK
 
-    function GetIndexInfo(dbIndex: Integer; ATableName, AIndexName: string;
-      var FieldsList: TStringList; var ConstraintName: string; var Unique, Ascending, IsPrimary: Boolean): Boolean;
+    function GetIndexInfo(dbIndex: Integer; ATableName, AIndexName: string;                                                                            //CHECK
+                          var FieldsList: TStringList; var ConstraintName: string;
+                          var Unique, Ascending, IsPrimary: Boolean): Boolean;
 
     // Gets field names for table
-    procedure GetTableFields(dbIndex :Integer; aTableName :string; FieldTypes : array of Integer; FieldsList :TStrings);overload; deprecated;//jkoz use the one with the DatabaseRec parameter
-    procedure GetTableFields(aDB :TDatabaseRec; aTableName :string; aFieldTypes : array of Integer; aFieldList :TStrings);overload;
-    procedure GetTableFields(aDB :TDatabaseRec; aTablename, aCondition :string; aFieldList :TStrings);overload;
+    procedure GetTableFields(dbIndex :Integer; aTableName :string; FieldTypes : array of Integer; FieldsList :TStrings);overload; deprecated'pass the dbinfo rec';//CHECK
+    procedure GetTableFields(aDB :TDBInfo; aTableName :string; aFieldTypes : array of Integer; aFieldList :TStrings);overload;                         //CHECK
+    procedure GetTableFields(aDB :TDBInfo; aTablename, aCondition :string; aFieldList :TStrings);overload;                                             //CHECK
+    procedure GetTableFields(aDB :Integer; aTablename, aCondition :string; aFieldList :TStrings);overload;                                             //CHECK
 
-    procedure GetTableNames(aDB :TDatabaseRec; aList:TStrings);
+    procedure GetTableNames(aDB :TDBInfo; aList:TStrings);                                                                                             //CHECK
 
-    function GetConstraintsOfTable(ATableName: string; var SqlQuery: TSQLQuery; ConstraintsList: TStringList=nil): Boolean;
+    procedure CreateUser      (constref aDB:TDBInfo; aUserName,aPassword,aRole:String; const aTransaction:TMDOTransaction = nil);
+    procedure GrandRolesToUser(Constref aDB:TDBInfo; aUserName, aRole:String; const aTransaction:TMDOTransaction = nil);
+    procedure DeleteUser      (constref aDB:TDBInfo; aUserName:String; const aTransaction:TMDOTransaction = nil);
+    procedure RevokeRoleFromUser(constref aDB:TDBInfo; aUserName, aRole:String; const aTransaction:TMDOTransaction = nil);
 
-    { public declarations }
-  end; 
+    function GetConstraintsOfTable(ATableName: string; const aSqlQuery: TMDOQuery; {var SqlQuery: TSQLQuery;} ConstraintsList: TStringList=nil): Boolean;//CHECK
+  end;
+
+function TestConnection(aDatabaseName, aUserName, aPassword, aRole, aCharset: string): Boolean;
+
+procedure ValidateConnection(aDatabaseName, aUserName, aPassword, aRole, aCharset: string);
 
 var
   dmSysTables: TdmSysTables;
 
 implementation
+{$R *.lfm}
+uses main, topologicalsort;
 
-uses Main, topologicalsort;
+var
+  FConnectionPool :turbocommon.TEvsConnectionPool;
 
 function DecToBin(Dec, Len: Byte): string;
 var
@@ -148,22 +183,54 @@ begin
   Result:= Temp;
 end;
 
+function TestConnection(aDatabaseName, aUserName, aPassword, aRole, aCharset :string) :Boolean;
+begin
+  Result := False;
+  try
+    ValidateConnection(aDatabaseName,aUserName,aPassword,aRole,aCharset);
+    Result := True;
+  except
+    on E: Exception do begin  //add some short of intenral errorlist that can be used to iterate the past errors?
+      if E is EIBDatabaseError then
+        SendDebug(E.Message+LineEnding+'Error Code :'+inttostr(EIBDatabaseError(E).GDSErrorCode))
+      else SendDebug(E.Message);
+    end;
+  end;
+end;
+
+procedure ValidateConnection(aDatabaseName, aUserName, aPassword, aRole, aCharset :string);
+var
+  vConn :TIBConnection;
+begin
+  vConn := TIBConnection.Create(Nil);
+  try
+      vConn.DatabaseName := aDatabaseName;
+      vConn.UserName     := aUserName;
+      vConn.Password     := aPassword;
+      vConn.CharSet      := aCharset;
+      vConn.Role         := aRole;
+      vConn.Open;
+  finally
+    vConn.Free;
+  end;
+end;
+
 { TdmSysTables }
 
 procedure TdmSysTables.Init(dbIndex: Integer);
 begin
-  //JKOZ : Deprecated and replaced will be removed in the near future.
-  // todo: first step: do not close, reopen connection if we're using the correct
-  // connection/transaction already
+  //JKOZ : Deprecated and replaced, will be removed in the near future.
+  // todo: first step: do not close, reopen Connect if we're using the correct
+  // Connect/transaction already
   //with fmMain.RegisteredDatabases[dbIndex] do
   //begin
   //  if not IBConnection.Connected then begin
-  //    IBConnection.DatabaseName:= RegRec.DatabaseName;
-  //    IBConnection.UserName:= RegRec.UserName;
-  //    IBConnection.Password:= RegRec.Password;
-  //    IBConnection.Role:= RegRec.Role;
-  //    IBConnection.CharSet:= RegRec.Charset;
-  //    IBConnection.Connected := True;
+  //    IBConnection.DatabaseName := RegRec.DatabaseName;
+  //    IBConnection.UserName     := RegRec.UserName;
+  //    IBConnection.Password     := RegRec.Password;
+  //    IBConnection.Role         := RegRec.Role;
+  //    IBConnection.CharSet      := RegRec.Charset;
+  //    IBConnection.Connected    := True;
   //  end;
   //  sqQuery.Close;
   //  ibcDatabase := IBConnection;
@@ -174,25 +241,47 @@ begin
   Init(fmMain.RegisteredDatabases[dbIndex]);
 end;
 
-procedure TdmSysTables.Init(aDB :TDatabaseRec);
+procedure TdmSysTables.Init(aDB :TDBInfo);
 begin
-  // todo: first step: do not close, reopen connection if we're using the correct
-  // connection/transaction already
-  //JKOZ : there is no way to use the wrong connection/transaction it uses the objects in the databaserec.
-  if not aDB.IBConnection.Connected then begin
-    aDB.IBConnection.DatabaseName := aDB.RegRec.DatabaseName;
-    aDB.IBConnection.UserName     := aDB.RegRec.UserName;
-    aDB.IBConnection.Password     := aDB.RegRec.Password;
-    aDB.IBConnection.Role         := aDB.RegRec.Role;
-    aDB.IBConnection.CharSet      := aDB.RegRec.Charset;
-    aDB.IBConnection.Connected    := True;
+  // todo: first step: do not close, reopen Connect if we're using the correct
+  // Connect/transaction already
+  //JKOZ : there is no way to use the wrong Connect/transaction it uses the objects in the databaserec.
+  //if ibcDatabase = aDB.IBConnection then Exit;
+
+  if not aDB.Conn.Connected then begin
+    Connect(adb.Conn, aDB.RegRec);
+    //aDB.IBConnection.DatabaseName := aDB.RegRec.DatabaseName;
+    //aDB.IBConnection.UserName     := aDB.RegRec.UserName;
+    //aDB.IBConnection.Password     := aDB.RegRec.Password;
+    //aDB.IBConnection.Role         := aDB.RegRec.Role;
+    //aDB.IBConnection.CharSet      := aDB.RegRec.Charset;
+    //aDB.IBConnection.Connected    := True;
   end;
-  sqQuery.Close;
-  ibcDatabase := aDB.IBConnection;
-  if aDB.SQLTrans.Active then aDB.SQLTrans.Active := False;
-  stTrans := aDB.SQLTrans;
-  sqQuery.DataBase    := ibcDatabase;
-  sqQuery.Transaction := stTrans;
+  MDOQuery.Close;
+  ibcDatabase := aDB.Conn;
+  if aDB.Trans.Active then aDB.Trans.Active := False;
+  stTrans := aDB.Trans;
+  MDOQuery.DataBase    := ibcDatabase;
+  MDOQuery.Transaction := stTrans;
+
+  //MDO transfer
+  if not IsConnectedTo(MDODatabase1, aDB.RegRec) then begin
+    MDODatabase1.Connected := False;
+    Connect(MDODatabase1, aDB.RegRec);
+  end;
+end;
+
+function TdmSysTables.GetServerVersion :string;
+var
+  vQry : TMDOQuery;//TSqlQuery;
+begin //fb 2.1 or newer only.
+  vQry := GetQuery(ibcDatabase, 'SELECT rdb$get_context(''SYSTEM'', ''ENGINE_VERSION'') from rdb$database;', [], stTrans);
+  try
+    vQry.Active := True;
+    Result      := vQry.Fields[0].AsString;
+  finally
+    ReleaseQuery(vQry);
+  end;
 end;
 
 (*****  GetDBObjectNames, like Table names, Triggers, Generators, etc according to TVIndex  ****)
@@ -202,46 +291,49 @@ end;
 //  GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], ObjectType, Count);
 //end;
 
-function TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; var aCount :Integer) :string;
-//var
-//  vList :TStringList;
+function TdmSysTables.GetDBObjectNames(const aDatabase :TDBInfo; aObjectType :TObjectType; var aCount :Integer) :string;
 begin
-  //vList := TStringList.Create;
-  //try
-    Init(aDatabase);
-    {$IFDEF EVS_New}
-    //GetDBObjectNames(aDatabase, aObjectType, vList);
+  Init(aDatabase);
+{$IFDEF EVS_New}
+  //GetDBObjectNames(aDatabase, aObjectType, vList);
   OpenQuery(aObjectType);
-    {$ELSE}
-    sqQuery.Close;
-    if aObjectType         = otTables then // Tables
-      sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
-                          'and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
-    else if aObjectType    = otGenerators then // Generators
-      sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
-    else if aObjectType    = otTriggers then // Triggers
-      sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
-    else if aObjectType    = otViews then // Views
-      sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
-    else if aObjectType    = otStoredProcedures then // Stored Procedures
-      sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
-    else if aObjectType    = otUDF then // UDF
-      sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
-    else if aObjectType    = otSystemTables then // System Tables
-      sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
-                          'order by RDB$RELATION_NAME'
-    else if aObjectType    = otDomains then // Domains, excluding system-defined domains
-      sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
-    else if aObjectType    = otRoles then // Roles
-      sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
-    else if aObjectType    = otExceptions then // Exceptions
-      sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
-    else if aObjectType    = otUsers then // Users
-      sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+  Result := '';
+  while not MDOQuery.EOF do begin
+    Result := Result + Trim(MDOQuery.Fields[0].AsString);
+    MDOQuery.Next;
+    if not MDOQuery.EOF then Result := Result + ',';
+  end;
+  aCount := MDOQuery.RecordCount;
+  MDOQuery.Close;
+{$ELSE}
+  sqQuery.Close;
+  if aObjectType         = otTables then // Tables
+    sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+                        'and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
+  else if aObjectType    = otGenerators then // Generators
+    sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
+  else if aObjectType    = otTriggers then // Triggers
+    sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
+  else if aObjectType    = otViews then // Views
+    sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
+  else if aObjectType    = otStoredProcedures then // Stored Procedures
+    sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
+  else if aObjectType    = otUDF then // UDF
+    sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
+  else if aObjectType    = otSystemTables then // System Tables
+    sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
+                        'order by RDB$RELATION_NAME'
+  else if aObjectType    = otDomains then // Domains, excluding system-defined domains
+    sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
+  else if aObjectType    = otRoles then // Roles
+    sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
+  else if aObjectType    = otExceptions then // Exceptions
+    sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
+  else if aObjectType    = otUsers then // Users
+    sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
 
-    sqQuery.Open;
-    sqQuery.First;
-    {$ENDIF}
+  sqQuery.Open;
+  sqQuery.First;
   while not sqQuery.EOF do begin
     Result := Result + Trim(sqQuery.Fields[0].AsString);
     sqQuery.Next;
@@ -250,12 +342,10 @@ begin
   aCount := sqQuery.RecordCount;
   sqQuery.Close;
   stTrans.Rollback;
-  //finally
-  //  vList.Free;
-  //end;
+{$ENDIF}
 end;
 
-procedure TdmSysTables.GetDBObjectNames(aDatabase :TDatabaseRec; aObjectType :TObjectType; aList :TStrings);
+function TdmSysTables.GetDBObjectNames(const aDatabase :TDBInfo; aObjectType :TObjectType; aList :TStrings) :integer;
 begin
   Init(aDatabase);
   {$IFDEF EVS_New}
@@ -291,12 +381,13 @@ begin
   sqQuery.First;
   {$ENDIF}
   aList.Clear;
-  while not sqQuery.EOF do begin
-    aList.Add(Trim(sqQuery.Fields[0].AsString));
-    sqQuery.Next;
+  while not MDOQuery.EOF do begin
+    aList.Add(Trim(MDOQuery.Fields[0].AsString));
+    MDOQuery.Next;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
   stTrans.Rollback;//no long leaved transactions please.
+  Result := aList.Count;
 end;
 
 function TdmSysTables.RecalculateIndexStatistics(dbIndex: integer): boolean;
@@ -307,7 +398,7 @@ var
 begin
   result:= false;
   Init(dbIndex);
-  sqQuery.Close;
+  MDOQuery.Close;
   Indices:= TStringList.Create;
   Tables:= TStringList.Create;
   try
@@ -326,8 +417,8 @@ begin
     for i:= 0 to Indices.Count-1 do
     begin
       stTrans.StartTransaction;
-      sqQuery.SQL.Text:= format('SET statistics INDEX %s',[Indices[i]]);
-      sqQuery.ExecSQL;
+      MDOQuery.SQL.Text:= format('SET statistics INDEX %s',[Indices[i]]);
+      MDOQuery.ExecSQL;
       { Commit after each index; no need to batch it all up in one
       big atomic transaction...}
       stTrans.Commit;
@@ -343,7 +434,7 @@ end;
 
 procedure TdmSysTables.SortDependencies(var ObjectList: TStringList);
 const
-  QueryTemplate=
+  QueryTemplate =
     'select rdb$dependent_name, ' +
     ' rdb$depended_on_name, ' +
     ' rdb$dependent_type, '+
@@ -355,32 +446,32 @@ var
 begin
   TopSort:= TTopologicalSort.Create;
   try
-    sqQuery.SQL.Text:= QueryTemplate;
-    sqQuery.Open;
+    MDOQuery.SQL.Text:= QueryTemplate;
+    MDOQuery.Open;
     // First add all objects that should end up as results without any depdencies
     for i:=0 to ObjectList.Count-1 do
     begin
       TopSort.AddNode(ObjectList[i]);
     end;
     // Now add dependencies:
-    while not sqQuery.EOF do
+    while not MDOQuery.EOF do
     begin
       for i:=0 to ObjectList.Count-1 do
       begin
-        if trim(sqQuery.FieldByName('rdb$dependent_name').AsString)=uppercase(ObjectList[i]) then
+        if trim(MDOQuery.FieldByName('rdb$dependent_name').AsString)=uppercase(ObjectList[i]) then
           begin
             // Get kind of object using dependency type in query;
             // limit to same category (i.e. all views or all stored procedures)
-            if sqQuery. FieldByName('rdb$dependent_type').AsInteger=
-              sqQuery. FieldByName('rdb$depended_on_type').AsInteger then
+            if MDOQuery. FieldByName('rdb$dependent_type').AsInteger=
+              MDOQuery. FieldByName('rdb$depended_on_type').AsInteger then
               TopSort.AddDependency(
-                trim(sqQuery.FieldByName('rdb$dependent_name').AsString),
-                trim(sqQuery.FieldByName('rdb$depended_on_name').AsString));
+                trim(MDOQuery.FieldByName('rdb$dependent_name').AsString),
+                trim(MDOQuery.FieldByName('rdb$depended_on_name').AsString));
           end;
       end;
-      sqQuery.Next;
+      MDOQuery.Next;
     end;
-    sqQuery.Close;
+    MDOQuery.Close;
     // Resulting sorted list should end up in ObjectList:
     ObjectList.Clear;
     TopSort.Sort(ObjectList);
@@ -398,8 +489,8 @@ var
 begin
   try
     Init(DatabaseIndex);
-    sqQuery.Close;
-    sqQuery.SQL.Text:= 'SELECT RDB$TRIGGER_NAME AS trigger_name, ' +
+    MDOQuery.Close;
+    MDOQuery.SQL.Text:= 'SELECT RDB$TRIGGER_NAME AS trigger_name, ' +
       '  RDB$RELATION_NAME AS table_name, ' +
       '  RDB$TRIGGER_SOURCE AS trigger_body, ' +
       '  RDB$TRIGGER_TYPE as Trigger_Type, ' +
@@ -411,12 +502,12 @@ begin
       ' FROM RDB$TRIGGERS ' +
       ' WHERE UPPER(RDB$TRIGGER_NAME)=''' + ATriggerName + ''' ';
 
-    sqQuery.Open;
-    Body:= Trim(sqQuery.FieldByName('Trigger_Body').AsString);
-    OnTable:= Trim(sqQuery.FieldByName('Table_Name').AsString);
-    TriggerEnabled:= sqQuery.FieldByName('Trigger_Enabled').AsBoolean;
-    TriggerPosition:= sqQuery.FieldByName('TPos').AsInteger;
-    Encode:= DecToBin(sqQuery.FieldByName('Trigger_Type').AsInteger + 1, 7);
+    MDOQuery.Open;
+    Body:= Trim(MDOQuery.FieldByName('Trigger_Body').AsString);
+    OnTable:= Trim(MDOQuery.FieldByName('Table_Name').AsString);
+    TriggerEnabled:= MDOQuery.FieldByName('Trigger_Enabled').AsBoolean;
+    TriggerPosition:= MDOQuery.FieldByName('TPos').AsInteger;
+    Encode:= DecToBin(MDOQuery.FieldByName('Trigger_Type').AsInteger + 1, 7);
     if Encode[7] = '1' then
       AfterBefore:= 'After'
     else
@@ -437,7 +528,7 @@ begin
       if (Encode <> '') and (Copy(Encode, Length(Encode) - 1, 2) <> '00') then
         Event:= Event + ' or ';
     end;
-    sqQuery.Close;
+    MDOQuery.Close;
     Result:= True;
   except
     on E: Exception do
@@ -466,18 +557,18 @@ begin
   List.Clear;
   try
     Init(dbIndex);
-    sqQuery.Close;
-    sqQuery.SQL.Text:= QueryTemplate;
-    sqQuery.Open;
-    while not sqQuery.EOF do
+    MDOQuery.Close;
+    MDOQuery.SQL.Text:= QueryTemplate;
+    MDOQuery.Open;
+    while not MDOQuery.EOF do
     begin
       List.Add(Format('ALTER TABLE %s ADD ',
-        [trim(sqQuery.FieldByName('rdb$relation_name').AsString)]));
+        [trim(MDOQuery.FieldByName('rdb$relation_name').AsString)]));
       // Field starts with CHECK
-      List.Add(trim(sqQuery.FieldByName('rdb$trigger_source').AsString)+';');
-      sqQuery.Next;
+      List.Add(trim(MDOQuery.FieldByName('rdb$trigger_source').AsString)+';');
+      MDOQuery.Next;
     end;
-    sqQuery.Close;
+    MDOQuery.Close;
     Result:= True;
   except
     on E: Exception do
@@ -564,13 +655,52 @@ begin
   end;
 end;
 
+function TdmSysTables.GetTableConstraints(const aTableName :string; var aSqlQry :TMDOQuery; ConstraintsList :TStringList) :Boolean;
+const
+  // Note that this query differs from the way constraints are
+  // presented in GetConstraintsOfTable.
+  // to do: find out what the differences are and indicate better in code/comments
+  QueryTemplate='select '+
+    'trim(rc.rdb$constraint_name) as ConstName, '+
+    'trim(rfc.rdb$const_name_uq) as KeyName, '+
+    'trim(rc2.rdb$relation_name) as OtherTableName, '+
+    'trim(flds_pk.rdb$field_name) as OtherFieldName, '+
+    'trim(rc.rdb$relation_name) as CurrentTableName, '+
+    'trim(flds_fk.rdb$field_name) as CurrentFieldName, '+
+    'trim(rfc.rdb$update_rule) as UpdateRule, '+
+    'trim(rfc.rdb$delete_rule) as DeleteRule '+
+    'from rdb$relation_constraints AS rc '+
+    'inner join rdb$ref_constraints as rfc on (rc.rdb$constraint_name = rfc.rdb$constraint_name) '+
+    'inner join rdb$index_segments as flds_fk on (flds_fk.rdb$index_name = rc.rdb$index_name) ' +
+    'inner join rdb$relation_constraints as rc2 on (rc2.rdb$constraint_name = rfc.rdb$const_name_uq) ' +
+    'inner join rdb$index_segments as flds_pk on ' +
+    '((flds_pk.rdb$index_name = rc2.rdb$index_name) and (flds_fk.rdb$field_position = flds_pk.rdb$field_position)) ' +
+    'where rc.rdb$constraint_type = ''FOREIGN KEY'' '+
+    'and rc.rdb$relation_name = ''%s'' '+
+    'order by rc.rdb$constraint_name, flds_fk.rdb$field_position ';
+begin
+  aSqlQry.Close;
+  aSqlQry.SQL.Text:= format(QueryTemplate, [UpperCase(ATableName)]);
+  aSqlQry.Open;
+  Result:= aSqlQry.RecordCount > 0;
+  with aSqlQry do
+    if Result and Assigned(ConstraintsList) then begin
+      First;
+      ConstraintsList.Clear;
+      while not Eof do begin
+        ConstraintsList.Add(FieldByName('ConstName').AsString);
+        Next;
+      end;
+      First;
+    end;
+end;
+
 (**********  Get Constraints for a table Info  ********************)
 
-function TdmSysTables.GetConstraintsOfTable(ATableName: string; var SqlQuery: TSQLQuery;
-   ConstraintsList: TStringList = nil): Boolean;
+function TdmSysTables.GetConstraintsOfTable(ATableName :string; const aSqlQuery :TMDOQuery; ConstraintsList :TStringList) :Boolean;
 begin
-  SqlQuery.Close;
-  SQLQuery.SQL.Text := 'select '+
+  aSqlQuery.Close;
+  aSQLQuery.SQL.Text := 'select '+
                        'trim(rc.rdb$constraint_name) as ConstName, '+
                        'trim(rfc.rdb$const_name_uq) as KeyName, '+
                        'trim(rc2.rdb$relation_name) as CurrentTableName, '+
@@ -588,9 +718,9 @@ begin
                        'where rc.rdb$constraint_type = ''FOREIGN KEY'' '+
                        'and rc2.rdb$relation_name = ''' + UpperCase(ATableName) + ''' '+
                        'order by rc.rdb$constraint_name, flds_fk.rdb$field_position ';
-  SqlQuery.Open;
-  Result:= SqlQuery.RecordCount > 0;
-  with SqlQuery do
+  aSqlQuery.Open;
+  Result:= aSqlQuery.RecordCount > 0;
+  with aSqlQuery do
   if Result and Assigned(ConstraintsList) then
   begin
     ConstraintsList.Clear;
@@ -607,8 +737,8 @@ end;
 function TdmSysTables.GetAllConstraints(dbIndex: Integer; ConstraintsList, TablesList: TStringList): Boolean;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select Trim(Refc.RDB$Constraint_Name) as ConstName, ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select Trim(Refc.RDB$Constraint_Name) as ConstName, ' +
     'Trim(Refc.RDB$CONST_NAME_UQ) as KeyName, ' +
     'Trim(Ind.RDB$Relation_Name) as CurrentTableName, ' +
     'Trim(Seg.RDB$Field_name) as CurrentFieldName, ' +
@@ -620,9 +750,9 @@ begin
     'where Con.RDB$COnstraint_Name = Refc.RDB$Const_Name_UQ ' +
     '  and Refc.RDB$COnstraint_Name = Ind.RDB$Index_Name' +
     '  and Refc.RDB$COnstraint_Name = Seg.RDB$Index_Name';
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
-  with sqQuery do
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
+  with MDOQuery do
   if Result then
   begin
     ConstraintsList.Clear;
@@ -636,43 +766,71 @@ begin
       Next;
     end;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 procedure TdmSysTables.OpenQuery(aObjectType :TObjectType);
+const
+                  //otUnknown, otTables,  otGenerators,  otTriggers, otViews,   otStoredProcedures,
+                  //otUDFs,    otDomains, otSystemTables,
+                  //otRoles,  otExceptions, otUsers,   otIndexes, otConstraints);
+
+  cObjectSQL :array[TObjectType] of string =('',                                         //otunknown
+     'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+     ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name', //tables
+
+     'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name',//generators
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '');
+
+
+{$IFDEF DEBUG}
 var
   vSQL : string;
+{$ENDIF}
 begin
-  sqQuery.Close;
+  MDOQuery.Close;
   if aObjectType         = otTables then // Tables
-    sqQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
-                        ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
+    MDOQuery.SQL.Text := 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+                         ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name'
   else if aObjectType    = otGenerators then // Generators
-    sqQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
+    MDOQuery.SQL.Text := 'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name'
   else if aObjectType    = otTriggers then // Triggers
-    sqQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
+    MDOQuery.SQL.Text := 'SELECT rdb$Trigger_Name FROM RDB$TRIGGERS WHERE RDB$SYSTEM_FLAG=0 order by rdb$Trigger_Name'
   else if aObjectType    = otViews then // Views
-    sqQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
+    MDOQuery.SQL.Text := 'SELECT DISTINCT RDB$VIEW_NAME FROM RDB$VIEW_RELATIONS order by rdb$View_Name'
   else if aObjectType    = otStoredProcedures then // Stored Procedures
-    sqQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
-  else if aObjectType    = otUDF then // UDF
-    sqQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
+    MDOQuery.SQL.Text := 'SELECT RDB$Procedure_Name FROM RDB$PROCEDURES order by rdb$Procedure_Name'
+  else if aObjectType    = otUDFs then // UDF
+    MDOQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
   else if aObjectType    = otSystemTables then // System Tables
-    sqQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
+    MDOQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
                         'order by RDB$RELATION_NAME'
   else if aObjectType    = otDomains then // Domains, excluding system-defined domains
-    sqQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
+    MDOQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
   else if aObjectType    = otRoles then // Roles
-    sqQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
+    MDOQuery.SQL.Text := 'select RDB$ROLE_NAME from RDB$ROLES order by rdb$Role_Name'
   else if aObjectType    = otExceptions then // Exceptions
-    sqQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
+    MDOQuery.SQL.Text := 'select RDB$EXCEPTION_NAME from RDB$EXCEPTIONS order by rdb$Exception_Name'
   else if aObjectType    = otUsers then // Users
-    sqQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
+    MDOQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
 
   // Save the result list as comma delimited string
-  vSQL := sqQuery.SQL.Text;
-  sqQuery.Open;
-  sqQuery.First;
+  {$IFDEF DEBUG}
+  vSQL := MDOQuery.SQL.Text;
+  {$ENDIF}
+  MDOQuery.SQL.Text := MDOQuery.SQL.Text;
+  MDOQuery.Open;
+  MDOQuery.First;
 end;
 
 procedure TdmSysTables.FillCompositeFKConstraints(const TableName: string;
@@ -696,10 +854,10 @@ const
    'having count(rfc.rdb$const_name_uq)>1 '+
    'order by rc.rdb$constraint_name ';
 var
-  CompositeQuery: TSQLQuery;
+  CompositeQuery: TMDOQuery;// TSQLQuery;
   i:integer;
 begin
-  CompositeQuery:= TSQLQuery.Create(nil);
+  CompositeQuery:= TMDOQuery.Create(nil);
   try
     CompositeQuery.DataBase:= ibcDatabase;
     CompositeQuery.Transaction:= stTrans;
@@ -750,8 +908,8 @@ function TdmSysTables.GetConstraintInfo(dbIndex :integer; ATableName, Constraint
   OtherTableName, OtherFieldName, UpdateRule, DeleteRule :string) :Boolean;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select Trim(Refc.RDB$Constraint_Name) as ConstName, Trim(Refc.RDB$CONST_NAME_UQ) as KeyName, ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select Trim(Refc.RDB$Constraint_Name) as ConstName, Trim(Refc.RDB$CONST_NAME_UQ) as KeyName, ' +
     'Trim(Ind.RDB$Relation_Name) as CurrentTableName, ' +
     'Trim(Seg.RDB$Field_name) as CurrentFieldName, ' +
     'Trim(Con.RDB$Relation_Name) as OtherTableName, ' +
@@ -764,9 +922,9 @@ begin
     '  and Refc.RDB$COnstraint_Name = Seg.RDB$Index_Name' +
     '  and Ind.RDB$Relation_Name = ' + QuotedStr(UpperCase(ATableName)) + ' ' +
     '  and Refc.RDB$Constraint_Name = ' + QuotedStr(ConstraintName);
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
-  with sqQuery do
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
+  with MDOQuery do
   if Result then
   begin
     KeyName:= FieldByName('KeyName').AsString;
@@ -777,7 +935,7 @@ begin
     UpdateRule:= FieldByName('UpdateRule').AsString;
     DeleteRule:= FieldByName('DeleteRule').AsString;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 
 end;
 
@@ -788,20 +946,20 @@ function TdmSysTables.GetExceptionInfo(dbIndex: integer; ExceptionName: string; 
 var
   CreatePart: string;
 begin
-  sqQuery.Close;
+  MDOQuery.Close;
   init(dbIndex);
-  sqQuery.SQL.Text:= 'select * from RDB$EXCEPTIONS ' +
+  MDOQuery.SQL.Text:= 'select * from RDB$EXCEPTIONS ' +
    'where RDB$EXCEPTION_NAME = ' + QuotedStr(ExceptionName);
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
   if Result then
   begin
     if CreateOrAlter then
       CreatePart:= 'CREATE OR ALTER EXCEPTION ' {Since Firebird 2.0; create or replace existing}
     else
       CreatePart:= 'CREATE EXCEPTION ';
-    Msg:= sqQuery.FieldByName('RDB$MESSAGE').AsString;
-    Description:= sqQuery.FieldByName('RDB$DESCRIPTION').AsString;
+    Msg:= MDOQuery.FieldByName('RDB$MESSAGE').AsString;
+    Description:= MDOQuery.FieldByName('RDB$DESCRIPTION').AsString;
     SqlQuery:= CreatePart + ExceptionName + LineEnding +
       QuotedStr(Msg) + ';';
     if Description<>'' then
@@ -810,7 +968,7 @@ begin
         'RDB$DESCRIPTION = ''' + Description + ''' ' + LineEnding +
         'where RDB$EXCEPTION_NAME = ''' + ExceptionName + ''';';
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 
@@ -840,30 +998,30 @@ const
     'where f.rdb$field_name=''%s'' ';
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= format(QueryTemplate, [UpperCase(DomainName)]);
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= format(QueryTemplate, [UpperCase(DomainName)]);
   {$IFDEF NEVER}
   // Left for debugging
-  SendDebug(sqQuery.SQL.Text);
+  SendDebug(MDOQuery.SQL.Text);
   {$ENDIF}
-  sqQuery.Open;
+  MDOQuery.Open;
 
-  if sqQuery.RecordCount > 0 then
+  if MDOQuery.RecordCount > 0 then
   begin
-    DomainType:= GetFBTypeName(sqQuery.FieldByName('RDB$FIELD_TYPE').AsInteger,
-      sqQuery.FieldByName('RDB$FIELD_SUB_TYPE').AsInteger,
-      sqQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger,
-      sqQuery.FieldByName('RDB$FIELD_PRECISION').AsInteger,
-      sqQuery.FieldByName('RDB$FIELD_SCALE').AsInteger);
-    DomainSize:= sqQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger;
-    DefaultValue:= trim(sqQuery.FieldByName('RDB$DEFAULT_SOURCE').AsString);
-    CheckConstraint:= trim(sqQuery.FieldByName('RDB$VALIDATION_SOURCE').AsString); //e.g. CHECK (VALUE > 10000 AND VALUE <= 2000000)
-    CharacterSet:= trim(sqQuery.FieldByName('rdb$character_set_name').AsString);
-    Collation:= trim(sqQuery.FieldByName('rdb$collation_name').AsString);
+    DomainType:= GetFBTypeName(MDOQuery.FieldByName('RDB$FIELD_TYPE').AsInteger,
+      MDOQuery.FieldByName('RDB$FIELD_SUB_TYPE').AsInteger,
+      MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger,
+      MDOQuery.FieldByName('RDB$FIELD_PRECISION').AsInteger,
+      MDOQuery.FieldByName('RDB$FIELD_SCALE').AsInteger);
+    DomainSize:= MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger;
+    DefaultValue:= trim(MDOQuery.FieldByName('RDB$DEFAULT_SOURCE').AsString);
+    CheckConstraint:= trim(MDOQuery.FieldByName('RDB$VALIDATION_SOURCE').AsString); //e.g. CHECK (VALUE > 10000 AND VALUE <= 2000000)
+    CharacterSet:= trim(MDOQuery.FieldByName('rdb$character_set_name').AsString);
+    Collation:= trim(MDOQuery.FieldByName('rdb$collation_name').AsString);
   end
   else
     DomainSize:= 0;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 
@@ -885,11 +1043,30 @@ begin
   SQLQuery.Close;
 end;
 
+function TdmSysTables.GetConstraintForeignKeyFields(AIndexName :string; aSqlQry :TMDOQuery) :string;
+begin
+  aSqlQry.Close;
+  aSqlQry.SQL.Text:= 'select RDB$Index_Name as IndexName, RDB$Field_name as FieldName from RDB$INDEX_SEGMENTS ' +
+                     'where RDB$Index_name = ' + QuotedStr(UpperCase(Trim(AIndexName)));
+  aSqlQry.Open;
+  while not aSqlQry.EOF do begin
+    Result:= Result + Trim(aSqlQry.FieldByName('FieldName').AsString);
+    aSqlQry.Next;
+    if not aSqlQry.EOF then
+      Result:= Result + ',';
+  end;
+  aSqlQry.Close;
+end;
+
 
 (************  Get Database Users  ************)
 
-function TdmSysTables.GetDBUsers(dbIndex: Integer; ObjectName: string = ''): string;
+function TdmSysTables.GetDBUsers(aDBIndex: Integer; ObjectName: string = ''): string;
 begin
+  {$IFDEF EVS_New}
+    GetDBUsers(fmMain.RegisteredDatabases[aDBIndex]);
+  {$ENDIF}
+  {$IFDEF EVS_OLD}
   Init(dbIndex);
   sqQuery.Close;
   sqQuery.SQL.Text:= 'select distinct RDB$User, RDB$User_Type from RDB$USER_PRIVILEGES ';
@@ -907,6 +1084,28 @@ begin
       Result:= Result + ',';
   end;
   sqQuery.Close;
+  {$ENDIF}
+end;
+
+function TdmSysTables.GetDBUsers(adb :TDBInfo; ObjectName :string) :string;
+begin
+  Init(aDB);
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select distinct RDB$User, RDB$User_Type from RDB$USER_PRIVILEGES ';
+  if ObjectName <> '' then // Specify specific Object
+    MDOQuery.SQL.Add('where RDB$Relation_Name = ' + QuotedStr(UpperCase(ObjectName)));
+  MDOQuery.SQL.Add('order by RDB$User_Type');
+  MDOQuery.Open;
+  while not MDOQuery.EOF do
+  begin
+    if MDOQuery.Fields[1].AsInteger = 13 then // Role
+      Result:= Result + '<R>';
+    Result:= Result + Trim(MDOQuery.Fields[0].Text);
+    MDOQuery.Next;
+    if not MDOQuery.EOF then
+      Result:= Result + ',';
+  end;
+  MDOQuery.Close;
 end;
 
 
@@ -915,32 +1114,32 @@ end;
 function TdmSysTables.GetDBObjectsForPermissions(dbIndex: Integer; AObjectType: Integer = -1): string;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select distinct RDB$Relation_Name, RDB$Object_Type from RDB$USER_PRIVILEGES ';
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select distinct RDB$Relation_Name, RDB$Object_Type from RDB$USER_PRIVILEGES ';
   if AObjectType <> -1 then
-    sqQuery.SQL.Add('where RDB$Object_Type = ' + IntToStr(AObjectType));
-  sqQuery.SQL.Add(' order by RDB$Object_Type');
-  sqQuery.Open;
-  while not sqQuery.EOF do
+    MDOQuery.SQL.Add('where RDB$Object_Type = ' + IntToStr(AObjectType));
+  MDOQuery.SQL.Add(' order by RDB$Object_Type');
+  MDOQuery.Open;
+  while not MDOQuery.EOF do
   begin
-    if Pos('$', sqQuery.Fields[0].AsString) = 0 then
+    if Pos('$', MDOQuery.Fields[0].AsString) = 0 then
     begin
       if AObjectType = -1 then
-      case sqQuery.Fields[1].AsInteger of
+      case MDOQuery.Fields[1].AsInteger of
         0: Result:= Result + '<T>'; // Table/View
         5: Result:= Result + '<P>'; // Procedure
         13: Result:= Result + '<R>'; // Role
       end;
-      Result:= Result + Trim(sqQuery.Fields[0].Text);
-      sqQuery.Next;
-      if not sqQuery.EOF then
+      Result:= Result + Trim(MDOQuery.Fields[0].Text);
+      MDOQuery.Next;
+      if not MDOQuery.EOF then
         Result:= Result + ',';
 
     end
     else
-      sqQuery.Next;
+      MDOQuery.Next;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 (************  Get Object Users ************)
@@ -948,21 +1147,21 @@ end;
 function TdmSysTables.GetObjectUsers(dbIndex: Integer; ObjectName: string): string;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select distinct RDB$User, RDB$User_Type from RDB$USER_PRIVILEGES  ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select distinct RDB$User, RDB$User_Type from RDB$USER_PRIVILEGES  ' +
     'where RDB$Relation_Name = ' + QuotedStr(ObjectName);
-  sqQuery.Open;
-  while not sqQuery.EOF do
+  MDOQuery.Open;
+  while not MDOQuery.EOF do
   begin
-      if sqQuery.Fields[1].AsInteger = 13 then // Role
+      if MDOQuery.Fields[1].AsInteger = 13 then // Role
         Result:= Result + '<R>';
-      Result:= Result + Trim(sqQuery.Fields[0].Text);
+      Result:= Result + Trim(MDOQuery.Fields[0].Text);
 
-      sqQuery.Next;
-      if not sqQuery.EOF then
+      MDOQuery.Next;
+      if not MDOQuery.EOF then
         Result:= Result + ',';
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 (************  Get Users Objects ************)
@@ -970,25 +1169,25 @@ end;
 function TdmSysTables.GetUserObjects(dbIndex: Integer; UserName: string; AObjectType: Integer = -1): string;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select distinct RDB$Relation_Name, RDB$Grant_Option from RDB$USER_PRIVILEGES  ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select distinct RDB$Relation_Name, RDB$Grant_Option from RDB$USER_PRIVILEGES  ' +
     'where RDB$User = ''' + UserName + ''' ';
   if AObjectType <> -1 then
-    sqQuery.SQL.Add(' and RDB$Object_Type = ' + IntToStr(AObjectType));
-  sqQuery.SQL.Add(' order by RDB$Object_Type');
-  sqQuery.Open;
+    MDOQuery.SQL.Add(' and RDB$Object_Type = ' + IntToStr(AObjectType));
+  MDOQuery.SQL.Add(' order by RDB$Object_Type');
+  MDOQuery.Open;
   Result:= '';
-  while not sqQuery.EOF do
+  while not MDOQuery.EOF do
   begin
-    if sqQuery.FieldByName('RDB$Grant_Option').AsInteger <> 0 then
+    if MDOQuery.FieldByName('RDB$Grant_Option').AsInteger <> 0 then
       Result:= Result + '<G>';
-    Result:= Result + Trim(sqQuery.Fields[0].Text);
+    Result:= Result + Trim(MDOQuery.Fields[0].Text);
 
-    sqQuery.Next;
-    if not sqQuery.EOF then
+    MDOQuery.Next;
+    if not MDOQuery.EOF then
       Result:= Result + ',';
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 
@@ -998,26 +1197,26 @@ function TdmSysTables.GetObjectUserPermission(dbIndex: Integer; ObjectName, User
   var ObjType: Integer): string;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select * from RDB$User_Privileges ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select * from RDB$User_Privileges ' +
     'where RDB$Relation_Name = ' + QuotedStr(ObjectName) + ' ' +
     'and RDB$User = ' + QuotedStr(UserName);
-  sqQuery.Open;
+  MDOQuery.Open;
   Result:= '';
-  if sqQuery.RecordCount >  0 then
+  if MDOQuery.RecordCount >  0 then
   begin
-    ObjType:= sqQuery.FieldByName('RDB$Object_Type').AsInteger;
-    while not sqQuery.EOF do
+    ObjType:= MDOQuery.FieldByName('RDB$Object_Type').AsInteger;
+    while not MDOQuery.EOF do
     begin
-      Result:= Result + Trim(sqQuery.FieldByName('RDB$Privilege').AsString);
-      if sqQuery.FieldByName('RDB$Grant_Option').AsInteger <> 0 then
+      Result:= Result + Trim(MDOQuery.FieldByName('RDB$Privilege').AsString);
+      if MDOQuery.FieldByName('RDB$Grant_Option').AsInteger <> 0 then
         Result:= Result + 'G';
-      sqQuery.Next;
-      if not sqQuery.EOF then
+      MDOQuery.Next;
+      if not MDOQuery.EOF then
         Result:= Result + ',';
     end;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 procedure TdmSysTables.GetBasicTypes(List: TStrings);
@@ -1087,7 +1286,7 @@ function TdmSysTables.GetFieldInfo(dbIndex: Integer; TableName, FieldName: strin
   var DefaultValue, CharacterSet, Collation, Description : string): Boolean;
 begin
   Init(dbIndex);
-  sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
+  MDOQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
                      'r.RDB$DESCRIPTION AS field_description, ' +
                      'r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL text for default value}+
                      'r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
@@ -1109,11 +1308,11 @@ begin
                      'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
                      'WHERE r.RDB$RELATION_NAME=''' + TableName + '''  and Trim(r.RDB$FIELD_NAME) = ''' + UpperCase(FieldName) + ''' ' +
                      'ORDER BY r.RDB$FIELD_POSITION ';
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
   if Result then
   begin
-    with sqQuery do
+    with MDOQuery do
     begin
       //todo: harmonize with implementation in turbocommon
       if (FieldByName('field_source').IsNull) or
@@ -1152,7 +1351,7 @@ begin
       Description  := trim(FieldByName('field_description').AsString);
     end;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 function TdmSysTables.GetDatabaseInfo(dbIndex: Integer; var DatabaseName, CharSet, CreationDate, ServerTime: string;
@@ -1162,39 +1361,39 @@ begin
   try
     Init(dbIndex);
     stTrans.Commit;
-    sqQuery.SQL.Text := 'select * from RDB$DATABASE';
-    sqQuery.Open;
-    CharSet := sqQuery.fieldbyName('RDB$Character_Set_Name').AsString;
-    sqQuery.Close;
+    MDOQuery.SQL.Text := 'select * from RDB$DATABASE';
+    MDOQuery.Open;
+    CharSet := MDOQuery.fieldbyName('RDB$Character_Set_Name').AsString;
+    MDOQuery.Close;
 
-    sqQuery.SQL.Text:= 'select * from MON$DATABASE';
-    sqQuery.Open;
-    DatabaseName := sqQuery.FieldByName('MON$Database_Name').AsString;
-    PageSize     := sqQuery.FieldByName('MON$Page_Size').AsInteger;
-    ODSVerMajor  := sqQuery.FieldByName('MON$ODS_Major').AsInteger;
-    ODSVerMinor  := sqQuery.FieldByName('MON$ODS_Minor').AsInteger;
-    CreationDate := Trim(sqQuery.FieldByName('MON$Creation_Date').AsString);
-    Pages        := sqQuery.FieldByName('MON$Pages').AsInteger;
-    sqQuery.Close;
+    MDOQuery.SQL.Text:= 'select * from MON$DATABASE';
+    MDOQuery.Open;
+    DatabaseName := MDOQuery.FieldByName('MON$Database_Name').AsString;
+    PageSize     := MDOQuery.FieldByName('MON$Page_Size').AsInteger;
+    ODSVerMajor  := MDOQuery.FieldByName('MON$ODS_Major').AsInteger;
+    ODSVerMinor  := MDOQuery.FieldByName('MON$ODS_Minor').AsInteger;
+    CreationDate := Trim(MDOQuery.FieldByName('MON$Creation_Date').AsString);
+    Pages        := MDOQuery.FieldByName('MON$Pages').AsInteger;
+    MDOQuery.Close;
 
     // Attached clients
-    sqQuery.SQL.Text:= 'select * from MON$ATTACHMENTS';
+    MDOQuery.SQL.Text:= 'select * from MON$ATTACHMENTS';
     if ProcessList = nil then ProcessList:= TStringList.Create;
-    sqQuery.Open;
-    with sqQuery do
+    MDOQuery.Open;
+    with MDOQuery do
     while not EOF do begin
       ProcessList.Add('Host: ' + Trim(FieldByName('MON$Remote_Address').AsString) +
                       ' User: ' + Trim(FieldByName('Mon$User').AsString)  +
                       ' Process: ' + Trim(FieldByName('Mon$Remote_Process').AsString));
       Next;
     end;
-    sqQuery.Close;
+    MDOQuery.Close;
 
     // Server time
-    sqQuery.SQL.Text := 'select current_timestamp from RDB$Database';
-    sqQuery.Open;
-    ServerTime := sqQuery.Fields[0].AsString;
-    sqQuery.Close;
+    MDOQuery.SQL.Text := 'select current_timestamp from RDB$Database';
+    MDOQuery.Open;
+    ServerTime := MDOQuery.Fields[0].AsString;
+    MDOQuery.Close;
     Result := True;
   except
     on E: Exception do
@@ -1209,12 +1408,12 @@ function TdmSysTables.GetIndices(dbIndex: Integer; ATableName: string; PrimaryIn
   var List: TStringList): Boolean;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'SELECT * FROM RDB$INDICES WHERE RDB$RELATION_NAME=''' + UpperCase(ATableName) +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'SELECT * FROM RDB$INDICES WHERE RDB$RELATION_NAME=''' + UpperCase(ATableName) +
                      ''' AND RDB$FOREIGN_KEY IS NULL';
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
-  with sqQuery do
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
+  with MDOQuery do
   if Result then
   begin
     while not Eof do begin
@@ -1223,7 +1422,7 @@ begin
       Next;
     end;
   end;
-  sqQuery.Close
+  MDOQuery.Close
 end;
 
 function TdmSysTables.GetAllIndices(dbIndex: Integer; List, TablesList: TStringList): Boolean;
@@ -1233,13 +1432,13 @@ const
     'and RDB$system_flag = 0';
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= SQL;
-  sqQuery.Open;
-  Result:= sqQuery.RecordCount > 0;
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= SQL;
+  MDOQuery.Open;
+  Result:= MDOQuery.RecordCount > 0;
   List.Clear;
   if TablesList <> nil then TablesList.Clear;
-  with sqQuery do
+  with MDOQuery do
   if Result then begin
     while not Eof do begin
       List.Add(Trim(Fields[0].AsString));
@@ -1248,31 +1447,31 @@ begin
       Next;
     end;
   end;
-  sqQuery.Close
+  MDOQuery.Close
 end;
 
 function TdmSysTables.GetPrimaryKeyIndexName(dbIndex: Integer; ATableName: string; var ConstraintName: string): string;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'select RDB$Index_name, RDB$Constraint_Name from RDB$RELATION_CONSTRAINTS ' +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'select RDB$Index_name, RDB$Constraint_Name from RDB$RELATION_CONSTRAINTS ' +
                      'where RDB$Relation_Name = ''' + UpperCase(ATableName) +
                      ''' and RDB$Constraint_Type = ''PRIMARY KEY'' ';
-  sqQuery.Open;
-  if sqQuery.RecordCount > 0 then begin
-    Result:= Trim(sqQuery.Fields[0].AsString);
-    ConstraintName:= Trim(sqQuery.Fields[1].AsString);
+  MDOQuery.Open;
+  if MDOQuery.RecordCount > 0 then begin
+    Result:= Trim(MDOQuery.Fields[0].AsString);
+    ConstraintName:= Trim(MDOQuery.Fields[1].AsString);
   end else
     Result:= '';
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 function TdmSysTables.GetIndexInfo(dbIndex: Integer; ATableName, AIndexName: string;
   var FieldsList: TStringList; var ConstraintName: string; var Unique, Ascending, IsPrimary: Boolean): Boolean;
 begin
   Init(dbIndex);
-  sqQuery.Close;
-  sqQuery.SQL.Text:= 'SELECT RDB$Indices.*, RDB$INDEX_SEGMENTS.RDB$FIELD_NAME AS field_name, ' + LineEnding +
+  MDOQuery.Close;
+  MDOQuery.SQL.Text:= 'SELECT RDB$Indices.*, RDB$INDEX_SEGMENTS.RDB$FIELD_NAME AS field_name, ' + LineEnding +
                      'RDB$INDICES.RDB$DESCRIPTION AS description, ' + LineEnding +
                      '(RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION + 1) AS field_position, ' + LineEnding +
                      'RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE as IndexType, ' + LineEnding +
@@ -1284,22 +1483,22 @@ begin
                      ' WHERE UPPER(RDB$INDICES.RDB$RELATION_NAME)=''' + UpperCase(ATablename) + '''         -- table name ' + LineEnding +
                      '  AND UPPER(RDB$INDICES.RDB$INDEX_NAME)=''' + UpperCase(AIndexName) + ''' ' + LineEnding +
                      'ORDER BY RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION;';
-  sqQuery.Open;
-  Result:= sqQuery.FieldCount > 0;
+  MDOQuery.Open;
+  Result:= MDOQuery.FieldCount > 0;
   if Result then
   begin
-    Unique         := sqQuery.FieldByName('RDB$Unique_Flag').AsString = '1';
-    Ascending      := sqQuery.FieldByName('RDB$Index_Type').AsString <> '1';
-    IsPrimary      := Trim(sqQuery.FieldByName('IndexType').AsString) = 'PRIMARY KEY';
-    ConstraintName := Trim(sqQuery.FieldByName('ConstraintName').AsString);
+    Unique         := MDOQuery.FieldByName('RDB$Unique_Flag').AsString = '1';
+    Ascending      := MDOQuery.FieldByName('RDB$Index_Type').AsString <> '1';
+    IsPrimary      := Trim(MDOQuery.FieldByName('IndexType').AsString) = 'PRIMARY KEY';
+    ConstraintName := Trim(MDOQuery.FieldByName('ConstraintName').AsString);
   end;
   FieldsList.Clear;
   if Result then
-  while not sqQuery.EOF do begin
-    FieldsList.Add(Trim(sqQuery.FieldByName('field_name').AsString));
-    sqQuery.Next;
+  while not MDOQuery.EOF do begin
+    FieldsList.Add(Trim(MDOQuery.FieldByName('field_name').AsString));
+    MDOQuery.Next;
   end;
-  sqQuery.Close;
+  MDOQuery.Close;
 end;
 
 procedure TdmSysTables.GetTableFields(dbIndex :Integer; aTableName :string; FieldTypes :array of Integer; FieldsList :TStrings);
@@ -1309,7 +1508,7 @@ begin
   //Jkoz : Deprecate and replaced.
   //
   //Init(dbIndex);
-  //sqQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
+  //MDOQuery.SQL.Text:= 'SELECT r.RDB$FIELD_NAME AS field_name, ' +
   //    ' r.RDB$DESCRIPTION AS field_description, ' +
   //    ' r.RDB$DEFAULT_SOURCE AS field_default_source, ' {SQL source for default value}+
   //    ' r.RDB$NULL_FLAG AS field_not_null_constraint, ' +
@@ -1330,26 +1529,28 @@ begin
   //    ' LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
   //    ' WHERE r.RDB$RELATION_NAME=''' + ATableName + '''  ' +
   //    ' ORDER BY r.RDB$FIELD_POSITION;';
-  //sqQuery.Open;
+  //MDOQuery.Open;
   //FieldsList.Clear;
-  //while not sqQuery.EOF do
+  //while not MDOQuery.EOF do
   //begin
-  //  FieldName:= Trim(sqQuery.FieldByName('field_name').AsString);
+  //  FieldName:= Trim(MDOQuery.FieldByName('field_name').AsString);
   //  if FieldsList.IndexOf(FieldName) = -1 then
   //    FieldsList.Add(FieldName);
-  //  sqQuery.Next;
+  //  MDOQuery.Next;
   //end;
-  //sqQuery.Close;
+  //MDOQuery.Close;
   GetTableFields(fmMain.RegisteredDatabases[dbIndex], ATableName, FieldTypes, FieldsList);
 end;
 
-procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; aTableName :string; aFieldTypes :array of Integer; aFieldList :TStrings);
+procedure TdmSysTables.GetTableFields(aDB :TDBInfo; aTableName :string; aFieldTypes :array of Integer; aFieldList :TStrings);
 var
   FieldName :string;
   vFldType  :TField;
   vSubType  :TField;
-  vQry      :TSQLQuery;
-
+  vQry      :TMDOQuery;
+  vSQL      :string;
+  vTypes    :String;
+  vCntr     :Integer;
   function FieldAccepted:Boolean;
   var
     vCntr :Integer;
@@ -1365,9 +1566,9 @@ var
   end;
 
 begin
-  vQry := GetQuery(aDB.IBConnection); //Init(aDB);
+  vQry := GetQuery(aDB.Conn); //Init(aDB);
   try
-    vQry.SQL.Text := 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
+    vSQL := 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
                      'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
                      'r.RDB$DEFAULT_SOURCE AS '        + cFldDefSource   + ', ' + {SQL source for default value}
                      'r.RDB$NULL_FLAG AS '             + cFldNullFlag     + ', ' +
@@ -1386,8 +1587,15 @@ begin
                      'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
                      'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
                      'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
-                     'WHERE r.RDB$RELATION_NAME=''' + aTableName + '''  ' +
-                     'ORDER BY r.RDB$FIELD_POSITION;';
+                     'WHERE r.RDB$RELATION_NAME=''' + aTableName + '''  ';
+    if Length(aFieldTypes) > 0 then begin
+      for vCntr := low(aFieldTypes) to High(aFieldTypes) do begin
+        vTypes := vTypes+IntToStr(aFieldTypes[vCntr]);
+        if vCntr < High(aFieldTypes) then vTypes := vTypes+',';
+      end;
+      vSQL := vSQL+' and ' +cFldType+' in [' + vTypes + '] ';
+    end;
+    vQry.SQL.Text := vSQL + 'ORDER BY r.RDB$FIELD_POSITION;';
     vQry.Open;
     try
       vFldType := vQry.FieldByName(cfldType);
@@ -1409,11 +1617,11 @@ begin
   end;
 end;
 
-procedure TdmSysTables.GetTableFields(aDB :TDatabaseRec; aTablename, aCondition :string; aFieldList :TStrings);
+procedure TdmSysTables.GetTableFields(aDB :TDBInfo; aTablename, aCondition :string; aFieldList :TStrings);
 var
   vFieldName :string;
   vFldType  :TField;
-  vQry      :TSQLQuery;
+  vQry      :TMDOQuery;
 
   function ConditionStr(aCond :string):string;
   begin
@@ -1423,7 +1631,7 @@ var
 
 begin
   //Init(aDB);
-  vQry := GetQuery(aDB.IBConnection);
+  vQry := GetQuery(aDB.Conn);
   try
     vQry.SQL.Text := 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
                      'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
@@ -1444,7 +1652,7 @@ begin
                      'LEFT JOIN RDB$COLLATIONS coll ON f.RDB$COLLATION_ID = coll.RDB$COLLATION_ID ' +
                      'LEFT JOIN RDB$CHARACTER_SETS cset ON f.RDB$CHARACTER_SET_ID = cset.RDB$CHARACTER_SET_ID ' +
                      'LEFT JOIN RDB$FIELD_DIMENSIONS dim on f.RDB$FIELD_NAME = dim.RDB$FIELD_NAME '+
-                     'WHERE r.RDB$RELATION_NAME= ' + QuotedStr(ATableName) + ConditionStr(aCondition) +
+                     'WHERE r.RDB$RELATION_NAME= ' + QuotedStr(ATableName) + ' ' + ConditionStr(aCondition) +
                      'ORDER BY r.RDB$FIELD_POSITION;';
     vQry.Open;
     vFldType := vQry.FieldByName(cfldType);
@@ -1461,13 +1669,52 @@ begin
   end;
 end;
 
-procedure TdmSysTables.GetTableNames(aDB :TDatabaseRec; aList :TStrings);
+procedure TdmSysTables.GetTableFields(aDB :Integer; aTablename, aCondition :string; aFieldList :TStrings);
+begin
+  GetTableFields(fmMain.RegisteredDatabases[aDB],aTablename, aCondition, aFieldList);
+end;
+
+procedure TdmSysTables.GetTableNames(aDB :TDBInfo; aList :TStrings);
+begin
+  GetDBObjectNames(aDB, otTables, aList);
+end;
+
+procedure TdmSysTables.CreateUser(constref aDB :TDBInfo; aUserName, aPassword, aRole :String; const aTransaction :TMDOTransaction);
+begin
+  SQLExecute(aDB, 'Create user %S password %S', [aUserName, QuotedStr(aPassword)]);
+  if Trim(aRole) <> '' then GrandRolesToUser(aDB, aUserName, aRole);
+end;
+
+procedure TdmSysTables.GrandRolesToUser(Constref aDB :TDBInfo; aUserName, aRole :String; const aTransaction:TMDOTransaction = nil);
+var
+  vList:TStringArray;
+  vStr:string;
+begin
+  if CharCount(';',aRole)>1 then begin
+    vList := Split(aRole,';');
+    for vStr in vList do begin
+      SQLExecute(aDB,'grant %S to %S ',[aUserName, vStr], aTransaction);
+    end;
+  end else begin
+    vStr := trim(aRole);
+    if vStr[Length(vStr)] = ';' then SetLength(vStr,Length(vStr)-1);
+    SQLExecute(aDB,'grant %S to %S ',[aUserName, vStr]);
+  end;
+
+end;
+
+procedure TdmSysTables.DeleteUser(constref aDB :TDBInfo; aUserName :String; const aTransaction :TMDOTransaction);
 begin
 
 end;
 
-initialization
-  {$I systables.lrs}
+procedure TdmSysTables.RevokeRoleFromUser(constref aDB :TDBInfo; aUserName, aRole :String; const aTransaction :TMDOTransaction);
+begin
+
+end;
+
+//initialization
+//  {$I systables.lrs}
 
 end.
 

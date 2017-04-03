@@ -887,7 +887,7 @@ begin
     (IsFieldDomainSystemGenerated(trim(FieldQuery.FieldByname('field_source').AsString))) then
   begin
     // Field type is not based on a domain but a standard SQL type
-    FieldType:= GetFBTypeName(FieldQuery.FieldByName('field_type_int').AsInteger,
+    FieldType := GetFBTypeName(FieldQuery.FieldByName('field_type_int').AsInteger,
       FieldQuery.FieldByName('field_sub_type').AsInteger,
       FieldQuery.FieldByName('field_length').AsInteger,
       FieldQuery.FieldByName('field_precision').AsInteger,

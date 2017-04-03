@@ -36,6 +36,7 @@ function NewSalt:TByteArray;unimplemented;
 implementation
 const
   cCfgExt = '.cfg';
+  cRegExt = '.Reg';
 
 function GetRegistryFileName :String;
 begin
@@ -44,7 +45,9 @@ begin
   end else begin
     Result := ExtractFileNameOnly(ParamStr(0));
   end;
-  ChangeFileExt(Result,'.reg');
+  if ExtractFileExt(Result) <> '' then
+    ChangeFileExt(Result,'.reg')
+  else Result := Result + cRegExt;
 end;
 
 function GetEncryptionPassword:string;

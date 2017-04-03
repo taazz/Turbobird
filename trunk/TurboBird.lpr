@@ -20,7 +20,7 @@ uses
   fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, turbocommon, csvdocument, uTBDBRegistry, dbInfo, main, QueryWindow, Reg, UDFInfo, About,
   BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec, EditTable, EnterPass, NewConstraint,
   NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions, uTBOptionsform, ViewDomain, ViewGen,
-  ViewSProc, ViewTrigger, ViewView, ufrFontEditor;
+  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema;
 
 const
   Major   = 1;
@@ -43,7 +43,7 @@ const
 
 var
   SAbout             :TfmAbout;
-  ErrorMessage       :string;
+  ErrorMessage       :widestring;
   IBaseLibraryHandle :TLibHandle;
   {$IFDEF UNIX}
   SLib : TSQLDBLibraryLoader;

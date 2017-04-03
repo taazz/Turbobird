@@ -158,7 +158,6 @@ object fmCreateUser: TfmCreateUser
     EchoMode = emPassword
     PasswordChar = '*'
     TabOrder = 1
-    Text = '123123123'
   end
   object cxGrantRole: TCheckBox
     Left = 7

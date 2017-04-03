@@ -47,7 +47,7 @@ move to a firebird specific unit }
 uses
   Classes, SysUtils, Menus, sqldb, memds, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls, Reg, QueryWindow, Grids, ExtCtrls, TableManage,
   Buttons, ActnList, dbugintf, turbocommon, IBConnection, Clipbrd, MDOQuery, MDODatabase, MDO, MDOServices, MDOCustomDataSet, MDODatabaseInfo,
-  uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, typinfo, importtable;
+  uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, typinfo, importtable, dbInfo;
 
 type
   //TDBInfo = record
@@ -79,7 +79,7 @@ type
     actFontEditor           :TAction;
     actAbout                :TAction;
     actBackupDB             :TAction;
-    actQuery :TAction;
+    actQuery                :TAction;
     actOptions              :TAction;
     actRefre                :TAction;
     actRefresh              :TAction;
@@ -92,8 +92,8 @@ type
     editorFontDialog        :TFontDialog;
     Image2                  :TImage;
     ImageList1              :TImageList;
-    MDODatabase1 :TMDODatabase;
-    mniDummy :TMenuItem;
+    MDODatabase1            :TMDODatabase;
+    mniDummy                :TMenuItem;
     qryMain                 :TMDOQuery;
     MenuImageList22         :TImageList;
     MainMenu2               :TMainMenu;
@@ -204,8 +204,8 @@ type
     StatusBar1              :TStatusBar;
     tbMain                  :TTabSheet;
     TBarImages32            :TImageList;
-    ToolButton1 :TToolButton;
-    ToolButton2 :TToolButton;
+    ToolButton1             :TToolButton;
+    ToolButton2             :TToolButton;
     ToolButton3             :TToolButton;
     tvMain                  :TTreeView;
     procedure actExitExecute      (Sender :TObject);
@@ -402,7 +402,7 @@ implementation
 uses CreateDb, ViewView, ViewTrigger, ViewSProc, ViewGen, NewTable, NewGen,
      EnterPass, CreateTrigger, EditTable, CallProc, EditDataFullRec, UDFInfo, ViewDomain,
      NewDomain, SysTables, Scriptdb, UserPermissions, BackupRestore, UnitFirebirdServices, CreateUser, ChangePass,
-     PermissionManage, CopyTable, About, NewEditField, dbInfo, Comparison;
+     PermissionManage, CopyTable, About, NewEditField, Comparison;
 
 { TPageControl }
 
@@ -639,14 +639,14 @@ var
   ATab: TTabSheet;
   Title: string;
   dbIndex: Integer;
+  //fmdbInfo :TfmDBInfo
 begin
   Title:= 'Database information for: ' + tvMain.Selected.Text;
   dbIndex:= PtrInt(tvMain.Selected.Data);
 
   fmDBInfo:= FindCustomForm(Title, TfmDBInfo) as TfmDBInfo;
 
-  if fmDBInfo = nil then
-  begin
+  if fmDBInfo = nil then begin
     fmDBInfo := TfmDBInfo.Create(Application);
     ATab     := NewTab(PageControl1, dbIndex); //TTBTabsheet.Create(self);
     ATab.Parent := PageControl1;
@@ -3568,10 +3568,10 @@ begin
     AStringGrid.RowCount:= 1;
     with AStringGrid, qryMain do
     while not EOF do begin
-      RowCount:= RowCount + 1;
+      AStringGrid.RowCount := AStringGrid.RowCount + 1;
 
       // Field Name
-      Cells[1, RowCount - 1]:= Trim(FieldByName('Field_Name').AsString);
+      AStringGrid.Cells[1, AStringGrid.RowCount - 1]:= Trim(FieldByName('Field_Name').AsString);
 
       // Field Type
       GetFieldType(qryMain, vFieldType, vFieldSize);
@@ -3579,7 +3579,7 @@ begin
 
       // Computed fields (Calculated)
       if FieldByName('computed_source').AsString <> '' then
-        Cells[2, RowCount - 1]:= FieldByName('computed_source').AsString;
+        Cells[2, RowCount - 1] := FieldByName('computed_source').AsString;
 
       // Field Size
       if FieldByName('field_type_int').AsInteger in [CharType,CStringType,VarCharType] then
@@ -4403,7 +4403,7 @@ begin
   try
     tvMain.Items.Clear;
     ReleaseRegisteredDatabases;
-    FileName := getConfigurationDirectory + ChangeFileExt(GetConfigFileName,'.reg');// 'turbobird.reg';
+    FileName := IncludeTrailingPathDelimiter(GetConfigurationDirectory) + GetRegistryFileName;
 
     // Copy old configuration file
     if not FileExists(FileName) and (FileExists(ChangeFileExt(ParamStr(0), '.reg'))) then

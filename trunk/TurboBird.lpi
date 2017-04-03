@@ -21,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="1258"/>
+      <BuildNr Value="1267"/>
       <StringTable ProductVersion="0.9"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -109,7 +109,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="49">
+    <Units Count="50">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -455,6 +455,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ConnectAs"/>
       </Unit48>
+      <Unit49>
+        <Filename Value="uevsdbschema.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsDBSchema"/>
+      </Unit49>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

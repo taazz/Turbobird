@@ -1,14 +1,14 @@
 { Registered Database manager and data types.
 
 }
+{$DEFINE EVS_INTF}
 unit utbDBRegistry;
-
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  Classes, SysUtils, uTBTypes, turbocommon, utbConfig, MDODatabase, sqldb, syncobjs;
+  Classes, SysUtils, uTBTypes, utbcommon, utbConfig, uEvsDBSchema, uTBFirebird, MDODatabase, sqldb, syncobjs;
 type
 
   EDBRegistry = class(ETBException);
@@ -116,7 +116,7 @@ type
     procedure SetSavePassword(aValue :Boolean);
     procedure SetUserName(aValue :string);
   protected
-    FID :TGuid; //internal ID used to encrypt sensitive information created once at creation.
+    FID : TGuid; //internal ID used to encrypt sensitive information created once at creation.
     function AsDBDetails:TDBDetails; //this returns a copy of the data.
   public
     constructor Create;override;//virtual;
@@ -217,6 +217,17 @@ var
   vFile    : file of TDBDetails;
   vFileName: string;
   vCntr    : Integer;
+  {$IFDEF EVS_INTF}
+  procedure IntfToDetails(const aDB:IEvsDatabaseInfo; var aRec:TDBDetails);
+  begin
+    aRec.Charset      := aDB.DefaultCharset;
+    aRec.DatabaseName := aDB.Host + ':' + aDB.Database;
+    aRec.Password     := aDB.Credentials.Password;
+    aRec.UserName     := aDB.Credentials.UserName;
+    aRec.Role         := aDB.Credentials.Role;
+    aRec.Title        := aDB.Title;
+  end;
+  {$ENDIF}
 begin
   try
     //Sort;               TDBInfo;
@@ -225,11 +236,15 @@ begin
       vFileName:= utbConfig.GetConfigurationDirectory + 'turbobird.reg';
 
     AssignFile(vFile, vFileName);
-    FileMode:= 2;
+    FileMode := 2;
     Rewrite(vFile);
 
-    for vCntr:= low(aDBArray) to High(aDBArray) do
+    for vCntr := low(aDBArray) to High(aDBArray) do begin
+      {$IFDEF EVS_INTF}
+      IntfToDetails(aDBArray[vCntr].DataBase, aDBArray[vCntr].RegRec);
+      {$ENDIF}
       Write(vFile, aDBArray[vCntr].OrigRegRec);
+    end;
     CloseFile(vFile);
     Result:= True;
   except
@@ -244,6 +259,14 @@ var
   vRec     : TDBDetails;
   vFile    : file of TDBDetails;
   vFileName: string;
+  {$IFDEF EVS_INTF}
+   function DetailsToIntf(aRec:TDBDetails):IEvsDatabaseInfo;
+   begin
+     Result := NewDatabase(stFirebird, ExtractHost(aRec.DatabaseName), ExtractDBName(aRec.DatabaseName),
+                           aRec.UserName, aRec.Password, aRec.Role, aRec.Charset);
+     Result.Title := aRec.Title;
+   end;
+  {$ENDIF}
 begin
   vFileName := aFilename;
   if vFileName = '' then
@@ -260,9 +283,12 @@ begin
           aDBArray[high(aDBArray)].RegRec     := vRec;
           aDBArray[high(aDBArray)].OrigRegRec := vRec;
           aDBArray[high(aDBArray)].Index      := FilePos(vFile) - 1;
+        {$IFDEF EVS_INTF}
+          aDBArray[high(aDBArray)].DataBase := DetailsToIntf(vRec);
+        {$ENDIF}
 
           aDBArray[high(aDBArray)].Conn  := GetConnection(aDBArray[high(aDBArray)]);
-          aDBArray[high(aDBArray)].Trans := TMDOTransaction.Create(nil); //JKOZ pool it. //TSQLTransaction.Create(nil);
+          aDBArray[high(aDBArray)].Trans := TMDOTransaction.Create(nil); //JKOZ pool?. //TSQLTransaction.Create(nil);
 
           SetTransactionIsolation(aDBArray[high(aDBArray)].Trans.Params);
           aDBArray[high(aDBArray)].Conn.DefaultTransaction := aDBArray[high(aDBArray)].Trans;

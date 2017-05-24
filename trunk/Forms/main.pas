@@ -46,7 +46,7 @@ move to a firebird specific unit }
 {$DEFINE IBCNN}
 uses
   Classes, SysUtils, Menus, sqldb, memds, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls, Reg, QueryWindow, Grids, ExtCtrls, TableManage,
-  Buttons, ActnList, dbugintf, turbocommon, IBConnection, Clipbrd, MDOQuery, MDODatabase, MDO, MDOServices, MDOCustomDataSet, MDODatabaseInfo,
+  Buttons, ActnList, dbugintf, utbcommon, IBConnection, Clipbrd, MDOQuery, MDODatabase, MDO, MDOServices, MDOCustomDataSet, MDODatabaseInfo,
   uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, typinfo, importtable, dbInfo;
 
 type
@@ -2836,7 +2836,7 @@ begin
 
     dmSysTables.GetDomainInfo(dbIndex, ADomainName, DomainType, DomainSize, DefaultValue, CheckConstraint, CharacterSet, Collation);
     //ATab.Tag:= dbIndex;
-    if Pos('default', LowerCase(DefaultValue)) = 1 then
+    if Pos('def ault', LowerCase(DefaultValue)) = 1 then
       DefaultValue:= Trim(Copy(DefaultValue, 8, Length(DefaultValue)));
     if (Pos('CHAR', DomainType) > 0) or
       (Pos('CSTRING', DomainType) >0) then
@@ -3942,12 +3942,12 @@ var
   dbIndex: Integer;
   Title: string;
 begin
-  SelNode:= tvMain.Selected;
+  SelNode := tvMain.Selected;
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
-    AFuncName:= SelNode.Text;
-    Title:= SelNode.Parent.Parent.Text + ': UDF: ' + AFuncName;
-    dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
+    AFuncName := SelNode.Text;
+    Title := SelNode.Parent.Parent.Text + ': UDF: ' + AFuncName;
+    dbIndex := PtrInt(SelNode.Parent.Parent.Data);
 
     if GetUDFInfo(dbIndex, AFuncName, ModuleName, EntryPoint, Params) then
     with fmUDFINfo do
@@ -3955,25 +3955,25 @@ begin
       fmUDFInfo:= FindCustomForm(Title, TfmUDFInfo) as TfmUDFInfo;
       if fmUDFInfo = nil then
       begin
-        fmUDFInfo:= TfmUDFInfo.Create(Application);
-        fmUDFInfo.Caption:= Title;
-        ATab:= NewTab(PageControl1,DBIndex);// TControl; //TTBTabSheet.Create(self);
+        fmUDFInfo := TfmUDFInfo.Create(Application);
+        fmUDFInfo.Caption := Title;
+        ATab := NewTab(PageControl1,DBIndex);// TControl; //TTBTabSheet.Create(self);
         //ATab.Tag := dbIndex;
         //ATab.Parent:= PageControl1;
-        fmUDFInfo.Parent:= ATab;
-        fmUDFInfo.Left:= 0;
-        fmUDFInfo.Top:= 0;
-        fmUDFInfo.BorderStyle:= bsNone;
-        fmUDFInfo.Align:= alClient;
+        fmUDFInfo.Parent := ATab;
+        fmUDFInfo.Left := 0;
+        fmUDFInfo.Top := 0;
+        fmUDFInfo.BorderStyle := bsNone;
+        fmUDFInfo.Align := alClient;
       end
       else
-        ATab:= fmUDFInfo.Parent as TTabSheet;
+        ATab := fmUDFInfo.Parent as TTabSheet;
 
-      PageControl1.ActivePage:= ATab;
-      ATab.Caption:= Title;
-      edName.Caption:= AFuncName;
-      edModule.Caption:= ModuleName;
-      edEntry.Caption:= EntryPoint;
+      PageControl1.ActivePage := ATab;
+      ATab.Caption := Title;
+      edName.Caption := AFuncName;
+      edModule.Caption := ModuleName;
+      edEntry.Caption := EntryPoint;
       meBody.Clear;
       meBody.Lines.Add('function ' + AFuncName + '(');
       meBody.Lines.Add(Params);
@@ -4421,18 +4421,18 @@ begin
         if not Rec.Deleted then begin
           SetLength(RegisteredDatabases, Length(RegisteredDatabases) + 1);
           with RegisteredDatabases[high(RegisteredDatabases)] do begin
-            RegRec:= Rec;
-            OrigRegRec:= Rec;
-            Index:= FilePos(F) - 1;
+            RegRec := Rec;
+            OrigRegRec := Rec;
+            Index := FilePos(F) - 1;
             //JKOZ :01.002
             Conn := GetConnection(RegisteredDatabases[high(RegisteredDatabases)]); //TMDODataBase.Create(Nil); //TIBConnection.Create(nil);
-            {$IFDEF DEBUG}
+            //{$IFDEF DEBUG}
             {$WARNING 'Enable Logging of commands'} //JKOZ
             //Conn.OnLog := @GetLogEvent;
             //Conn.LogEvents := [detCustom,detExecute,detCommit,detRollBack];
             Conn.TraceFlags := [tfQPrepare, tfQExecute, tfQFetch, tfError, tfStmt, tfMisc];
             //tfConnect, tfTransact, tfBlob, tfService
-            {$ENDIF DEBUG}
+            //{$ENDIF DEBUG}
             Trans:= TMDOTransaction.Create(nil);//TSQLTransaction.Create(nil);
             SetTransactionIsolation(Trans.Params);
             Conn.DefaultTransaction:= Trans;

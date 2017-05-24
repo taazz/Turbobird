@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, IBConnection, sqldb, FileUtil, LResources, Forms, Controls,
-  Graphics, Dialogs, StdCtrls, Buttons, turbocommon, uTBTypes;
+  Graphics, Dialogs, StdCtrls, Buttons, utbcommon, uTBTypes;
 
 type
 

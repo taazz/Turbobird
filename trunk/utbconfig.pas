@@ -5,7 +5,7 @@ unit utbConfig;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, Graphics, Forms, typinfo, turbocommon, FileUtil, uTBTypes;
+  Classes, SysUtils, IniFiles, Graphics, Forms, typinfo, utbcommon, FileUtil, uTBTypes;
 
 const
   cQuerySection = 'SQL Editor';
@@ -40,7 +40,7 @@ const
 
 function GetRegistryFileName :String;
 begin
-  if turbocommon.IsWindows then begin
+  if utbcommon.IsWindows then begin
     Result := ExtractFileNameOnly(Application.ExeName);
   end else begin
     Result := ExtractFileNameOnly(ParamStr(0));
@@ -80,7 +80,7 @@ end;
 
 function GetConfigurationDirectory :string;
 begin
-  if turbocommon.IsWindows then begin
+  if utbcommon.IsWindows then begin
     if FileExists(ChangeFileExt(application.ExeName,'.cfg')) then begin //portable installation.
       Result := IncludeTrailingPathDelimiter(ExtractFileDir(Application.ExeName));
       Exit;
@@ -114,7 +114,7 @@ end;
 
 function GetConfigFileName :String;
 begin
-  if turbocommon.IsWindows then begin
+  if utbcommon.IsWindows then begin
     Result := ChangeFileExt(ExtractFileNameOnly(Application.ExeName),cCfgExt)
   end else
     //Result := Application.Name+'.cfg';

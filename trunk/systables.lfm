@@ -28,6 +28,7 @@ object dmSysTables: TdmSysTables
     TraceFlags = []
     UserName = 'evosi'
     Password = 'isove'
+    Role = 'admin'
     left = 56
     top = 20
   end

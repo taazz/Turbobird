@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Buttons, ComCtrls, {IBConnection,} sqldb, QueryWindow, LCLType, turbocommon, uTBTypes,
+  Buttons, ComCtrls, {IBConnection,} sqldb, QueryWindow, LCLType, utbcommon, uTBTypes,
   dbugintf;
 
 

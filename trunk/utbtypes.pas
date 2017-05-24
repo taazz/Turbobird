@@ -7,9 +7,10 @@ interface
 //variables and avoid circular reference
 {.$DEFINE EVS_Internal}
 {$DEFINE EVS_New}
+{$DEFINE EVS_INTF}
 {$DEFINE EVS_MDO}//undefine this to use with the original MDO package.
 uses
-  Classes, SysUtils, sqldb, syncobjs, IBConnection, ComCtrls, controls, StdCtrls, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
+  Classes, SysUtils, sqldb, syncobjs, IBConnection, ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
 
 type
 
@@ -101,6 +102,9 @@ type
     //active database session data.
     Conn         :TMDODataBase;
     Trans        :TMDOTransaction;
+    {$IFDEF EVS_INTF}
+    DataBase     :IEvsDatabaseInfo;
+    {$ENDIF}
     {$IFDEF EVS_ThreadSafe}
     aLock        :TCriticalSection;
     procedure Lock;unimplemented;
@@ -160,10 +164,9 @@ type
     Destructor Destroy; override;
   end;
 
-
 implementation
 
-uses turbocommon;
+uses utbcommon;
 
 { TDBInfo }
 {$IFDEF EVS_ThreadSafe}

@@ -6,8 +6,9 @@ interface
 
 uses
   Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls, sqldb, sqldblib,
-  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, uTBTypes, utbConfig, turbocommon;
-{ TODO -oJKOZ -cUser Expirience : Retreive the database default characterset during registration.(The button is in place write the code to go with it and make it visible). }
+  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, uTBTypes, utbConfig, utbcommon;
+{ TODO -oJKOZ -cUser Expirience : Retreive the database default characterset during registration.(The button is
+  in place write the code to go with it and make it visible). }
 type
 
   { TfmReg }
@@ -43,6 +44,18 @@ type
     { private declarations }
     function EditRegisteration(Index: Integer; Title, DatabaseName, UserName, Password, Charset, Role: string;
       SavePassword: Boolean): Boolean;
+    function GetCharSet :string;
+    function GetDBName :string;
+    function GetHost :string;
+    function GetPassword :string;
+    function GetRole :string;
+    function GetUserName :string;
+    procedure SetCharset(aValue :string);
+    procedure SetDBName(aValue :string);
+    procedure SetHost(aValue :string);
+    procedure SetPassword(aValue :string);
+    procedure SetRole(aValue :string);
+    procedure SetUserName(aValue :string);
   public
     { public declarations }
     NewReg: Boolean;
@@ -54,6 +67,12 @@ type
     function GetEmptyRec: Integer;
     function SaveRegistrations: Boolean;
     procedure Sort;
+    property DatabaseName:string read GetDBName   write SetDBName;
+    property Host        :string Read GetHost     write SetHost;
+    property UserName    :string read GetUserName write SetUserName;
+    property Password    :string read GetPassword write SetPassword;
+    property Charset     :string read GetCharSet  write SetCharset;
+    property Role        :string read GetRole     write SetRole;
   end;
 
 var
@@ -150,38 +169,38 @@ var
   FileName   : string;
 begin
   try
-    FileName:= GetConfigurationDirectory + GetRegistryFileName; //'turbobird.reg';
-
-    AssignFile(F, FileName);
-    if FileExists(FileName) then
-    begin
-      EmptyIndex:= GetEmptyRec;
-      FileMode := 2;//2!? what 2 means?
-
-      Reset(F);
-      if EmptyIndex <> -1 then
-        Seek(F, EmptyIndex)
-      else
-        Seek(F, System.FileSize(F));
-    end
-    else
-      Rewrite(F);
-
-    Rec.Title       := Title;
-    Rec.DatabaseName:= DatabaseName;
-    Rec.UserName    := UserName;
-    if SavePassword then
-      Rec.Password:= Password
-    else
-      Rec.Password:= '';
-    Rec.Charset     :=Charset;
-    Rec.Role        :=Role;
-    Rec.SavePassword:=SavePassword;
-    Rec.Deleted     :=False;
-    Rec.LastOpened  :=Now;
-
-    Write(F, Rec);
-    CloseFile(F);
+    //FileName:= GetConfigurationDirectory + GetRegistryFileName; //'turbobird.reg';
+    //
+    //AssignFile(F, FileName);
+    //if FileExists(FileName) then
+    //begin
+    //  EmptyIndex:= GetEmptyRec;
+    //  FileMode := 2;//2!? what 2 means?
+    //
+    //  Reset(F);
+    //  if EmptyIndex <> -1 then
+    //    Seek(F, EmptyIndex)
+    //  else
+    //    Seek(F, System.FileSize(F));
+    //end
+    //else
+    //  Rewrite(F);
+    //
+    //Rec.Title       := Title;
+    //Rec.DatabaseName:= DatabaseName;
+    //Rec.UserName    := UserName;
+    //if SavePassword then
+    //  Rec.Password:= Password
+    //else
+    //  Rec.Password:= '';
+    //Rec.Charset     :=Charset;
+    //Rec.Role        :=Role;
+    //Rec.SavePassword:=SavePassword;
+    //Rec.Deleted     :=False;
+    //Rec.LastOpened  :=Now;
+    //
+    //Write(F, Rec);
+    //CloseFile(F);
     Result:= True;
   except
     on E: Exception do
@@ -231,6 +250,66 @@ begin
   end;
 end;
 
+function TfmReg.GetCharSet :string;
+begin
+  Result := cbCharset.Text;
+end;
+
+function TfmReg.GetDBName :string;
+begin
+  Result := extractDBName(edDatabaseName.Text);
+end;
+
+function TfmReg.GetHost :string;
+begin
+  Result := GetServerName(edDatabaseName.Text);
+end;
+
+function TfmReg.GetPassword :string;
+begin
+  Result := edPassword.Text;
+end;
+
+function TfmReg.GetRole :string;
+begin
+  Result := edRole.Text;
+end;
+
+function TfmReg.GetUserName :string;
+begin
+  Result := edUserName.Text;
+end;
+
+procedure TfmReg.SetCharset(aValue :string);
+begin
+  cbCharset.Text:=aValue;
+end;
+
+procedure TfmReg.SetDBName(aValue :string);
+begin
+  edDatabaseName.Text := aValue;
+end;
+
+procedure TfmReg.SetHost(aValue :string);
+begin
+  edDatabaseName.Text := ChangeServerName(edDatabaseName.Text,aValue);
+end;
+
+procedure TfmReg.SetPassword(aValue :string);
+begin
+  edPassword.Text := aValue;
+end;
+
+procedure TfmReg.SetRole(aValue :string);
+begin
+  edRole.Text := aValue;
+end;
+
+procedure TfmReg.SetUserName(aValue :string);
+begin
+  edUserName.Text := aValue;
+end;
+
 function TfmReg.TestConnection(DatabaseName, UserName, Password, Charset: string): Boolean;
 begin
   try
@@ -243,14 +322,12 @@ begin
     Connection.Close;
     Result:= True;
   except
-    on d: EIBDatabaseError do
-    begin
+    on d: EIBDatabaseError do begin
       Result:= False;
       ShowMessage('Unable to connect: '+ d.Message + LineEnding +
         'Details: GDS error code: '+inttostr(d.GDSErrorCode));
     end;
-    on E: Exception do
-    begin
+    on E: Exception do begin
       Result:= False;
       ShowMessage('Unable to connect: ' + e.Message);
     end;

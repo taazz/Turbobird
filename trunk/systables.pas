@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, sqldb, db, IBConnection, FileUtil, {LResources,} Forms, Controls,
-  Dialogs, MDOQuery, MDODatabase, dbugintf, turbocommon, uTBTypes;
+  Dialogs, MDOQuery, MDODatabase, dbugintf, utbcommon, uTBTypes;
 { TODO -oJKOZ -cCode Hierarchy : Convert this datamodule to a plugin and move all external data and meta data access code here. }
 { TODO -oJKOZ -cDB Support : Move from sqldb to MDO objects, better array support. IBX4laz requires fpc3 and laz 1.6 }
 type
@@ -167,7 +167,7 @@ implementation
 uses main, topologicalsort;
 
 var
-  FConnectionPool :turbocommon.TEvsConnectionPool;
+  FConnectionPool :utbcommon.TEvsConnectionPool;
 
 function DecToBin(Dec, Len: Byte): string;
 var
@@ -770,33 +770,25 @@ begin
 end;
 
 procedure TdmSysTables.OpenQuery(aObjectType :TObjectType);
-const
+//const
                   //otUnknown, otTables,  otGenerators,  otTriggers, otViews,   otStoredProcedures,
                   //otUDFs,    otDomains, otSystemTables,
                   //otRoles,  otExceptions, otUsers,   otIndexes, otConstraints);
-
-  cObjectSQL :array[TObjectType] of string =('',                                         //otunknown
-     'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
-     ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name', //tables
-
-     'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name',//generators
-     '',
-     '',
-     '',
-     '',
-     '',
-     '',
-     '',
-     '',
-     '',
-     '',
-     '');
-
-
-{$IFDEF DEBUG}
-var
-  vSQL : string;
-{$ENDIF}
+  //cObjectSQL :array[TObjectType] of string =('',                                         //otunknown
+  //   'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
+  //   ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name', //tables
+  //   'select RDB$GENERATOR_Name from RDB$GENERATORS where RDB$SYSTEM_FLAG = 0 order by rdb$generator_Name',//generators
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '',
+  //   '');
 begin
   MDOQuery.Close;
   if aObjectType         = otTables then // Tables
@@ -814,7 +806,7 @@ begin
     MDOQuery.SQL.Text := 'SELECT RDB$FUNCTION_NAME FROM RDB$FUNCTIONS where RDB$SYSTEM_FLAG=0 order by rdb$Function_Name'
   else if aObjectType    = otSystemTables then // System Tables
     MDOQuery.SQL.Text := 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS where RDB$SYSTEM_FLAG=1 ' +
-                        'order by RDB$RELATION_NAME'
+                         'order by RDB$RELATION_NAME'
   else if aObjectType    = otDomains then // Domains, excluding system-defined domains
     MDOQuery.SQL.Text := 'select RDB$FIELD_NAME from RDB$FIELDS where RDB$Field_Name not like ''RDB$%''  order by rdb$Field_Name'
   else if aObjectType    = otRoles then // Roles
@@ -825,10 +817,6 @@ begin
     MDOQuery.SQL.Text := 'select distinct RDB$User from RDB$USER_PRIVILEGES where RDB$User_Type = 8 order by rdb$User';
 
   // Save the result list as comma delimited string
-  {$IFDEF DEBUG}
-  vSQL := MDOQuery.SQL.Text;
-  {$ENDIF}
-  MDOQuery.SQL.Text := MDOQuery.SQL.Text;
   MDOQuery.Open;
   MDOQuery.First;
 end;
@@ -1013,17 +1001,16 @@ begin
       MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger,
       MDOQuery.FieldByName('RDB$FIELD_PRECISION').AsInteger,
       MDOQuery.FieldByName('RDB$FIELD_SCALE').AsInteger);
-    DomainSize:= MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger;
-    DefaultValue:= trim(MDOQuery.FieldByName('RDB$DEFAULT_SOURCE').AsString);
-    CheckConstraint:= trim(MDOQuery.FieldByName('RDB$VALIDATION_SOURCE').AsString); //e.g. CHECK (VALUE > 10000 AND VALUE <= 2000000)
-    CharacterSet:= trim(MDOQuery.FieldByName('rdb$character_set_name').AsString);
-    Collation:= trim(MDOQuery.FieldByName('rdb$collation_name').AsString);
+    DomainSize      := MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger;
+    DefaultValue    := trim(MDOQuery.FieldByName('RDB$DEFAULT_SOURCE').AsString);
+    CheckConstraint := trim(MDOQuery.FieldByName('RDB$VALIDATION_SOURCE').AsString); //e.g. CHECK (VALUE > 10000 AND VALUE <= 2000000)
+    CharacterSet    := trim(MDOQuery.FieldByName('rdb$character_set_name').AsString);
+    Collation       := trim(MDOQuery.FieldByName('rdb$collation_name').AsString);
   end
   else
     DomainSize:= 0;
   MDOQuery.Close;
 end;
-
 
 (*************  Get constraint foreign key fields  *************)
 

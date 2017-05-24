@@ -14,7 +14,7 @@ uses
   Controls, Graphics, Dialogs, ExtCtrls, {PairSplitter,} StdCtrls, Buttons,
   DBGrids, Menus, ComCtrls, SynEdit, SynHighlighterSQL, {Reg,} SynEditTypes,
   SynCompletion, ExtendedNotebook, Clipbrd, grids, DbCtrls, types, LCLType, ActnList, MDODatabase, MDOQuery, MDOScript, dbugintf,
-  turbocommon, variants, strutils, IniFiles, uTBTypes, utbConfig, SysTables;
+  utbcommon, variants, strutils, IniFiles, uTBTypes, utbConfig, SysTables;
 
 type
 
@@ -851,7 +851,7 @@ begin
   // Get a free number to be assigned to the new Query window
   for i:= 1 to 1000 do
   begin
-    if turbocommon.FindCustomForm(FDB^.RegRec.Title {FRegRec.Title} + ': Query Window # ' + IntToStr(i), TfmQueryWindow) = nil then
+    if utbcommon.FindCustomForm(FDB^.RegRec.Title {FRegRec.Title} + ': Query Window # ' + IntToStr(i), TfmQueryWindow) = nil then
     begin
       fmMain.ShowCompleteQueryWindow(FDB, 'Query Window # ' + IntToStr(i), '');
       Break;
@@ -1133,7 +1133,7 @@ begin
     // Clean up any existing object to avoid memory leak
     if assigned(aSQLQuery) then
       ReleaseQuery(aSQLQuery);//.Free;
-    aSqlQuery := turbocommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
+    aSqlQuery := utbcommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
     //aSqlQuery.DataBase    := FConn;
     //aSqlQuery.Transaction := FTrans;
     aSqlQuery.AfterPost   := @QueryAfterPost; //detect user-edited grid
@@ -1194,7 +1194,7 @@ begin
     case QueryType of
       qtExecute:
       begin
-        aSqlQuery     := turbocommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
+        aSqlQuery     := utbcommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
         //aSqlQuery.DataBase    := FConn;
         //aSqlQuery.Transaction := FTrans;
       end;
@@ -1256,7 +1256,7 @@ begin
       if fQueryType = qtSelectable then begin
         FTab:= nil;
         try
-          vSQLQuery:= turbocommon.GetQuery(FConn,FTrans);// TSQLQuery.Create(self);
+          vSQLQuery:= utbcommon.GetQuery(FConn,FTrans);// TSQLQuery.Create(self);
           //vSQLQuery.DataBase:= FConn;
           //vSQLQuery.Transaction:= FTrans;
           if (cxAutoCommit.Checked and FTrans.Active) then
@@ -1280,7 +1280,7 @@ begin
             SanitizedSQL:= ExtractWordPos(3, FQueryPart, StdWordDelims, i);
             if i > 0 then begin
               SanitizedSQL:= 'select ' + trim(copy(FQueryPart, i+length(SanitizedSQL), maxint));
-              TempQuery:= turbocommon.GetQuery(FConn,FTrans); //TQuery.Create(nil);
+              TempQuery:= utbcommon.GetQuery(FConn,FTrans); //TQuery.Create(nil);
               try
                 //TempQuery.ParseSQL:= true;
                 //vTemp := TempQuery.InsertSQL.Text;
@@ -1518,7 +1518,7 @@ begin
       if Trim(FQueryPart) <> '' then   // Select
       if fQueryType = qtSelectable then begin
         FTab:= nil;
-        vSQLQuery := turbocommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
+        vSQLQuery := utbcommon.GetQuery(FConn,FTrans); //TSQLQuery.Create(self);
         try
           //vSQLQuery.DataBase:= FIBConnection;
           //vSQLQuery.Transaction:= FSQLTrans;

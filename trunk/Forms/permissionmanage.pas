@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, Buttons, CheckLst, turbocommon, uTBTypes;
+  ComCtrls, StdCtrls, Buttons, CheckLst, utbcommon, uTBTypes;
 
 type
 

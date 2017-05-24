@@ -6,7 +6,7 @@ unit Scriptdb;
 interface
 
 uses
-  Classes, SysUtils, turbocommon, uTBTypes, dialogs, MDOQuery, sqldb;
+  Classes, SysUtils, utbcommon, uTBTypes, dialogs, MDOQuery, sqldb;
 
 
 // Scripts all roles; changes List to contain the CREATE ROLE SQL statements

@@ -1,4 +1,8 @@
-unit turbocommon;
+unit utbcommon;
+
+  //--------------------------------------------------------------------
+  //JKOZ: move the firebird specific code to the utbFirebird unit.
+  //--------------------------------------------------------------------
 
 { Non-GUI common code for TurboBird that do not depend on a database connection.
 SysTables covers functionality for which a db connection is required. }
@@ -64,7 +68,6 @@ const
   CharType    = 14;
   CStringType = 40; // probably null-terminated string used for UDFs
   VarCharType = 37;
-
   // Available character set encodings for Firebird.
   // Update this whenever Firebird supports new character sets
   DefaultFBCharacterSet = 42; //Used for GUI controls etc. UTF8 in CharacterSets below.
@@ -189,17 +192,16 @@ type
   { A pool of Tcomponents, tracks how many objects it has created.
     When the SoftMax is true then MaxCount becomes the maximum number of inactive components in the pool
     otherwise it is the maximum number of components that the pool is allowed to create.
-    the user call the aquire method to get a component from the pool and when he no longer needs it calls
+    the user calls the aquire method to get a component from the pool and when he no longer needs it calls
     the return method to release the component back to the pool.
 
-
-    should I convert it to a generic pool to avoid type casting?
+    Should I convert it to a generic pool to avoid type casting?
   }
 
   TEvsCustomComponentPool = class(TObject)
   private
     FContainer  :{$IFDEF EVS_CONTAINERS} TEvsStack {$ELSE} TStack {$ENDIF};
-    FLazyCreate :Boolean; //default false
+    FCreateNeeded :Boolean; //default false
     FMaxCount   :Integer; //default 10
     FSoftMax    :Boolean; //default true;
     {$IFDEF EVS_CONTAINERS}
@@ -216,14 +218,14 @@ type
     procedure FillPool;virtual;
     procedure EmptyPool;
   public
-    constructor Create(const aMaxCount :Integer = 10; const aLazyCreate :Boolean = False; const aClass :TComponentClass=nil);virtual;
+    constructor Create(const aMaxCount :Integer = 10; const aNeededOnly :Boolean = False; const aClass :TComponentClass=nil);virtual;
     destructor Destroy; override;
     function Aquire :TComponent;overload;
     procedure Return(const aComponent :TComponent);
 
     property MaxCount   :Integer read FMaxCount;
     property Count      :Integer read GetCount;
-    property LazyCreate :Boolean read FLazyCreate write SetLazyCreate;
+    property LazyCreate :Boolean read FCreateNeeded write SetLazyCreate;
     property SoftMax    :Boolean read FSoftMax write FSoftMax;
   end;
 
@@ -362,6 +364,9 @@ procedure ClearControls(const aParent:TWinControl);experimental;
 function WhereStr(const aFieldNames: array of string; const aFieldValues:array of const; const aLinkStatement:string='and'; Enclose:Boolean = False ):string;
 
 function GetServerName(const aDBName: string): string;
+function ChangeServerName(const aDBName:string; aServerName:String):string;
+function ExtractDBName(const aDBName: string): string;
+function ExtractHost(const aDBName: string): string;
 
 function NotImplementedException:ETBException;
 function DeprecatedException:ETBException;
@@ -413,7 +418,7 @@ var
 
 function NotImplementedException:ETBException;
 begin
-  Result := ETBException.Create('Not Implemented');
+  Result := ETBNotImplemented.Create('Not Implemented');
 end;
 
 function DeprecatedException :ETBException;
@@ -692,6 +697,31 @@ begin
     Result:= Copy(aDBName, 1, Pos(':', aDBName) - 1)
   else
     Result:= 'localhost';
+end;
+
+function ChangeServerName(const aDBName :string; aServerName :String) :string;
+begin
+  if Pos(':', aDBName) > 2 then
+    Result:= Copy(aDBName, Pos(':', aDBName) + 1, Length(aDBName))
+  else
+    Result:= aDBName;
+  Result := aServerName+':'+Result;
+end;
+
+function ExtractDBName(const aDBName :string) :string;
+begin
+  if Pos(':', aDBName) > 2 then
+    Result:= Copy(aDBName, Pos(':', aDBName) + 1, Length(aDBName))
+  else
+    Result:= aDBName;
+end;
+
+function ExtractHost(const aDBName :string) :string;
+begin
+  if Pos(':', aDBName) > 2 then
+    Result := Copy(aDBName, 1, Pos(':', aDBName))//, Length(aDBName))
+  else
+    Result := '';//aDBName;
 end;
 
 function GetConnection(const aConnection :TMDODataBase) :TMDODataBase;
@@ -1168,7 +1198,7 @@ end;
 
 procedure TEvsCustomComponentPool.SetLazyCreate(aValue :Boolean);
 begin
-  FLazyCreate := aValue;
+  FCreateNeeded := aValue;
 end;
 
 procedure TEvsCustomComponentPool.Put(const aItem :TComponent);
@@ -1181,7 +1211,6 @@ end;
 function TEvsCustomComponentPool.Get :TComponent;
 begin
   Result := TComponent(FContainer.Pop);
-  //if FDestroying then Exit;
   if (not Assigned(Result)) and ((FAquired < FMaxCount) or FSoftMax) then
     Result := CreateNew;
   if Assigned(Result) then Inc(FAquired);
@@ -1209,15 +1238,15 @@ begin
   until vRes = nil;
 end;
 
-constructor TEvsCustomComponentPool.Create(const aMaxCount :Integer; const aLazyCreate :Boolean; const aClass :TComponentClass);
+constructor TEvsCustomComponentPool.Create(const aMaxCount :Integer; const aNeededOnly :Boolean; const aClass :TComponentClass);
 begin
   inherited Create;
   FMaxCount   := aMaxCount;
-  FLazyCreate := aLazyCreate;
+  FCreateNeeded := aNeededOnly;
   FSoftMax    := True;
   FClass      := aClass;
   FContainer  := {$IFDEF EVS_CONTAINERS} TEvsStack.Create {$ELSE} TStack.Create {$ENDIF};
-  if not FLazyCreate then FillPool;
+  if not FCreateNeeded then FillPool;
 end;
 
 destructor TEvsCustomComponentPool.Destroy;

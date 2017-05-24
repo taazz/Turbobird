@@ -65,6 +65,7 @@ object fmReg: TfmReg
     Top = 72
     Width = 269
     TabOrder = 1
+    Text = 'Localhost:D:\data\firebird\employee.fdb'
   end
   object btBrowse: TButton
     Left = 444
@@ -81,6 +82,7 @@ object fmReg: TfmReg
     Top = 128
     Width = 155
     TabOrder = 3
+    Text = 'evosi'
   end
   object edPassword: TEdit
     Left = 329
@@ -194,6 +196,7 @@ object fmReg: TfmReg
     Top = 24
     Width = 298
     TabOrder = 0
+    Text = 'Employee'
   end
   object bbTest: TBitBtn
     Left = 20

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, Buttons, MDOQuery, SynEdit, SynHighlighterSQL, sqldb, turbocommon, uTBTypes, IniFiles;
+  StdCtrls, Buttons, MDOQuery, SynEdit, SynHighlighterSQL, sqldb, utbcommon, uTBTypes, IniFiles;
 
 type
 

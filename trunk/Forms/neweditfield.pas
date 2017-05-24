@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, Spin, Buttons, turbocommon;
+  StdCtrls, Spin, Buttons, utbcommon, uEvsDBSchema;
 
 type
   TFormMode = (foNew, foEdit);
@@ -40,9 +40,12 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
-    FDBIndex: Integer;
-    FTableName: string;
-    FRefreshButton: TBitBtn;
+    FDBField       :IEvsFieldInfo; //the original field
+    FEditField     :IEvsFieldInfo; //the field to be used while editing probably a copy.
+    FDBIndex       :Integer;
+    FTableName     :string;
+    FRefreshButton :TBitBtn;
+    procedure SetDBField(aValue :IEvsFieldInfo);
   public
     fFormMode: TFormMode;
     OldFieldName: string;
@@ -64,6 +67,7 @@ type
       AllowNull: Boolean;
       RefreshButton: TBitBtn);
     { public declarations }
+    property DBField :IEvsFieldInfo read FDBField write SetDBField;
   end; 
 
 var
@@ -253,14 +257,14 @@ begin
   // db charset
 end;
 
-procedure TfmNewEditField.Init(dbIndex: Integer; TableName: string;
-  FormMode: TFormMode;
-  FieldName, FieldType,
-  CharacterSet, Collation,
-  DefaultValue, Description: string;
-  Size, Scale, Order: integer;
-  AllowNull: Boolean;
-  RefreshButton: TBitBtn);
+procedure TfmNewEditField.SetDBField(aValue :IEvsFieldInfo);
+begin
+  if FDBField=aValue then Exit;
+  FDBField:=aValue;
+end;
+
+procedure TfmNewEditField.Init(dbIndex :Integer; TableName :string; FormMode :TFormMode; FieldName, FieldType, CharacterSet, Collation, DefaultValue,
+  Description :string; Size, Scale, Order :Integer; AllowNull :Boolean; RefreshButton :TBitBtn);
 begin
   cbType.Clear;
 

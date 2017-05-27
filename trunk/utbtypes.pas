@@ -6,11 +6,11 @@ interface
 //Generic unit to hold all the custom data types of the application to help with the deletion of public/published
 //variables and avoid circular reference
 {.$DEFINE EVS_Internal}
-{$DEFINE EVS_New}
-{$DEFINE EVS_INTF}
+{$I EvsDefs.inc}
 {$DEFINE EVS_MDO}//undefine this to use with the original MDO package.
+
 uses
-  Classes, SysUtils, sqldb, syncobjs, IBConnection, ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
+  Classes, SysUtils, sqldb, syncobjs, {IBConnection,} ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
 
 type
 
@@ -59,6 +59,7 @@ type
 
   TByteArray = array of Byte;
   TStringArray = array of string;
+  TWideStringArray = array of WideString;
   //JKOZ: moved here from Reg.pas
   ETBException = class( {$IFDEF EVS_Internal} EEVSException {$ELSE} Exception {$EndIf} );
 

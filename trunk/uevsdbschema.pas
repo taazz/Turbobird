@@ -24,7 +24,7 @@ unit uEvsDBSchema;
 interface
 
 uses
-  Classes, SysUtils, variants, db, contnrs, Graphics, uEvsWideString;
+  Classes, SysUtils, variants, db, contnrs, Graphics, uEvsGenIntf, uEvsWideString;
 
 const  //negative numbers are for internal use only positive are for 3rd party support, either assinged by range or single ID.
   stUnknown    =  0;
@@ -58,86 +58,7 @@ type
   TConnectProc   = Function (aHost,aDatabase,aUser,aPwd,aRole,aCharset:Widestring):IEvsConnection;
   TConnectMethod = Function (aHost,aDatabase,aUser,aPwd,aRole,aCharset:Widestring):IEvsConnection of object;
 
-  { IEvsTreeNode }
-  IEvsTreeNode = interface(IInterface)
-    ['{A900E764-EF8C-4052-A967-A8255C7575ED}']
-    Function GetChildCount :integer; extdecl;
-    Function GetDisplayText :String;extdecl;
-    Function GetFirstChild :IEvsTreeNode;extdecl;
-    Function GetNextSibling :IEvsTreeNode;extdecl;
-
-    Property DisplayText:String read GetDisplayText;
-    Property ChildCount:integer read GetChildCount;
-    Property FirstChild:IEvsTreeNode read GetFirstChild;
-    Property NextSibling:IEvsTreeNode read GetNextSibling;
-  end;
-
-  IEvsCopyable = interface(IInterface)
-    ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
-    Procedure CopyFrom(const aSource:IEvsCopyable); extdecl;
-    Procedure CopyTo(const aDest:IEvsCopyable); extdecl;
-  end;
-
   { TEvsDBInfo }
-  IEvsObjectRef = interface(IEvsCopyable)
-    ['{06704B77-F3A4-4CAA-9E8A-6E13AD70EA07}']
-    Function ObjectRef:TObject;extdecl;
-  end;
-
-  { IEvsParented }
-  IEvsParented = interface(IEvsObjectRef)
-    ['{916AA6A8-EFE4-4360-AC14-35D9E15FAD28}']
-    Function GetParent :IEvsParented;             extdecl;
-    Procedure SetParent(aValue :IEvsParented);    extdecl;
-    Procedure ClearState;                         extdecl;
-    Property Parent :IEvsParented read GetParent write SetParent;
-  end;
-
-  //IObservable = interface;
-  {This is the interface to be implemented for any object that needs to be notified
-   about changes in any observable object.
-  }
-  IEvsObserver = interface(IEvsObjectRef)
-    ['{CBB67A46-C5A2-4507-A39F-C8AFC44540A5}']
-    // Gets notified for changes of an observable. It can observe only a single observable.
-    procedure Update(aSubject:IEvsObjectRef; Action:TEVSGenAction);extdecl;
-  end;
-
-  {This is the interface that an observable object must have to be able to notify
-   observers about changes in its data or metadata}
-  IEvsObservable = interface(IEvsObjectRef)
-    ['{D3A8D212-094E-4F17-BB3D-21D151CC8559}']
-    procedure AddObserver(Observer:IEvsObserver);    extdecl;
-    procedure DeleteObserver(Observer:IEvsObserver); extdecl;
-    procedure ClearObservers;                        extdecl;
-    procedure Notify(const Action: TEVSGenAction; const aSubject:IEvsObjectRef); extdecl;
-  end;
-
-  IEvsObserverList = interface(IInterface)
-     ['{19E3A48C-E857-4EF3-A1DE-3726C5A23AB7}']
-    function Get(Index: Integer): IEvsObserver; extdecl;
-    function GetCapacity: Integer;              extdecl;
-    function GetCount: Integer;                 extdecl;
-    procedure Put(Index: Integer; const Item: IEvsObserver);   extdecl;
-    procedure SetCapacity(NewCapacity: Integer);               extdecl;
-    procedure SetCount(NewCount: Integer);                     extdecl;
-    procedure Clear;                                           extdecl;
-    procedure Delete(Index: Integer);                          extdecl;
-    procedure Exchange(Index1, Index2: Integer);               extdecl;
-    function First: IEvsObserver;                              extdecl;
-    function IndexOf(const Item: IEvsObserver): Integer;       extdecl;
-    function Add(const Item: IEvsObserver): Integer;           extdecl;
-    procedure Insert(Index: Integer; const Item: IEvsObserver);extdecl;
-    function Last: IEvsObserver;                               extdecl;
-    function Remove(const Item: IEvsObserver): Integer;        extdecl;
-    procedure Lock;                                            extdecl;
-    procedure Unlock;                                          extdecl;
-
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Count: Integer read GetCount write SetCount;
-    property Items[Index: Integer]: IEvsObserver read Get write Put; default;
-  end;
-
   IEvsObjectState = interface(IEvsCopyable)
     function GetStates :TEvsDBStates;
     Property ObjectState:TEvsDBStates read GetStates;// write SetStates;
@@ -802,6 +723,7 @@ type
     Function GetCredentials :IEvsCredentials; extdecl;
     Function GetDatabase    :WideString;      extdecl;
     Function GetDefaultCharSet :Widestring;   extdecl;
+    function GetDefCollation   :Widestring;   extdecl;
     function GetDomainCount    :Integer;      extdecl;
     Function GetExceptionCount :Integer;      extdecl;
     Function GetExceptions(aIndex :Integer) :IEvsExceptionInfo; extdecl;
@@ -831,6 +753,7 @@ type
     Procedure SetConnection(aValue :IEvsConnection);            extdecl;
     Procedure SetDatabase(aValue :WideString);                  extdecl;
     Procedure SetDefaultCharSet(aValue :Widestring);            extdecl;
+    procedure SetDefCollation(aValue :Widestring);              extdecl;
     Procedure SetHost(aValue :WideString);                      extdecl;
     Procedure SetPageSize(aValue :Integer);                     extdecl;
     Procedure SetTitle(aValue :Widestring);                     extdecl;
@@ -876,6 +799,7 @@ type
     Property Database       :WideString     read Getdatabase       write SetDatabase; //the database name
     Property PageSize       :Integer        read GetPageSize       write SetPageSize; //The db page size.
     Property DefaultCharset :WideString     read GetDefaultCharSet write SetDefaultCharSet;
+    Property DefaultCollation:Widestring    read GetDefCollation   write SetDefCollation;
     Property Connection     :IEvsConnection read GetConnection     write SetConnection;
     Property ServerKind     :Integer        read GetServerID       write SetServerID;
     Property Title          :Widestring     read GetTitle          write SetTitle;
@@ -937,18 +861,23 @@ type
   { IEvsCredentials }
   IEvsCredentials = interface(IEvsCopyable)  //OK
     ['{461C62B7-58AD-42D6-9059-1F82E1C485C7}']
-    Function GetPassword :widestring;extdecl;
-    Function GetRole :WideString;extdecl;
-    Function GetUserName :widestring;extdecl;
-    Procedure SetPassword(aValue :widestring);extdecl;
-    Procedure SetRole(aValue :WideString);extdecl;
-    Procedure SetUserName(aValue :widestring);extdecl;
+    function GetCharSet :WideString;
+    Function GetPassword :WideString;          extdecl;
+    Function GetRole     :WideString;          extdecl;
+    function GetSavePwd :LongBool;             extdecl;
+    Function GetUserName :WideString;          extdecl;
+    procedure SetCharset(aValue :WideString);  extdecl;
+    Procedure SetPassword(aValue :WideString); extdecl;
+    Procedure SetRole(aValue :WideString);     extdecl;
+    procedure SetSavePwd(aValue :LongBool);    extdecl;
+    Procedure SetUserName(aValue :WideString); extdecl;
 
-    Property UserName:widestring read GetUserName write SetUserName;
-    Property Password:widestring read GetPassword write SetPassword;
-    Property Role:WideString read GetRole write SetRole;
-    //property PreferedCharset:widestring;
-    //property RefereedCollation:widestring;
+    Property UserName     :WideString read GetUserName    write SetUserName;
+    Property Password     :WideString read GetPassword    write SetPassword;
+    Property Role         :WideString read GetRole        write SetRole;
+    Property Charset      :WideString read GetCharSet     write SetCharset;
+    Property SavePassword :LongBool   read GetSavePwd     write SetSavePwd;
+    Property LastChanged  :TDateTime  read GetLastChanged write SetLastChanged
   end;
 
 
@@ -1217,11 +1146,11 @@ type
     class function NewDomain(const aParent:IEvsParented=nil)     : IEvsDomainInfo;
   end;
 
-procedure RegisterDBType(const aID:Integer; aTitle:string; aConnectProc:TConnectProc; aConnectMethod:TConnectMethod = nil; aIcon:TIcon = nil);
+Procedure RegisterDBType(const aID:Integer; aTitle:string; aConnectProc:TConnectProc; aConnectMethod:TConnectMethod = nil; aIcon:TIcon = nil);
 
-function NewDatabase(const aType :Int32; const aHost, aDatabase, aUser, aPassword, aRole, aCharset :widestring) :IEvsDatabaseInfo;overload;
-function NewDatabase(const aType :Int32) :IEvsDatabaseInfo;overload;
-function Connect(const aDB:IEvsDatabaseInfo; aServerType : Integer = 0):IEvsConnection;
+Function NewDatabase(const aType :Int32; const aHost, aDatabase, aUser, aPassword, aRole, aCharset :widestring) :IEvsDatabaseInfo;overload;
+Function NewDatabase(const aType :Int32) :IEvsDatabaseInfo;overload;
+Function Connect(const aDB:IEvsDatabaseInfo; aServerType : Integer = 0):IEvsConnection;
 Function Query(const aDB:IEvsDatabaseInfo; aSQL:widestring; ExclusiveConnection:Boolean = False):IEvsDataset;{$MESSAGE WARN 'Needs Implementation'}
 
 implementation
@@ -1502,19 +1431,27 @@ type
   { TEvsCredentials }
   TEvsCredentials = class(TEvsDBInfo, IEvsCredentials){$MESSAGE WARN 'Needs Testing'}
   private
-    FPassword : widestring;
-    FRole     : widestring;
-    FUserName : WideString;
-    function GetPassword : WideString;          extdecl;
-    function GetRole     : WideString;          extdecl;
-    function GetUserName : WideString;          extdecl;
-    procedure SetPassword(aValue : WideString); extdecl;
-    procedure SetRole    (aValue : WideString); extdecl;
-    procedure SetUserName(aValue : WideString); extdecl;
+    FPassword :WideString;
+    FRole     :WideString;
+    FUserName :WideString;
+    FCharset  :WideString;
+    FSavePwd  :LongBool;
+    Function GetCharSet  :WideString;
+    Function GetPassword :WideString;           extdecl;
+    Function GetRole     :WideString;           extdecl;
+    Function GetSavePwd  :LongBool;             extdecl;
+    Function GetUserName :WideString;           extdecl;
+    Procedure SetCharset (aValue :WideString);  extdecl;
+    Procedure SetPassword(aValue :WideString);  extdecl;
+    Procedure SetRole    (aValue :WideString);  extdecl;
+    Procedure SetSavePwd (aValue :LongBool);    extdecl;
+    Procedure SetUserName(aValue :WideString);  extdecl;
   published
-    property UserName : WideString read GetUserName write SetUserName;
-    property Password : WideString read GetPassword write SetPassword;
-    property Role     : WideString read GetRole     write SetRole;
+    Property UserName :WideString   read GetUserName write SetUserName;
+    Property Password :WideString   read GetPassword write SetPassword;
+    Property Role     :WideString   read GetRole     write SetRole;
+    Property Charset  :WideString   read GetCharSet  write SetCharset;
+    Property SavePassword :LongBool read GetSavePwd  write SetSavePwd;
   end;
   { TEvsDatabaseInfo }
   TEvsDatabaseInfo = class(TEvsDBInfo, IEvsDatabaseInfo)
@@ -1544,6 +1481,7 @@ type
     Function GetCredentials :IEvsCredentials;                  extdecl;
     Function GetDatabase :WideString;                          extdecl;
     Function GetDefaultCharSet :WideString;                    extdecl;
+    function IEvsDatabaseInfo.GetDefCollation = GetDefaultColation;
     Function GetDefaultColation :WideString;                   extdecl;
     function GetDomain(aIndex :Integer):IEvsDomainInfo;        extdecl;
     Function GetExceptionCount :Integer;                       extdecl;
@@ -1566,6 +1504,7 @@ type
     Procedure SetConnection(aValue :IEvsConnection);           extdecl;
     Procedure SetDatabase(aValue :WideString);                 extdecl;
     Procedure SetDefaultCharSet(aValue :Widestring);           extdecl;
+    function IEvsDatabaseInfo.SetDefCollation = SetDefaultColation;
     Procedure SetDefaultColation(aValue :WideString);          extdecl;
     Procedure SetHost(aValue :WideString);                     extdecl;
     Procedure SetPageSize(aValue :Integer);                    extdecl;
@@ -3228,9 +3167,9 @@ Procedure TEvsAbstractConnectionProxy.CopyFrom(const aSource :IEvsCopyable); ext
 var
   vTmp :TPersistent;
 begin
-  if Supports(aSource, TPersistent, vTmp) then begin
-    Assign(vTmp);
-  end else raise ETBException.Create('Unsuported Source');
+  if Supports(aSource, TPersistent, vTmp) then
+    Assign(vTmp)
+  else aSource.CopyTo(Self as IEvsCopyable);
 end;
 
 procedure TEvsAbstractConnectionProxy.SetConnected(aValue :Boolean);extdecl;
@@ -4938,26 +4877,46 @@ begin
   Result := FUserName;
 end;
 
-function TEvsCredentials.GetPassword :widestring;extdecl;
+procedure TEvsCredentials.SetCharset(aValue :WideString);
+begin
+  FCharset := aValue;
+end;
+
+function TEvsCredentials.GetPassword :WideString; extdecl;
 begin
   Result := FPassword;
 end;
 
-function TEvsCredentials.GetRole :widestring;extdecl;
+function TEvsCredentials.GetCharSet :WideString;
+begin
+  Result := FCharset
+end;
+
+function TEvsCredentials.GetRole :WideString; extdecl;
 begin
   Result := FRole;
 end;
 
-procedure TEvsCredentials.SetPassword(aValue :widestring);extdecl;
+function TEvsCredentials.GetSavePwd :LongBool;
+begin
+  Result := FSavePwd
+end;
+
+procedure TEvsCredentials.SetPassword(aValue :WideString); extdecl;
 begin
   if FPassword=aValue then Exit;
   FPassword:=aValue;
 end;
 
-procedure TEvsCredentials.SetRole(aValue :widestring);extdecl;
+procedure TEvsCredentials.SetRole(aValue :WideString); extdecl;
 begin
   if FRole=aValue then Exit;
   FRole:=aValue;
+end;
+
+procedure TEvsCredentials.SetSavePwd(aValue :LongBool);
+begin
+  FSavePwd := aValue;
 end;
 
 {$ENDREGION}
@@ -5038,7 +4997,7 @@ begin
   raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
-Function TEvsDatabaseInfo.GetTitle :WideString; stdcall;
+Function TEvsDatabaseInfo.GetTitle :WideString; extdecl;
 begin
   Result := FTitle;
 end;

@@ -33,7 +33,7 @@ property of the popup menu to the right value.
 {$mode objfpc}{$H+}
 {$DEFINE UseDebugLog}
 {$DEFINE DEBUG_CONFIG}
-{$DEFINE EVS_TKControl}
+{$I EvsDefs.inc}
 interface
 { TODO -oJKOZ -cMeta Data : Add Refresh to all nodes of the tree except the root node. }
 { TODO -oJKOZ -cUser Interface : Drag and drop objects between databases, aka carbon copy an object, mostly tables generators and triggers.}
@@ -45,9 +45,9 @@ that means remove all the unwanted groups and leave only the absolutely minimum 
 move to a firebird specific unit }
 {$DEFINE IBCNN}
 uses
-  Classes, SysUtils, Menus, sqldb, memds, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls, Reg, QueryWindow, Grids, ExtCtrls, TableManage,
-  Buttons, ActnList, dbugintf, utbcommon, IBConnection, Clipbrd, MDOQuery, MDODatabase, MDO, MDOServices, MDOCustomDataSet, MDODatabaseInfo,
-  uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, typinfo, importtable, dbInfo;
+  Classes, SysUtils, Menus, sqldb, memds, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs, ComCtrls, Reg, QueryWindow, Grids, ExtCtrls,
+  TableManage, Buttons, ActnList, dbugintf, utbcommon, IBConnection, Clipbrd, StdCtrls, StdActns, MDOQuery, MDODatabase, MDO, MDOServices,
+  MDOCustomDataSet, MDODatabaseInfo, uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, uevsGenIntf, typinfo, importtable, dbInfo;
 
 type
   //TDBInfo = record
@@ -79,6 +79,11 @@ type
     actFontEditor           :TAction;
     actAbout                :TAction;
     actBackupDB             :TAction;
+    actCut                  :TAction;
+    actCopy                 :TAction;
+    actDatabaseEdit         :TAction;
+    actSelectAll            :TAction;
+    actPaste                :TAction;
     actQuery                :TAction;
     actOptions              :TAction;
     actRefre                :TAction;
@@ -89,37 +94,47 @@ type
     actNewDB                :TAction;
     ActionList1             :TActionList;
     CoolBar1                :TCoolBar;
+    EditCopy1               :TEditCopy;
+    EditCut1                :TEditCut;
     editorFontDialog        :TFontDialog;
+    EditPaste1              :TEditPaste;
+    EditSelectAll1          :TEditSelectAll;
+    EditUndo1               :TEditUndo;
     Image2                  :TImage;
     ImageList1              :TImageList;
     MDODatabase1            :TMDODatabase;
+    mniCut                  :TMenuItem;
+    mniPaste                :TMenuItem;
+    mniSelectAll            :TMenuItem;
+    mniCopy                 :TMenuItem;
+    mnuEdit                 :TMenuItem;
     mniDummy                :TMenuItem;
     qryMain                 :TMDOQuery;
     MenuImageList22         :TImageList;
     MainMenu2               :TMainMenu;
-    MenuItem1               :TMenuItem;
-    MenuItem10              :TMenuItem;
-    MenuItem3               :TMenuItem;
+    mniAppExit2             :TMenuItem;
+    mniOptions              :TMenuItem;
+    mniAppExit              :TMenuItem;
     MenuItem4               :TMenuItem;
-    mniBackupDB             :TMenuItem;
+    mniDatabaseBackup       :TMenuItem;
     mniSeperator1           :TMenuItem;
-    mnuConnect              :TMenuItem;
-    MenuItem2               :TMenuItem;
+    mnuDatabaseConnect      :TMenuItem;
+    MnuSettings             :TMenuItem;
     mnuDatabase             :TMenuItem;
-    mniNewDatabase          :TMenuItem;
-    mniRegisterDatabase     :TMenuItem;
-    mniRestoreDatabase      :TMenuItem;
-    MenuItem7               :TMenuItem;
-    MenuItem8               :TMenuItem;
-    MenuItem9               :TMenuItem;
+    mniDatabaseNew          :TMenuItem;
+    mniDatabaseRegister     :TMenuItem;
+    mniDatabaseRestore      :TMenuItem;
+    mniFontEditor           :TMenuItem;
+    mnuHelp                 :TMenuItem;
+    mniAbout                :TMenuItem;
     mnOptions               :TMenuItem;
     mnEditorFont            :TMenuItem;
     SQLQueryOLD             :TSQLQuery;
     tbtnAbout               :TToolButton;
-    tbtnCreateNewDB         :TToolButton;
+    tbtnDatabaseNew         :TToolButton;
     tbtnEditorFont          :TToolButton;
-    tbtnRegDatabase         :TToolButton;
-    tbtnRestoreDatabase     :TToolButton;
+    tbtnDatabaseRegister    :TToolButton;
+    tbtnDatabaseRestore     :TToolButton;
     ToolBar1                :TToolBar;
     toolbarImages           :TImageList;
     MainMenu1               :TMainMenu;
@@ -204,19 +219,24 @@ type
     StatusBar1              :TStatusBar;
     tbMain                  :TTabSheet;
     TBarImages32            :TImageList;
-    ToolButton1             :TToolButton;
+    tbtnDatabaseQuery       :TToolButton;
     ToolButton2             :TToolButton;
     ToolButton3             :TToolButton;
     tvMain                  :TTreeView;
+    procedure actCopyUpdate(Sender :TObject);
+    procedure actCutUpdate(Sender :TObject);
+    procedure actDatabaseEditUpdate(Sender :TObject);
     procedure actExitExecute      (Sender :TObject);
     procedure actFontEditorExecute(Sender :TObject);
     procedure actAboutExecute     (Sender :TObject);
     procedure actNewDBExecute     (Sender :TObject);
+    procedure actPasteUpdate(Sender :TObject);
     procedure actQueryExecute(Sender :TObject);
     procedure actRefreshDatabaseExecute(Sender :TObject);
     procedure actRefreshExecute   (Sender :TObject);
     procedure actRegisterDBExecute(Sender :TObject);
     procedure actRestoreDBExecute (Sender :TObject);
+    procedure actSelectAllUpdate(Sender :TObject);
     procedure FormActivate        (Sender: TObject);
     procedure FormClose           (Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate          (Sender: TObject);
@@ -284,16 +304,16 @@ type
     procedure lmViewFirst1000Click(Sender: TObject);
     procedure lmNewRoleClick      (Sender: TObject);
     procedure PageControl1Change  (Sender :TObject);
-    procedure lmViewStoredProcedureClick  (Sender: TObject);
-    procedure lmRecalculateStatisticsClick(Sender: TObject);
-    procedure lmUnregisterDatabaseClick   (Sender: TObject);
+    procedure lmViewStoredProcedureClick  (Sender :TObject);
+    procedure lmRecalculateStatisticsClick(Sender :TObject);
+    procedure lmUnregisterDatabaseClick   (Sender :TObject);
     procedure PageControl1Changing(Sender :TObject; var AllowChange :Boolean);
-    procedure PageControl1CloseTabClicked (Sender: TObject);
+    procedure PageControl1CloseTabClicked (Sender :TObject);
     procedure PageControl1MouseUp(Sender :TObject; Button :TMouseButton; Shift :TShiftState; X, Y :Integer);
-    procedure pmDatabasePopup(Sender: TObject);
-    procedure tvMainDblClick (Sender: TObject);
-    procedure tvMainExpanded (Sender: TObject; Node: TTreeNode);
-    procedure GlobalException(Sender: TObject; E : Exception);
+    procedure pmDatabasePopup(Sender :TObject);
+    procedure tvMainDblClick (Sender :TObject);
+    procedure tvMainExpanded (Sender :TObject; Node :TTreeNode);
+    procedure GlobalException(Sender :TObject; E :Exception);
   private
     //Page changing variables
     FOldPage : Integer;
@@ -304,9 +324,8 @@ type
     FActivated          :Boolean;
 
     function FindCustomForm(aTitle: string; aClass: TClass): TComponent;overload;
+    function GetActiveNode :TTreeNode;
     function _FindCustomForm(aTitle: string; aClass: TFormClass): TForm;overload;
-    // Show new generator form
-    procedure InitNewGen(DatabaseIndex: Integer);
     function GetServerNameNode(ServerName: string): TTreeNode;
     // Remove RegisteredDatabases and clean up memory held by its objects
     procedure ReleaseRegisteredDatabases;
@@ -328,13 +347,15 @@ type
     //function GetNodeType(Const aNode:TTreeNode):
     Function NewTab(const aParent:TWinControl; aIndex:Integer):TTabSheet;overload;inline;
     //Function NewTab(const aParent:TWinControl; aIndex:Integer; aTitle:String):TWinControl;overload;inline;
+
+    property ActiveNode:TTreeNode read GetActiveNode;
   public
     // Array of database Connect details as stored in turbobird.reg file
-    RegisteredDatabases : TDBInfoArray;// array of TDBInfo; //JKOZ :01.002
-    Version             : string;
-    VersionDate         : string;
+    RegisteredDatabases :TDBInfoArray;// array of TDBInfo; //JKOZ :01.002
+    Version             :string;
+    VersionDate         :string;
     Major, Minor,
-    ReleaseVersion      : word;
+    ReleaseVersion      :Word;
 
     function GetServerName(DBName: string): string;
     function RetrieveInputParamFromSP(Body: string): string;
@@ -808,6 +829,41 @@ begin
   end;
 end;
 
+function CanMultiSelect(Const aControl:TControl):Boolean;{$MESSAGE WARN 'Needs Testing'}
+var
+  vTmp:IEvsCopyPaste;
+begin
+  Result := (aControl  is TCustomEdit)
+         or (aControl  is TCustomSynEdit)
+         or ((aControl is TListBox)  and TListBox(aControl).MultiSelect)
+         or ((aControl is TTreeView) and TTreeView(aControl).MultiSelect)
+         or ((aControl is TListView) and TListView(aControl).MultiSelect);
+end;
+
+function CanCopy(const aControl:TControl):Boolean;{$MESSAGE WARN 'Needs Testing'}
+var
+  vTmp:IEvsCopyPaste;
+begin
+  Result := ((aControl is TCustomEdit)    and (TCustomEdit(aControl).SelLength > 0))
+         or ((aControl is TCustomSynEdit) and TCustomSynEdit(aControl).SelAvail)
+         or ((aControl is TListBox)       and (TListBox(aControl).SelCount>0))
+         or ((aControl is TListView)      and (TListView(aControl).SelCount>0));
+end;
+
+function CanPaste(Const aControl:TControl):Boolean;{$MESSAGE WARN 'Needs Testing'}
+var
+  vTmp:IEvsCopyPaste;
+begin
+  Result := ((aControl is TCustomEdit) and Clipboard.HasFormat(CF_Text))
+         or ((aControl is TSynEdit) and TSynEdit(aControl).CanPaste)
+         or (Supports(aControl, IEvsCopyPaste, vTmp) and vTmp.CanPaste);
+end;
+
+procedure TfmMain.actSelectAllUpdate(Sender :TObject);
+begin
+  actSelectAll.Enabled := CanMultiSelect(ActiveControl);
+end;
+
 procedure TfmMain.actNewDBExecute(Sender :TObject);
 var
   fmCreateDB : TfmCreateDB;
@@ -819,6 +875,11 @@ begin
   finally
     fmCreateDB.Free;
   end;
+end;
+
+procedure TfmMain.actPasteUpdate(Sender :TObject);
+begin
+  actPaste.Enabled := CanPaste(ActiveControl);
 end;
 
 procedure TfmMain.actQueryExecute(Sender :TObject);
@@ -840,7 +901,7 @@ begin
     otUsers: ;
     otIndexes: ;
     otConstraints: ;
-  end; ;
+  end;
 end;
 
 procedure TfmMain.actRefreshDatabaseExecute(Sender :TObject);
@@ -853,12 +914,26 @@ end;
 procedure TfmMain.actRefreshExecute(Sender :TObject);
 begin
   //??jkoz: did I deleted this?
-
 end;
 
 procedure TfmMain.actExitExecute(Sender :TObject);
 begin
   Close;
+end;
+
+procedure TfmMain.actCutUpdate(Sender :TObject);
+begin
+  actCut.Enabled := CanCopy(ActiveControl);
+end;
+
+procedure TfmMain.actDatabaseEditUpdate(Sender :TObject);
+begin
+  actDatabaseEdit.Enabled := IsDBNode(ActiveNode);
+end;
+
+procedure TfmMain.actCopyUpdate(Sender :TObject);
+begin
+  actCopy.Enabled := CanCopy(ActiveControl);
 end;
 
 procedure TfmMain.actFontEditorExecute(Sender :TObject);
@@ -872,7 +947,6 @@ end;
                       //C:\Users\jkoz\AppData\Local\Evosi\TurboBird\
 procedure TfmMain.actAboutExecute(Sender :TObject);
 begin
-  //fmAbout:= TfmAbout.Create(nil);
   with TfmAbout.Create(Nil) do try
     Init;
     ShowModal;
@@ -1155,7 +1229,8 @@ begin
   SelNode:= tvMain.Selected;
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
-    InitNewGen(PtrInt(SelNode.Parent.Parent.Data));
+    //InitNewGen(PtrInt(SelNode.Parent.Parent.Data));
+    fmNewGen.Init(PtrInt(SelNode.Parent.Parent.Data));
     fmNewGen.edGenName.Text:= SelNode.Text;
     fmNewGen.edGenName.Enabled:= False;
     fmNewGen.cxTrigger.Checked:= True;
@@ -1631,15 +1706,6 @@ end;
 
 (**************  Initialize New Generator form  *************)
 
-procedure TfmMain.InitNewGen(DatabaseIndex: Integer);
-var
-  Rec: TDBInfo;
-begin
-  Rec:= RegisteredDatabases[DatabaseIndex];
-
-  fmNewGen.Init(DatabaseIndex);
-end;
-
 (*  Get server name from database string  *)
 
 function TfmMain.GetServerName(DBName: string): string;
@@ -1945,7 +2011,8 @@ begin
   SelNode:= tvMain.Selected;
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
-    InitNewGen(PtrInt(SelNode.Parent.Data));
+    //InitNewGen(PtrInt(SelNode.Parent.Data));
+    fmNewGen.Init(PtrInt(SelNode.Parent.Data));
     fmNewGen.edGenName.Clear;
     fmNewGen.edGenName.Enabled:= True;
     fmNewGen.cxTrigger.Checked:= False;
@@ -4047,20 +4114,16 @@ begin
   begin
     vRegDlg.NewReg:= False;
     vRegDlg.bbReg.Caption:= 'Save';
-    vRegDlg.RecPos:= RegisteredDatabases[PtrInt(SelNode.Data)].Index;
+    //vRegDlg.RecPos:= RegisteredDatabases[PtrInt(SelNode.Data)].Index;
 
-    Rec:= RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec;
-    vRegDlg.edDatabaseName.Text:= Rec.DatabaseName;
-    vRegDlg.edTitle.Text:= Rec.Title;
-    vRegDlg.edUserName.Text:= Rec.UserName;
-    vRegDlg.edPassword.Text:= Rec.Password;
-    vRegDlg.cbCharset.Text:= Rec.Charset;
-    vRegDlg.edRole.Text:= Rec.Role;
-    vRegDlg.cxSavePassword.Checked:= Rec.SavePassword;
-
+    Rec := RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec;
+    //vRegDlg.Rec := @Rec;
+    vRegDlg.DB := RegisteredDatabases[PtrInt(SelNode.Data)].DataBase;
+    vRegDlg.SavePassword := Rec.SavePassword;
     if vRegDlg.ShowModal = mrOK then
     begin
-      LoadRegisteredDatabases;
+
+      RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec := Rec;
       vRegDlg.SaveRegistrations;
       LoadRegisteredDatabases;
     end;
@@ -4596,7 +4659,7 @@ end;
 
 (**********************           Find QueryWindow                *********************************)
 
-function TfmMain.FindQueryWindow(ATitle: string): TComponent;
+function TfmMain.FindQueryWindow(ATitle: string): TComponent;deprecated;
 //var
 //  vCntr: Integer;
 begin
@@ -4607,6 +4670,8 @@ begin
   //      Result := Application.Components[vCntr];
   //      Break;
   //    end;
+   Result := _FindCustomForm(ATitle, TfmQueryWindow);
+  //raise ReplaceException;
 end;
 
 (**********************   Find CustomForm   *********************************)
@@ -4615,17 +4680,22 @@ function TfmMain.FindCustomForm(aTitle: string; aClass: TClass): TComponent;
 var
   vCntr: Integer;
 begin
-  //JKoz : all forms are registeres with the screen global object but not all the forms register the application as owner.
+  //JKoz : all forms are registered with the screen global object but not all the forms register the application as owner.
   Result := nil;
   if aClass.InheritsFrom(TForm) then Result := _FindCustomForm(aTitle, TFormClass(aClass))
   else //old code. Remove it in a future update for simplification.
-    for vCntr:= 0 to Application.ComponentCount- 1 do begin
+    for vCntr:= 0 to Application.ComponentCount- 1 do begin {$MESSAGE WARN 'Needs Removing'}
       if Application.Components[vCntr] is AClass then
         if (Application.Components[vCntr] as TForm).Caption = ATitle then begin
           Result := Application.Components[vCntr];
           Break;
         end;
     end;
+end;
+
+function TfmMain.GetActiveNode :TTreeNode;
+begin
+  Result := tvMain.Selected;
 end;
 
 function TfmMain._FindCustomForm(aTitle :string; aClass :TFormClass) :TForm;
@@ -4669,7 +4739,7 @@ begin
 end;
 
 function TfmMain.GetBlobSubTypeName(SubType: integer): string;
-begin
+begin {$MESSAGE WARN 'Needs Replacing'}
   case SubType of
     //<0: user-defined
     0: Result:= 'SUB_TYPE BINARY';
@@ -4684,7 +4754,7 @@ end;
 (*******************  Get Primary Key fields  ************************)
 
 function TfmMain.GetPrimaryKeyIndexName(DatabaseIndex: Integer; ATableName: string; var ConstraintName: string): string;
-begin
+begin {$MESSAGE WARN 'Needs Replacing'}
   qryMain.Close;
   SetConnection(DatabaseIndex);
   qryMain.SQL.Text:= 'select RDB$Index_name, RDB$Constraint_Name from RDB$RELATION_CONSTRAINTS ' +
@@ -4700,9 +4770,9 @@ begin
   qryMain.Close;
 end;
 
-function TfmMain.GetPrimaryKeyFields(DatabaseIndex: Integer;
-  ATableName: string; var KeyFields: TStringList): boolean;
-const
+function TfmMain.GetPrimaryKeyFields(DatabaseIndex: Integer; ATableName: string;
+                                     var KeyFields: TStringList): boolean;
+const                     {$MESSAGE WARN 'Needs Replacing'}
   // Select field(s) that make up primary key
   Template= ' SELECT r.rdb$field_name ' +
             ' FROM RDB$RELATION_FIELDS r ' +
@@ -4733,7 +4803,7 @@ end;
 (*********  Get constrain fields  *********)
 
 function TfmMain.GetConstraintFields(ATableName, AIndexName: string; var List: TStringList): Boolean;
-begin
+begin {$MESSAGE WARN 'Needs Replacing'}
   qryMain.Close;
   qryMain.SQL.Text:= 'SELECT s.RDB$FIELD_NAME AS field_name ' +
      'FROM RDB$INDEX_SEGMENTS s ' +

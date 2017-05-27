@@ -1,7 +1,7 @@
 object fmMain: TfmMain
-  Left = 346
+  Left = 495
   Height = 620
-  Top = 117
+  Top = 244
   Width = 1092
   ActiveControl = tvMain
   Caption = 'TurboBird Admin for FireBird'
@@ -4483,6 +4483,8 @@ object fmMain: TfmMain
         Control = ToolBar1
         Width = 179
       end>
+    Color = 15521990
+    ParentColor = False
     object ToolBar1: TToolBar
       AnchorSideLeft.Control = CoolBar1
       AnchorSideTop.Control = CoolBar1
@@ -4504,17 +4506,17 @@ object fmMain: TfmMain
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
-      object tbtnCreateNewDB: TToolButton
+      object tbtnDatabaseNew: TToolButton
         Left = 1
         Top = 0
         Action = actNewDB
       end
-      object tbtnRegDatabase: TToolButton
+      object tbtnDatabaseRegister: TToolButton
         Left = 41
         Top = 0
         Action = actRegisterDB
       end
-      object tbtnRestoreDatabase: TToolButton
+      object tbtnDatabaseRestore: TToolButton
         Left = 81
         Top = 0
         Action = actRestoreDB
@@ -4539,7 +4541,7 @@ object fmMain: TfmMain
         Caption = 'tbtnAbout'
         ImageIndex = 11
       end
-      object ToolButton1: TToolButton
+      object tbtnDatabaseQuery: TToolButton
         Left = 126
         Top = 0
         Action = actQuery
@@ -9262,7 +9264,7 @@ object fmMain: TfmMain
       OnExecute = actRefreshDatabaseExecute
     end
     object actOptions: TAction
-      Caption = 'actOptions'
+      Caption = 'Options'
       ImageIndex = 12
     end
     object actBackupDB: TAction
@@ -9274,6 +9276,62 @@ object fmMain: TfmMain
       Caption = 'Query Database'
       ImageIndex = 19
       OnExecute = actQueryExecute
+    end
+    object actCut: TAction
+      Category = 'Edit'
+      Caption = 'actCut'
+      OnUpdate = actCutUpdate
+    end
+    object actCopy: TAction
+      Category = 'Edit'
+      Caption = 'actCopy'
+      OnUpdate = actCopyUpdate
+    end
+    object actPaste: TAction
+      Category = 'Edit'
+      Caption = 'actPaste'
+      OnUpdate = actPasteUpdate
+    end
+    object actSelectAll: TAction
+      Category = 'Edit'
+      Caption = 'actSelectAll'
+      OnUpdate = actSelectAllUpdate
+    end
+    object EditCut1: TEditCut
+      Category = 'Edit'
+      Caption = 'Cu&t'
+      Hint = 'Cut'
+      ShortCut = 16472
+    end
+    object EditCopy1: TEditCopy
+      Category = 'Edit'
+      Caption = '&Copy'
+      Hint = 'Copy'
+      ShortCut = 16451
+    end
+    object EditPaste1: TEditPaste
+      Category = 'Edit'
+      Caption = '&Paste'
+      Hint = 'Paste'
+      ShortCut = 16470
+    end
+    object EditSelectAll1: TEditSelectAll
+      Category = 'Edit'
+      Caption = 'Select &All'
+      Hint = 'Select All'
+      ShortCut = 16449
+    end
+    object EditUndo1: TEditUndo
+      Category = 'Edit'
+      Caption = '&Undo'
+      Hint = 'Undo'
+      ShortCut = 16474
+    end
+    object actDatabaseEdit: TAction
+      Category = 'Database'
+      Caption = 'actDatabaseEdit'
+      OnExecute = lmEditRegClick
+      OnUpdate = actDatabaseEditUpdate
     end
   end
   object MainMenu2: TMainMenu
@@ -9318,7 +9376,7 @@ object fmMain: TfmMain
         EAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52AF
         EAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52AFEAFA52B0EAC4
       }
-      object mniNewDatabase: TMenuItem
+      object mniDatabaseNew: TMenuItem
         Action = actNewDB
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9386,7 +9444,7 @@ object fmMain: TfmMain
           EE1EFFFFFF00FFFFFF00
         }
       end
-      object mniRegisterDatabase: TMenuItem
+      object mniDatabaseRegister: TMenuItem
         Action = actRegisterDB
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9454,16 +9512,16 @@ object fmMain: TfmMain
           EC1BFFFFFF00FFFFFF00
         }
       end
-      object mnuConnect: TMenuItem
+      object mnuDatabaseConnect: TMenuItem
         Caption = 'Connect'
       end
       object mniSeperator1: TMenuItem
         Caption = '-'
       end
-      object mniBackupDB: TMenuItem
+      object mniDatabaseBackup: TMenuItem
         Caption = 'Backup'
       end
-      object mniRestoreDatabase: TMenuItem
+      object mniDatabaseRestore: TMenuItem
         Action = actRestoreDB
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9534,7 +9592,7 @@ object fmMain: TfmMain
       object MenuItem4: TMenuItem
         Caption = '-'
       end
-      object MenuItem3: TMenuItem
+      object mniAppExit: TMenuItem
         Action = actExit
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9603,9 +9661,24 @@ object fmMain: TfmMain
         }
       end
     end
-    object MenuItem2: TMenuItem
+    object mnuEdit: TMenuItem
+      Caption = 'Edit'
+      object mniSelectAll: TMenuItem
+        Caption = 'New Item18'
+      end
+      object mniCopy: TMenuItem
+        Caption = 'New Item19'
+      end
+      object mniCut: TMenuItem
+        Caption = 'New Item20'
+      end
+      object mniPaste: TMenuItem
+        Caption = 'New Item21'
+      end
+    end
+    object MnuSettings: TMenuItem
       Caption = 'Settings'
-      object MenuItem7: TMenuItem
+      object mniFontEditor: TMenuItem
         Action = actFontEditor
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9673,7 +9746,7 @@ object fmMain: TfmMain
           FF00FFFFFF00FFFFFF00
         }
       end
-      object MenuItem10: TMenuItem
+      object mniOptions: TMenuItem
         Action = actOptions
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9742,9 +9815,9 @@ object fmMain: TfmMain
         }
       end
     end
-    object MenuItem8: TMenuItem
+    object mnuHelp: TMenuItem
       Caption = 'Help'
-      object MenuItem9: TMenuItem
+      object mniAbout: TMenuItem
         Action = actAbout
         Bitmap.Data = {
           C6070000424DC607000000000000360000002800000016000000160000000100
@@ -9882,7 +9955,7 @@ object fmMain: TfmMain
       }
       Hint = 'Only for testing icons delete it before release.'
     end
-    object MenuItem1: TMenuItem
+    object mniAppExit2: TMenuItem
       Action = actExit
       Bitmap.Data = {
         C6070000424DC607000000000000360000002800000016000000160000000100

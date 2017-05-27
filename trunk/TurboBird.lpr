@@ -20,7 +20,7 @@ uses
   fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, utbcommon, csvdocument, uTBDBRegistry, dbInfo, main, QueryWindow, Reg, UDFInfo, About,
   BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec, EditTable, EnterPass, NewConstraint,
   NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions, uTBOptionsform, ViewDomain, ViewGen,
-  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsNullables;
+  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsGenIntf;
 
 const
   Major   = 1;

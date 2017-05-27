@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="charsetExport.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="32" Y="21"/>
+        <UsageCount Value="34"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="unit1.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Unit1"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="50"/>
+        <CursorPos X="28" Y="102"/>
+        <UsageCount Value="34"/>
+        <Bookmarks Count="2">
+          <Item0 X="61" Y="120" ID="1"/>
+          <Item1 Y="121"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\uCharSets.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="215"/>
+        <CursorPos X="41" Y="259"/>
+        <UsageCount Value="34"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="843"/>
+        <CursorPos X="15" Y="870"/>
+        <UsageCount Value="16"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\streams.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="433"/>
+        <CursorPos X="5" Y="456"/>
+        <UsageCount Value="16"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="51"/>
+        <CursorPos X="10" Y="79"/>
+        <UsageCount Value="9"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\utbtypes.pas"/>
+        <UnitName Value="uTBTypes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="137"/>
+        <CursorPos X="27" Y="163"/>
+        <UsageCount Value="16"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\uevsgenintf.pas"/>
+        <UnitName Value="uEvsGenIntf"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="41"/>
+        <CursorPos X="21" Y="74"/>
+        <UsageCount Value="16"/>
+      </Unit7>
+    </Units>
+    <JumpHistory Count="17" HistoryIndex="16">
+      <Position1>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="31" Column="54" TopLine="3"/>
+      </Position1>
+      <Position2>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="156" Column="7" TopLine="113"/>
+      </Position2>
+      <Position3>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="167" Column="5" TopLine="115"/>
+      </Position3>
+      <Position4>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="154" Column="4" TopLine="112"/>
+      </Position4>
+      <Position5>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="165" TopLine="112"/>
+      </Position5>
+      <Position6>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="157" TopLine="111"/>
+      </Position6>
+      <Position7>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="32" Column="14"/>
+      </Position7>
+      <Position8>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="148" TopLine="101"/>
+      </Position8>
+      <Position9>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="93" Column="18" TopLine="65"/>
+      </Position9>
+      <Position10>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="117" Column="52" TopLine="87"/>
+      </Position10>
+      <Position11>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="169" Column="29" TopLine="137"/>
+      </Position11>
+      <Position12>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="102" Column="28" TopLine="50"/>
+      </Position12>
+      <Position13>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="101" Column="28" TopLine="49"/>
+      </Position13>
+      <Position14>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="100" Column="28" TopLine="48"/>
+      </Position14>
+      <Position15>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="99" Column="28" TopLine="47"/>
+      </Position15>
+      <Position16>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="100" Column="28" TopLine="48"/>
+      </Position16>
+      <Position17>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="101" Column="28" TopLine="49"/>
+      </Position17>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

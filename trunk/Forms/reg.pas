@@ -1,12 +1,14 @@
 unit Reg;
 
 {$mode objfpc}{$H+}
-
+{$I EvsDefs.inc}
 interface
-
+{ TODO -oJKOZ -cMetadata upgrade : Add support for Collation selection. }
+{ TODO -oJKOZ -cMetadata upgrade : Add support for page size }
+{ TODO -oJKOZ -cMetadata upgrade : Add support for multiple files }
 uses
   Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls, sqldb, sqldblib,
-  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, uTBTypes, utbConfig, utbcommon;
+  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, uTBTypes, utbConfig, utbcommon, uEvsDBSchema;
 { TODO -oJKOZ -cUser Expirience : Retreive the database default characterset during registration.(The button is
   in place write the code to go with it and make it visible). }
 type
@@ -14,65 +16,99 @@ type
   { TfmReg }
 
   TfmReg = class(TForm)
-    bbCancel: TBitBtn;
-    bbTest: TBitBtn;
-    bbReg: TBitBtn;
+    bbCancel :TBitBtn;
+    bbReg :TBitBtn;
+    bbTest :TBitBtn;
     BitBtn1 :TBitBtn;
-    btBrowse: TButton;
-    cbCharset: TComboBox;
-    cxSavePassword: TCheckBox;
-    edRole: TEdit;
-    edDatabaseName: TEdit;
-    edTitle: TEdit;
-    edPassword: TEdit;
-    edUserName: TEdit;
-    Image1: TImage;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Connection :TMDODatabase;
-    OpenDialog1: TOpenDialog;
+    btBrowse :TButton;
+    cbCharset :TComboBox;
+    cbCharset1 :TComboBox;
+    cxSavePassword :TCheckBox;
+    edDatabaseName :TEdit;
+    edPassword :TEdit;
+    edRole :TEdit;
+    edTitle :TEdit;
+    edUserName :TEdit;
+    Image1 :TImage;
+    Connection     :TMDODatabase;
+    Label1 :TLabel;
+    Label2 :TLabel;
+    Label3 :TLabel;
+    Label4 :TLabel;
+    Label5 :TLabel;
+    Label6 :TLabel;
+    Label7 :TLabel;
+    OpenDialog1    :TOpenDialog;
+    Panel1 :TPanel;
+    Panel2 :TPanel;
+    Panel3 :TPanel;
+    Panel4 :TPanel;
+    Panel5 :TPanel;
+    Panel6 :TPanel;
     procedure bbRegClick(Sender: TObject);
     procedure bbTestClick(Sender: TObject);
     procedure BitBtn1Click(Sender :TObject);
     procedure btBrowseClick(Sender: TObject);
 
   private
+    FCollation :string;
     { private declarations }
+    FDBDetails:PDBDetails;
+    FDBInfo : IEvsDatabaseInfo;
+
     function EditRegisteration(Index: Integer; Title, DatabaseName, UserName, Password, Charset, Role: string;
-      SavePassword: Boolean): Boolean;
+                               SavePassword: Boolean): Boolean;
     function GetCharSet :string;
+    function GetDBInfo :IEvsDatabaseInfo;
     function GetDBName :string;
     function GetHost :string;
     function GetPassword :string;
+    function GetRec :PDBDetails;
     function GetRole :string;
+    function GetSavePwd :Boolean;
+    function GetTitle :string;
     function GetUserName :string;
     procedure SetCharset(aValue :string);
+    procedure SetCollation(aValue :string);
+    procedure SetDBInfo(aValue :IEvsDatabaseInfo);
     procedure SetDBName(aValue :string);
     procedure SetHost(aValue :string);
     procedure SetPassword(aValue :string);
+    procedure SetRec(aValue :PDBDetails);
     procedure SetRole(aValue :string);
+    procedure SetSavePwd(aValue :Boolean);
+    procedure SetTitle(aValue :string);
     procedure SetUserName(aValue :string);
+  protected
+    procedure ToScreen;
+    procedure FromScreen;
   public
     { public declarations }
     NewReg: Boolean;
-    RecPos: Integer;
+    //RecPos: Integer;
     function RegisterDatabase(Title, DatabaseName, UserName, Password, Charset, Role: string;
       SavePassword: Boolean): Boolean;
+
     function TestConnection(DatabaseName, UserName, Password, Charset: string): Boolean;
     function GetDefaultCharSet:string;
     function GetEmptyRec: Integer;
     function SaveRegistrations: Boolean;
     procedure Sort;
-    property DatabaseName:string read GetDBName   write SetDBName;
-    property Host        :string Read GetHost     write SetHost;
-    property UserName    :string read GetUserName write SetUserName;
-    property Password    :string read GetPassword write SetPassword;
-    property Charset     :string read GetCharSet  write SetCharset;
-    property Role        :string read GetRole     write SetRole;
+
+    property DatabaseName  :string  read GetDBName   write SetDBName;
+    property Host          :string  read GetHost     write SetHost;
+    property UserName      :string  read GetUserName write SetUserName;
+    property Password      :string  read GetPassword write SetPassword;
+    property Charset       :string  read GetCharSet  write SetCharset;
+    property Collation     :string  read FCollation  write SetCollation;
+    property Role          :string  read GetRole     write SetRole;
+    property Title         :string  read GetTitle    write SetTitle;
+    property SavePassword  :Boolean read GetSavePwd  write SetSavePwd;
+
+    Property DBRec : PDBDetails read GetRec write SetRec;
+    {$IFDEF EVS_Intf}
+    Property DB :IEvsDatabaseInfo read GetDBInfo write SetDBInfo;
+    {$ENDIF}
   end;
 
 var
@@ -90,21 +126,23 @@ begin
     ShowMessage('You should fill all fields')
   else
   if TestConnection(edDatabaseName.Text, edUserName.Text, edPassword.Text, cbCharset.Text) then
-  if NewReg then  // New registration
-  begin
-    if RegisterDatabase(edTitle.Text, edDatabaseName.Text, edUserName.Text, edPassword.Text, cbCharset.Text,
-      edRole.Text, cxSavePassword.Checked) then
-       ModalResult:= mrOK;
-  end
-  else // if not NewReg, edit registration
-    if EditRegisteration(RecPos, edTitle.Text, edDatabaseName.Text, edUserName.Text, edPassword.Text,
-      cbCharset.Text, edRole.Text, cxSavePassword.Checked) then
-      MOdalResult:= mrOk;
+  //if NewReg then  // New registration
+  //begin
+  //  if RegisterDatabase(edTitle.Text, edDatabaseName.Text, edUserName.Text, edPassword.Text, cbCharset.Text,
+  //    edRole.Text, cxSavePassword.Checked) then
+  //     ModalResult:= mrOK;
+  //end
+  //else // if not NewReg, edit registration
+  //  if EditRegisteration(RecPos, edTitle.Text, edDatabaseName.Text, edUserName.Text, edPassword.Text,
+  //    cbCharset.Text, edRole.Text, cxSavePassword.Checked) then
+  //    MOdalResult:= mrOk;
+  FromScreen;
+  ModalResult := mrOK;
 end;
 
 procedure TfmReg.bbTestClick(Sender: TObject);
 begin
-  if TestConnection(edDatabaseName.Text, edUserName.Text, edPassword.Text, cbCharset.Text) then
+  if TestConnection(DatabaseName, UserName, Password, Charset) then
     ShowMessage('Connected successfully');
 end;
 
@@ -114,10 +152,9 @@ var
   vIdx  :Integer;
 begin
   vTest := GetDefaultCharSet;
-  vIdx := cbCharset.Items.IndexOf(Trim(vTest));
+  vIdx  := cbCharset.Items.IndexOf(Trim(vTest));
   cbCharset.Text := vTest;
   cbCharset.ItemIndex := vIdx;
-  //cbCharset;
 end;
 
 procedure TfmReg.btBrowseClick(Sender: TObject);
@@ -163,44 +200,45 @@ end;
 
 function TfmReg.RegisterDatabase(Title, DatabaseName, UserName, Password, Charset, Role: string; SavePassword: Boolean): Boolean;
 var
-  Rec        : TDBDetails;
-  F          : file of TDBDetails;
-  EmptyIndex : Integer;
-  FileName   : string;
+  vRec        :TDBDetails;
+  vFile       :file of TDBDetails;
+  vEmptyIndex :Integer;
+  vFileName   :string;
 begin
   try
-    //FileName:= GetConfigurationDirectory + GetRegistryFileName; //'turbobird.reg';
+    raise ReplaceException; {$MESSAGE WARN 'Function is replaced will be removed'}
+    //vFileName:= GetConfigurationDirectory + GetRegistryFileName; //'turbobird.reg';
     //
-    //AssignFile(F, FileName);
-    //if FileExists(FileName) then
+    //AssignFile(vFile, vFileName);
+    //if FileExists(vFileName) then
     //begin
-    //  EmptyIndex:= GetEmptyRec;
+    //  vEmptyIndex:= GetEmptyRec;
     //  FileMode := 2;//2!? what 2 means?
     //
-    //  Reset(F);
-    //  if EmptyIndex <> -1 then
-    //    Seek(F, EmptyIndex)
+    //  Reset(vFile);
+    //  if vEmptyIndex <> -1 then
+    //    Seek(vFile, vEmptyIndex)
     //  else
-    //    Seek(F, System.FileSize(F));
+    //    Seek(vFile, System.FileSize(vFile));
     //end
     //else
-    //  Rewrite(F);
+    //  Rewrite(vFile);
     //
-    //Rec.Title       := Title;
-    //Rec.DatabaseName:= DatabaseName;
-    //Rec.UserName    := UserName;
+    //vRec.Title       := Title;
+    //vRec.DatabaseName:= DatabaseName;
+    //vRec.UserName    := UserName;
     //if SavePassword then
-    //  Rec.Password:= Password
+    //  vRec.Password:= Password
     //else
-    //  Rec.Password:= '';
-    //Rec.Charset     :=Charset;
-    //Rec.Role        :=Role;
-    //Rec.SavePassword:=SavePassword;
-    //Rec.Deleted     :=False;
-    //Rec.LastOpened  :=Now;
+    //  vRec.Password:= '';
+    //vRec.Charset     :=Charset;
+    //vRec.Role        :=Role;
+    //vRec.SavePassword:=SavePassword;
+    //vRec.Deleted     :=False;
+    //vRec.LastOpened  :=Now;
     //
-    //Write(F, Rec);
-    //CloseFile(F);
+    //Write(vFile, vRec);
+    //CloseFile(vFile);
     Result:= True;
   except
     on E: Exception do
@@ -255,6 +293,11 @@ begin
   Result := cbCharset.Text;
 end;
 
+function TfmReg.GetDBInfo :IEvsDatabaseInfo;
+begin
+  Result := FDBInfo
+end;
+
 function TfmReg.GetDBName :string;
 begin
   Result := extractDBName(edDatabaseName.Text);
@@ -270,9 +313,24 @@ begin
   Result := edPassword.Text;
 end;
 
+function TfmReg.GetRec :PDBDetails;
+begin
+  Result := FDBDetails;
+end;
+
 function TfmReg.GetRole :string;
 begin
   Result := edRole.Text;
+end;
+
+function TfmReg.GetSavePwd :Boolean;
+begin
+  Result := cxSavePassword.Checked;
+end;
+
+function TfmReg.GetTitle :string;
+begin
+  Result := edTitle.Text;
 end;
 
 function TfmReg.GetUserName :string;
@@ -283,6 +341,17 @@ end;
 procedure TfmReg.SetCharset(aValue :string);
 begin
   cbCharset.Text:=aValue;
+end;
+
+procedure TfmReg.SetCollation(aValue :string);
+begin
+  if FCollation=aValue then Exit;
+  FCollation:=aValue;
+end;
+
+procedure TfmReg.SetDBInfo(aValue :IEvsDatabaseInfo);
+begin
+  FDBInfo := aValue;
 end;
 
 procedure TfmReg.SetDBName(aValue :string);
@@ -300,14 +369,63 @@ begin
   edPassword.Text := aValue;
 end;
 
+procedure TfmReg.SetRec(aValue :PDBDetails);
+begin
+  FDBDetails := aValue;
+  ToScreen;
+end;
+
 procedure TfmReg.SetRole(aValue :string);
 begin
   edRole.Text := aValue;
 end;
 
+procedure TfmReg.SetSavePwd(aValue :Boolean);
+begin
+  cxSavePassword.Checked := aValue;
+end;
+
+procedure TfmReg.SetTitle(aValue :string);
+begin
+  edTitle.Text := aValue;
+end;
+
 procedure TfmReg.SetUserName(aValue :string);
 begin
   edUserName.Text := aValue;
+end;
+
+procedure TfmReg.ToScreen;
+begin
+  {$IFDEF EVS_INTF}
+  DatabaseName := FDBInfo.Database;// FDBDetails^.DatabaseName;
+  Title        := FDBInfo.Title;
+  UserName     := FDBInfo.Credentials.UserName;
+  Password     := FDBInfo.Credentials.Password;
+  Charset      := FDBInfo.Credentials.Charset;
+  Role         := FDBInfo.Credentials.Role;
+  SavePassword := FDBInfo.Credentials.SavePassword;
+  FCollation   := FDBInfo.DefaultCollation;
+  {$ELSE EVS_INTF}
+  DatabaseName := FDBDetails^.DatabaseName;
+  Title        := FDBDetails^.Title;
+  UserName     := FDBDetails^.UserName;
+  Password     := FDBDetails^.Password;
+  Charset      := FDBDetails^.Charset;
+  Role         := FDBDetails^.Role;
+  SavePassword := FDBDetails^.SavePassword;
+  {$ENDIF}
+end;
+
+procedure TfmReg.FromScreen;
+begin
+  FDBDetails^.DatabaseName := DatabaseName;
+  FDBDetails^.Title        := Title;
+  FDBDetails^.UserName     := UserName;
+  FDBDetails^.Password     := Password;
+  FDBDetails^.Charset      := Charset;
+  FDBDetails^.Role         := Role;
+  FDBDetails^.SavePassword := SavePassword;
 end;
 
 function TfmReg.TestConnection(DatabaseName, UserName, Password, Charset: string): Boolean;

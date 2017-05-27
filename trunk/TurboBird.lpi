@@ -21,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="1276"/>
+      <BuildNr Value="1279"/>
       <StringTable ProductVersion="0.9"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -109,7 +109,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="51">
+    <Units Count="52">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -461,10 +461,14 @@
         <UnitName Value="uEvsDBSchema"/>
       </Unit49>
       <Unit50>
-        <Filename Value="uevsnullables.pas"/>
+        <Filename Value="uevsgenintf.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uevsNullables"/>
+        <UnitName Value="uEvsGenIntf"/>
       </Unit50>
+      <Unit51>
+        <Filename Value="uFBCharSets.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit51>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

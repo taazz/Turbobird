@@ -369,10 +369,13 @@ function ExtractDBName(const aDBName: string): string;
 function ExtractHost(const aDBName: string): string;
 
 function NotImplementedException:ETBException;
+function ReplaceException:ETBException;
+
 function DeprecatedException:ETBException;
 function EOF(const aStream:TStream):Boolean;inline;
 function CharCount(const aChar : Char; const aString:string):Integer;
-function Split(const aSource:String; aDelimeter:Char):TStringArray;//mind the sie of the string that are passed it might raise an out of memory exception if too big.
+function Split(const aSource:String; const aDelimiter:Char):TStringArray;
+function Split(const aSource:wideString; const aDelimiter:WideChar):TWideStringArray;
 
 implementation
 
@@ -421,6 +424,11 @@ begin
   Result := ETBNotImplemented.Create('Not Implemented');
 end;
 
+function ReplaceException:ETBException;
+begin
+  Result := ETBException.Create('needs to be replaced');
+end;
+
 function DeprecatedException :ETBException;
 begin
   Result := ETBException.Create('Method is deprecated');
@@ -440,23 +448,134 @@ begin
     if CompareText(aChar, vChr) = 0 then Inc(Result);
 end;
 
-function Split(const aSource :String; aDelimeter :Char) :TStringArray;
+function Split(const aSource :String; const aDelimiter :Char): TStringArray;
 var
-  vCntr,
-  vIndex: integer;
-begin
-  vIndex := 0;
-  SetLength(Result, (Length(aSource) div 2) + 1); //worst case senario every other letter is a delimeter.
-  for vCntr := 1 to Length(aSource) do begin
-    if aSource[vCntr] = aDelimeter then
-      if Result[vIndex] <> '' then Inc(vIndex)
+  vIdx   :Integer;
+  vStart :Integer;
+  vCntr  :Integer;
+  vLen   :Integer;
+
+  procedure AddString(var aArray:TStringArray; aEnd: Integer = -1);
+  var
+    vEnd: Integer;
+  begin
+    if (aEnd = -1) then vEnd := vIdx
+    else vEnd := aEnd;
+    if (vStart < vEnd) then
+      aArray[vCntr] := Copy(aSource, vStart, vEnd - vStart)
     else
-      Result[vIndex] := Result[vIndex] + aSource[vCntr];
+      aArray[vCntr] := '';
+    Inc(vCntr);
   end;
-  if Result[vIndex + 1] <> '' then
-    SetLength(Result, vIndex + 1)
-  else SetLength(Result, vIndex);
+
+begin
+  if (aSource = '') then Exit(Nil);
+
+  if (aDelimiter = '') then begin
+    SetLength(Result, 1);
+    Result[0] := aSource;
+    Exit;
+  end;
+
+  vLen := Length(aDelimiter);
+  SetLength(Result, (Length(aSource) div vLen) + 1);//max count
+
+  vIdx   := 1;
+  vStart := vIdx;
+  vCntr  := 0;
+  while (vIdx <= (Length(aSource) - vLen)) do begin
+    if (aSource[vIdx] = aDelimiter) then begin
+      AddString(Result);
+      vStart := vIdx + vLen;
+    end;
+    Inc(vIdx, vLen);
+  end;
+  AddString(Result, Length(aSource));
+  SetLength(Result, vCntr);
 end;
+
+function Split(const aSource :wideString; const aDelimiter :WideChar): TWideStringArray;
+var
+  vIdx   :PWideChar;
+  vStart :PWideChar;
+  vCntr  :Integer;
+  vLen   :Integer;
+
+  function IsHighSurrogate(const aChar:PWideChar):Boolean;inline;
+  begin
+    Result := (PWord(aChar)^ >= $D800) and (PWord(aChar)^ <= $DBFF);
+  end;
+  function IsLowSurrogate(const aChar:PWideChar):Boolean;inline;
+  begin
+    Result := (PWord(aChar)^ >= $DC00) and (PWord(aChar)^ <= $DFFF);
+  end;
+
+  procedure NextChar(var aStart:PWideChar);inline;
+  begin
+    if IsHighSurrogate(aStart) then
+      Inc(aStart, SizeOf(PWideChar) * 2)
+    else
+      Inc(aStart, SizeOf(PWideChar) * 2)
+  end;
+
+  procedure AddString(var aArray:TWideStringArray; aEnd: Integer = -1);
+  var
+    vEnd: PtrUInt;
+  begin
+    if (aEnd = -1) then vEnd := PtrUInt(vIdx)
+    else vEnd := aEnd;
+    if (PtrUInt(vStart) < vEnd) then
+      aArray[vCntr] := Copy(aSource, PtrUInt(vStart), vEnd - PtrUInt(vStart))
+    else
+      aArray[vCntr] := '';
+    Inc(vCntr);
+  end;
+
+begin
+  if (aSource = '') then Exit(Nil);
+
+  if (aDelimiter = '') then begin
+    SetLength(Result, 1);
+    Result[0] := aSource;
+    Exit;
+  end;
+
+  vLen := Length(aDelimiter);
+  SetLength(Result, (Length(aSource) div vLen) + 1);//max count
+
+  vIdx   := @aSource[1];
+  vStart := vIdx;
+  vCntr  := 0;
+  while (vIdx < @aSource[Length(aSource)]) do begin
+    if (vIdx = aDelimiter) then begin
+      AddString(Result);
+      NextChar(vIdx);
+      vStart := vIdx;
+    end;
+    NextChar(vIdx);//, vLen);
+  end;
+  AddString(Result, Length(aSource));
+  SetLength(Result, vCntr);
+end;
+
+//function Split(const aSource :String; aDelimeter :Char) :TStringArray;
+//var
+//  vCntr,
+//  vIndex: integer;
+//begin
+//  ExtractStrings();
+//  vIndex := 0;
+//  SetLength(Result, (Length(aSource) div 2) + 1); //worst case senario every other letter is a delimeter.
+//  for vCntr := 1 to Length(aSource) do begin
+//    if aSource[vCntr] = aDelimeter then
+//      if Result[vIndex] <> '' then Inc(vIndex)
+//    else
+//      Result[vIndex] := Result[vIndex] + aSource[vCntr];
+//  end;
+//  if Result[vIndex + 1] <> '' then
+//    SetLength(Result, vIndex + 1)
+//  else SetLength(Result, vIndex);
+//end;
 
 function VarArrayOf(aValues: array of const): Variant;
 var

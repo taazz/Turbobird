@@ -1,0 +1,93 @@
+object Form1: TForm1
+  Left = 681
+  Height = 192
+  Top = 440
+  Width = 398
+  Caption = 'Form1'
+  ClientHeight = 192
+  ClientWidth = 398
+  LCLVersion = '1.4.4.0'
+  object Button1: TButton
+    Left = 308
+    Height = 25
+    Top = 26
+    Width = 75
+    Caption = 'export'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object FileNameEdit1: TFileNameEdit
+    Left = 12
+    Height = 23
+    Top = 27
+    Width = 288
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 1
+  end
+  object Label1: TLabel
+    Left = 15
+    Height = 15
+    Top = 9
+    Width = 48
+    Caption = 'Filename'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 136
+    Height = 121
+    Top = 56
+    Width = 251
+    AutoSize = False
+    Caption = 'There is test.fdb datase in the this utlity''s '#13#10'source code directory. It is used internally '#13#10'to connect the installed firebird server and '#13#10'retrieve the character sets and collations.'#13#10'Make sure that the server can access the '#13#10'database or connect to any database '#13#10'you have access it only querys the system '#13#10'tables.'
+    ParentColor = False
+  end
+  object OpenDialog1: TOpenDialog
+    left = 60
+    top = 96
+  end
+  object MDODatabase1: TMDODatabase
+    Connected = True
+    DatabaseName = 'D:\data\firebird\test.fdb'
+    DefaultTransaction = MDOTransaction1
+    IdleTimer = 0
+    Params.Strings = (
+      'user_name=sysdba'
+      'sql_role_name=rdb$admin'
+    )
+    SQLDialect = 3
+    TraceFlags = []
+    UserName = 'sysdba'
+    Role = 'rdb$admin'
+    left = 16
+    top = 56
+  end
+  object MDOTransaction1: TMDOTransaction
+    Active = False
+    AutoCommit = False
+    left = 60
+    top = 56
+  end
+  object MDODataSet1: TMDODataSet
+    Database = MDODatabase1
+    Transaction = MDOTransaction1
+    BooleanFields = False
+    BufferChunks = 1000
+    CachedUpdates = False
+    LoadDefaults = False
+    SelectSQL.Strings = (
+      'Select RDB$CHARACTER_SETS.RDB$CHARACTER_SET_ID,'
+      '       RDB$CHARACTER_SETS.RDB$CHARACTER_SET_NAME,'
+      '       RDB$COLLATIONS.RDB$COLLATION_ID,'
+      '       RDB$COLLATIONS.RDB$COLLATION_NAME'
+      'from RDB$CHARACTER_SETS'
+      '  left join RDB$COLLATIONS on RDB$CHARACTER_SETS.RDB$CHARACTER_SET_ID = RDB$COLLATIONS.RDB$CHARACTER_SET_ID'
+      ''
+    )
+    left = 16
+    top = 96
+  end
+end

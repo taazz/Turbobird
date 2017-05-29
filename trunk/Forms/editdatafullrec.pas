@@ -88,10 +88,10 @@ var
   ATop: Integer;
   bbDate: TBitBtn;
 begin
-  FConnection := fmMain.RegisteredDatabases[dbIndex].Conn;
-  FConnection.Close;
-  FTransaction := fmMain.RegisteredDatabases[dbIndex].Trans;
-  sqEditTable.DataBase := FConnection;
+  //FConnection := fmMain.RegisteredDatabases[dbIndex].Conn;
+  //FConnection.Close;
+  //FTransaction := fmMain.RegisteredDatabases[dbIndex].Trans;
+  //sqEditTable.DataBase := FConnection;
 
   sqEditTable.SQL.Text:= 'select * from ' +  ATableName;
   sqEditTable.Open;

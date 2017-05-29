@@ -10,7 +10,7 @@ interface
 {$DEFINE EVS_MDO}//undefine this to use with the original MDO package.
 
 uses
-  Classes, SysUtils, sqldb, syncobjs, {IBConnection,} ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
+  Classes, SysUtils, sqldb, syncobjs, ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
 
 type
 

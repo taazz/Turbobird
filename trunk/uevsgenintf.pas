@@ -6,8 +6,9 @@ unit uEvsGenIntf;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils;//, uTBTypes;
 type
+  TEvsGenAction =(gaUnknown, gaInsert, gaDelete, gaUpdate, gaDestroy, gaExtracting, gaDataChange);
 
   IEvsCopyPaste = Interface(IInterface)//
     ['{85BF366A-A410-4D16-8D8B-5298143CBABD}']

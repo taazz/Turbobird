@@ -929,19 +929,19 @@ end;
 
 (*********  Get Exception Info ***************)
 
-function TdmSysTables.GetExceptionInfo(dbIndex: integer; ExceptionName: string; var Msg, Description,
-  SqlQuery: string; CreateOrAlter: boolean): Boolean;
+function TdmSysTables.GetExceptionInfo(dbIndex :integer; ExceptionName :string; var Msg, Description,
+                                       SqlQuery :string; CreateOrAlter :boolean) :Boolean;
 var
-  CreatePart: string;
+  CreatePart :string;
+
 begin
   MDOQuery.Close;
   init(dbIndex);
   MDOQuery.SQL.Text:= 'select * from RDB$EXCEPTIONS ' +
-   'where RDB$EXCEPTION_NAME = ' + QuotedStr(ExceptionName);
+                      'where RDB$EXCEPTION_NAME = ' + QuotedStr(ExceptionName);
   MDOQuery.Open;
-  Result:= MDOQuery.RecordCount > 0;
-  if Result then
-  begin
+  Result := MDOQuery.RecordCount > 0;
+  if Result then begin
     if CreateOrAlter then
       CreatePart:= 'CREATE OR ALTER EXCEPTION ' {Since Firebird 2.0; create or replace existing}
     else

@@ -7,8 +7,8 @@ interface
 { TODO -oJKOZ -cMetadata upgrade : Add support for page size }
 { TODO -oJKOZ -cMetadata upgrade : Add support for multiple files }
 uses
-  Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls, sqldb, sqldblib,
-  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, uTBTypes, utbConfig, utbcommon, uEvsDBSchema;
+  Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls, sqldb, sqldblib, uEvsWideString,
+  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, MDO, uTBTypes, utbConfig, utbcommon, uEvsDBSchema, ufrDatabaseEdit;
 { TODO -oJKOZ -cUser Expirience : Retreive the database default characterset during registration.(The button is
   in place write the code to go with it and make it visible). }
 type
@@ -24,6 +24,7 @@ type
     cbCharset :TComboBox;
     cbCharset1 :TComboBox;
     cxSavePassword :TCheckBox;
+    DatabaseEditorFr :TDatabaseEditorFrame;
     edDatabaseName :TEdit;
     edPassword :TEdit;
     edRole :TEdit;
@@ -45,6 +46,7 @@ type
     Panel4 :TPanel;
     Panel5 :TPanel;
     Panel6 :TPanel;
+    Panel7 :TPanel;
     procedure bbRegClick(Sender: TObject);
     procedure bbTestClick(Sender: TObject);
     procedure BitBtn1Click(Sender :TObject);
@@ -53,8 +55,8 @@ type
   private
     FCollation :string;
     { private declarations }
-    FDBDetails:PDBDetails;
-    FDBInfo : IEvsDatabaseInfo;
+    FDBDetails :PDBDetails;
+    FDBInfo    :IEvsDatabaseInfo;
 
     function EditRegisteration(Index: Integer; Title, DatabaseName, UserName, Password, Charset, Role: string;
                                SavePassword: Boolean): Boolean;
@@ -300,7 +302,8 @@ end;
 
 function TfmReg.GetDBName :string;
 begin
-  Result := extractDBName(edDatabaseName.Text);
+  //Result := extractDBName(edDatabaseName.Text);
+  Result := DatabaseEditorFr.FullDBName;
 end;
 
 function TfmReg.GetHost :string;
@@ -357,6 +360,7 @@ end;
 procedure TfmReg.SetDBName(aValue :string);
 begin
   edDatabaseName.Text := aValue;
+  DatabaseEditorFr.FullDBName := aValue;
 end;
 
 procedure TfmReg.SetHost(aValue :string);
@@ -397,35 +401,50 @@ end;
 
 procedure TfmReg.ToScreen;
 begin
-  {$IFDEF EVS_INTF}
-  DatabaseName := FDBInfo.Database;// FDBDetails^.DatabaseName;
-  Title        := FDBInfo.Title;
-  UserName     := FDBInfo.Credentials.UserName;
-  Password     := FDBInfo.Credentials.Password;
-  Charset      := FDBInfo.Credentials.Charset;
-  Role         := FDBInfo.Credentials.Role;
-  SavePassword := FDBInfo.Credentials.SavePassword;
-  FCollation   := FDBInfo.DefaultCollation;
-  {$ELSE EVS_INTF}
-  DatabaseName := FDBDetails^.DatabaseName;
-  Title        := FDBDetails^.Title;
-  UserName     := FDBDetails^.UserName;
-  Password     := FDBDetails^.Password;
-  Charset      := FDBDetails^.Charset;
-  Role         := FDBDetails^.Role;
-  SavePassword := FDBDetails^.SavePassword;
+  if Assigned(FDBDetails) then begin
+    DatabaseName := FDBDetails^.DatabaseName;
+    Title        := FDBDetails^.Title;
+    UserName     := FDBDetails^.UserName;
+    Password     := FDBDetails^.Password;
+    Charset      := FDBDetails^.Charset;
+    Role         := FDBDetails^.Role;
+    SavePassword := FDBDetails^.SavePassword;
+  end;
+  {$IFDEF EVS_INTF} // the new interfaces are to be prefered.
+  if Assigned(FDBInfo) then begin
+    DatabaseName := FDBInfo.Database;
+    Title        := FDBInfo.Title;
+    UserName     := FDBInfo.Credentials.UserName;
+    Password     := FDBInfo.Credentials.Password;
+    Charset      := FDBInfo.Credentials.Charset;
+    Role         := FDBInfo.Credentials.Role;
+    SavePassword := FDBInfo.Credentials.SavePassword;
+    FCollation   := FDBInfo.DefaultCollation;
+  end;
   {$ENDIF}
+
 end;
 
 procedure TfmReg.FromScreen;
 begin
-  FDBDetails^.DatabaseName := DatabaseName;
-  FDBDetails^.Title        := Title;
-  FDBDetails^.UserName     := UserName;
-  FDBDetails^.Password     := Password;
-  FDBDetails^.Charset      := Charset;
-  FDBDetails^.Role         := Role;
-  FDBDetails^.SavePassword := SavePassword;
+  if Assigned(FDBDetails) then begin
+    FDBDetails^.DatabaseName := DatabaseName;
+    FDBDetails^.Title        := Title;
+    FDBDetails^.UserName     := UserName;
+    FDBDetails^.Password     := Password;
+    FDBDetails^.Charset      := Charset;
+    FDBDetails^.Role         := Role;
+    FDBDetails^.SavePassword := SavePassword;
+  end;
+  if Assigned(FDBInfo) then begin
+    FDBInfo.Database     := DatabaseName;
+    FDBInfo.Title        := Title;
+    FDBInfo.Credentials.UserName     := UserName;
+    FDBInfo.Credentials.Password     := Password;
+    FDBInfo.Credentials.Charset      := Charset;
+    FDBInfo.Credentials.Role         := Role;
+    FDBInfo.Credentials.SavePassword := SavePassword;
+  end;
 end;
 
 function TfmReg.TestConnection(DatabaseName, UserName, Password, Charset: string): Boolean;
@@ -438,16 +457,16 @@ begin
     Connection.CharSet:= Charset;
     Connection.Open;
     Connection.Close;
-    Result:= True;
+    Result := True;
   except
     on d: EIBDatabaseError do begin
       Result:= False;
       ShowMessage('Unable to connect: '+ d.Message + LineEnding +
         'Details: GDS error code: '+inttostr(d.GDSErrorCode));
     end;
-    on E: Exception do begin
+    on E: EMDOError do begin
       Result:= False;
-      ShowMessage('Unable to connect: ' + e.Message);
+      ShowMessage('Unable to connect: ' + LineEnding + e.Message);
     end;
   end;
 end;

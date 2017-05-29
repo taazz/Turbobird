@@ -55,10 +55,10 @@ begin
 end;
 
 procedure TfmAbout.Init;
-begin
-  laVersion.Caption:= 'Version ' + fmMain.Version;
-  laVersionDate.Caption:= fmMain.VersionDate;
-  laTarget.Caption:= 'Target : ' + Target + '-' + Arch;
+begin                         {$MESSAGE WARN 'Needs Replacing'}
+  //laVersion.Caption:= 'Version ' + fmMain.Version;
+  //laVersionDate.Caption:= fmMain.VersionDate;
+  //laTarget.Caption:= 'Target : ' + Target + '-' + Arch;
 end;
 
 procedure TfmAbout.Label6Click(Sender: TObject);
@@ -68,8 +68,8 @@ end;
 
 procedure TfmAbout.laUpdateClick(Sender: TObject);
 begin
-  fmUpdate:= TfmUpdate.Create(nil);
-  fmUpdate.Init(fmMain.Major, fmMain.Minor, fmMain.ReleaseVersion);
+  fmUpdate:= TfmUpdate.Create(nil);{$MESSAGE WARN 'Needs replacing'}
+  //fmUpdate.Init(fmMain.Major, fmMain.Minor, fmMain.ReleaseVersion);
   fmUpdate.Show;
 end;
 
@@ -82,9 +82,6 @@ procedure TfmAbout.BitBtn1Click(Sender: TObject);
 begin
   Close;
 end;
-
-//initialization
-//  {$I about.lrs}
 
 end.
 

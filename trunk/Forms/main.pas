@@ -47,7 +47,7 @@ move to a firebird specific unit }
 uses
   Classes, SysUtils, Menus, sqldb, memds, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs, ComCtrls, Reg, QueryWindow, Grids, ExtCtrls,
   TableManage, Buttons, ActnList, dbugintf, utbcommon, IBConnection, Clipbrd, StdCtrls, StdActns, MDOQuery, MDODatabase, MDO, MDOServices,
-  MDOCustomDataSet, MDODatabaseInfo, uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, uevsGenIntf, typinfo, importtable, dbInfo;
+  MDOCustomDataSet, MDODatabaseInfo, uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, uevsGenIntf, uEvsDBSchema, typinfo, importtable, dbInfo;
 
 type
   //TDBInfo = record
@@ -317,7 +317,7 @@ type
   private
     //Page changing variables
     FOldPage : Integer;
-    //session varaibles
+    //session variables
     FConn               :TMDODataBase;
     FTrans              :TMDOTransaction;
     FCurrentHistoryFile :string;
@@ -351,11 +351,7 @@ type
     property ActiveNode:TTreeNode read GetActiveNode;
   public
     // Array of database Connect details as stored in turbobird.reg file
-    RegisteredDatabases :TDBInfoArray;// array of TDBInfo; //JKOZ :01.002
-    Version             :string;
-    VersionDate         :string;
-    Major, Minor,
-    ReleaseVersion      :Word;
+    RegDDB :TDBInfoArray; {$MESSAGE WARN 'Deprecated'} // array of TDBInfo; //JKOZ :01.002
 
     function GetServerName(DBName: string): string;
     function RetrieveInputParamFromSP(Body: string): string;
@@ -384,11 +380,12 @@ type
     function GetViewInfo(DatabaseIndex: Integer; AViewName: string; var Columns, Body: string): Boolean;
     function ChangeTriggerActivity(DatabaseIndex: Integer; ATriggerName: string; ActiveState: Boolean): Boolean;
     function GetIndices(ATableName: string; AQuery: TSQLQuery): Boolean;deprecated 'Use the mdoQuery instead';
-    function GetIndices(ATableName: string; const aQuery: TMDOQuery): Boolean;
-    function GetIndexFields(ATableName, AIndexName: string; AQuery: TMDOQuery; var FieldsList: TStringList): Boolean;
-    function GetUDFInfo(DatabaseIndex: Integer; UDFName: string; var ModuleName, EntryPoint, Params: string): Boolean;
+    function GetIndices(ATableName: string; const aQuery: TMDOQuery): Boolean;deprecated;
+    function GetIndexFields(ATableName, AIndexName: string; AQuery: TMDOQuery; var FieldsList: TStringList): Boolean;deprecated;
+    function GetUDFInfo(DatabaseIndex: Integer; UDFName: string; var ModuleName, EntryPoint, Params: string): Boolean;deprecated;
     function ShowQueryWindow(DatabaseIndex: Integer; aTitle: string): TfmQueryWindow;overload;deprecated;
     function ShowQueryWindow(const aDatabase: PDBInfo; aTitle: string): TfmQueryWindow;overload;
+    function ShowQueryWindow(const aDatabase: IEvsDatabaseInfo; aTitle: string): TfmQueryWindow;overload;
     procedure FillObjectRoot(aNode: TTreeNode);
     procedure FillAndShowConstraintsForm(Form: TfmTableManage; ATableName: string; dbIndex: Integer);
     procedure ShowCompleteQueryWindow(DatabaseIndex: Integer; const ATitle:String; AQueryText: string; const OnCommitProcedure: TNotifyEvent = nil);
@@ -1075,26 +1072,22 @@ end;
 
 function TfmMain.ConnectToDBAs(dbIndex: Integer; ForceConnectDialog: boolean=false): Boolean;
 var
-  Rec: TDBDetails;
-  Count: Integer;
-  vPasswordForm : TfmEnterPass;
+  Rec    :TDBDetails;
+  Count  :Integer;
+  vPasswordForm :TfmEnterPass;
 begin
-  Result:= False;
-  Rec   := RegisteredDatabases[dbIndex].RegRec;
+  Result := False;
+  Rec    := RegisteredDatabases[dbIndex].RegRec;
+  Registry.Database[dbIndex];
   vPasswordForm := TfmEnterPass.Create(Nil);
   try
-    //vPasswordForm.DatabaseRec := @RegisteredDatabases[dbIndex];
-    //vPasswordForm.DBCaption := Rec.Title;
-    //vPasswordForm.UserName  := Rec.UserName;
-    //vPasswordForm.Password := '';
-    //vPasswordForm.Role := '';
     if vPasswordForm.Execute(@RegisteredDatabases[dbIndex],Rec.UserName,'',rec.Role) = mrOK then //the data are alrady passed in the 1st parameter
     begin
       RegisteredDatabases[dbIndex].RegRec.UserName := vPasswordForm.UserName;
       RegisteredDatabases[dbIndex].RegRec.Password := vPasswordForm.Password;
       RegisteredDatabases[dbIndex].RegRec.Role     := vPasswordForm.Role;
-      Connect(RegisteredDatabases[dbIndex].Conn, RegisteredDatabases[dbIndex].RegRec);
-      Result:= True;
+      Connect(Registry.Database[dbIndex],Registry.Database[dbIndex].ServerKind);// RegisteredDatabases[dbIndex].Conn, RegisteredDatabases[dbIndex].RegRec);
+      Result := True;
     end;//no the database registration is not to be changed by the connect as dialog connect as gives us a way to emulate a different user if needed only.
     //JKOZ: Moved the relevant parts to the password form and everything else is removed.
     // Use may have saved an empty password, which is valid for embedded dbs
@@ -3417,6 +3410,11 @@ begin
   Result.Show;
 end;
 
+function TfmMain.ShowQueryWindow(const aDatabase :IEvsDatabaseInfo; aTitle :string) :TfmQueryWindow;
+begin
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+end;
+
 (******* Fill Object Root, like (Tables, Views, etc)  ******)
 
 procedure TfmMain.FillObjectRoot(aNode :TTreeNode);
@@ -3594,6 +3592,7 @@ end;
 
 function TfmMain.GetIndices(ATableName: string; AQuery: TSQLQuery): Boolean;
 begin
+  raise DeprecatedException;
   AQuery.Close;
   AQuery.SQL.Text:= 'SELECT * FROM RDB$INDICES WHERE RDB$RELATION_NAME=''' + UpperCase(ATableName) +
     ''' AND RDB$FOREIGN_KEY IS NULL';
@@ -4455,13 +4454,15 @@ end;
 
 function TfmMain.LoadRegisteredDatabases: Boolean;
 var
-  Rec: TDBDetails;
-  F: file of TDBDetails;
-  FileName: string;
-  MainNode, CNode: TTreeNode;
-  i: Integer;
-  AServerName: string;
-  ServerNode: TTreeNode;
+  Rec      :TDBDetails;
+  F        :file of TDBDetails;
+
+  FileName    :string;
+  MainNode,
+  CNode       :TTreeNode;
+  i           :Integer;
+  AServerName :string;
+  ServerNode  :TTreeNode;
 begin
   try
     tvMain.Items.Clear;
@@ -4469,14 +4470,12 @@ begin
     FileName := IncludeTrailingPathDelimiter(GetConfigurationDirectory) + GetRegistryFileName;
 
     // Copy old configuration file
-    if not FileExists(FileName) and (FileExists(ChangeFileExt(ParamStr(0), '.reg'))) then
-    begin
+    if not FileExists(FileName) and (FileExists(ChangeFileExt(ParamStr(0), '.reg'))) then begin
       CopyFile(ChangeFileExt(ParamStr(0), '.reg'), FileName);
     end;
 
     AssignFile(F, FileName);
-    if FileExists(FileName) then
-    begin
+    if FileExists(FileName) then begin
       Reset(F);
       i:= 0;
       while not system.EOF(F) do begin
@@ -4572,17 +4571,18 @@ begin
           Inc(i);
         end;
       end;
-      CloseFile(F);
-
-      // Add spaces at end of tree
-      tvMain.Items.Add(nil, '');
-      tvMain.Items.Add(nil, '');
-      tvMain.Items.Add(nil, '');
     end;
-    Result:= True;
+
+    CloseFile(F);
+
+    // Add spaces at end of tree //JKOZ why??
+    tvMain.Items.Add(nil, '');
+    tvMain.Items.Add(nil, '');
+    tvMain.Items.Add(nil, '');
+    //end;
+    Result := True;
   except
-    on E: Exception do
-    begin
+    on E: Exception do begin
       Result:= False;
       ShowMessage('Error: ' + E.Message);
     end;
@@ -4593,10 +4593,17 @@ function TfmMain.LoadRegisteredDatabases2 :Boolean;
 
   function AppendNode(aParent:TTreeNode; aTitle:String; aImageIndex,aSelectedIndex:Integer; aData:Pointer):TTreeNode;inline;
   begin
-    Result := aParent.TreeNodes.AddChild(aParent, aTitle);
-    Result.ImageIndex   := aImageIndex;
-    Result.SelectedIndex:= aSelectedIndex;
-    Result.Data := aData;
+    Result := tvMain.Items.AddChildObject(aParent, aTitle, aData);
+    Result.ImageIndex    := aImageIndex;
+    Result.SelectedIndex := aSelectedIndex;
+  end;
+
+  function HostNode(const aHost:String):TTreeNode;
+  begin
+    Result := tvMain.Items.FindNodeWithText(aHost);
+    if not Assigned(Result) then begin
+      Result := AppendNode(nil, aHost, 25, 26, nil);
+    end;
   end;
 
   procedure RebuildTree;
@@ -4605,46 +4612,51 @@ function TfmMain.LoadRegisteredDatabases2 :Boolean;
     vParentNode : TTreenode;
     vCntr       : Integer;
   begin
-    tvMain.Items.Clear;
-    for vCntr := low(RegisteredDatabases) to high(RegisteredDatabases) do begin;
-      // Server node
-      tvMain.Items.Add(nil, '');
-      vParentNode := AppendNode(nil, GetServerName(RegisteredDatabases[vCntr].RegRec.DatabaseName), 25, 26, nil);
-      vParentNode := AppendNode(vParentNode, RegisteredDatabases[vCntr].RegRec.Title, 0, 3, Pointer(vCntr));
+    tvMain.Items.BeginUpdate;
+    try
+      tvMain.Items.Clear;
 
-      vNode := AppendNode(vParentNode, rsotQueryWindow,   1, 1,  Pointer(-1));
-      vNode := AppendNode(vParentNode, rsotTables,        2, 2,  Pointer(Ord(otTables)));
-      vNode := AppendNode(vParentNode, rsotGenerators,    5, 5,  Pointer(Ord(otGenerators)));
-      vNode := AppendNode(vParentNode, rsotTriggers,      7, 7,  Pointer(Ord(otTriggers)));
-      vNode := AppendNode(vParentNode, rsotViews,         9, 9,  Pointer(Ord(otViews)));
-      vNode := AppendNode(vParentNode, rsotStoredProced, 11, 11, Pointer(Ord(otStoredProcedures)));
-      vNode := AppendNode(vParentNode, rsotFunctions,    13, 13, Pointer(Ord(otUDFs)));
-      vNode := AppendNode(vParentNode, rsotSystemTables, 15, 15, Pointer(-2));
-      vNode := AppendNode(vParentNode, rsotDomains,      17, 17, Pointer(Ord(otDomains)));
-      vNode := AppendNode(vParentNode, rsotRoles,        19, 19, Pointer(Ord(otRoles)));
-      vNode := AppendNode(vParentNode, rsotExceptions,   21, 21, Pointer(Ord(otExceptions)));
-      vNode := AppendNode(vParentNode, rsotUsers,        21, 21, Pointer(Ord(otUsers)));
+      for vCntr := 0 to Registry.Count do begin;
+        // Server node
+        tvMain.Items.Add(nil, '');
+        //vParentNode := AppendNode(nil, GetServerName(RegisteredDatabases[vCntr].RegRec.DatabaseName), 25, 26, nil);
+        vParentNode := HostNode(Registry.Database[vCntr].Host);
+        //vParentNode := AppendNode(vParentNode, RegisteredDatabases[vCntr].RegRec.Title, 0, 3, Pointer(vCntr));
+        vParentNode := AppendNode(vParentNode, Registry.Database[vCntr].Title, 0, 3, Registry.Database[vCntr]);
+
+        vNode := AppendNode(vParentNode, rsotQueryWindow,   1, 1,  Pointer(-1));
+        vNode.HasChildren := True;
+        vNode := AppendNode(vParentNode, rsotTables,        2, 2,  Pointer(Ord(otTables)));
+        vNode := AppendNode(vParentNode, rsotGenerators,    5, 5,  Pointer(Ord(otGenerators)));
+        vNode := AppendNode(vParentNode, rsotTriggers,      7, 7,  Pointer(Ord(otTriggers)));
+        vNode := AppendNode(vParentNode, rsotViews,         9, 9,  Pointer(Ord(otViews)));
+        vNode := AppendNode(vParentNode, rsotStoredProced, 11, 11, Pointer(Ord(otStoredProcedures)));
+        vNode := AppendNode(vParentNode, rsotFunctions,    13, 13, Pointer(Ord(otUDFs)));
+        vNode := AppendNode(vParentNode, rsotSystemTables, 15, 15, Pointer(-2));
+        vNode := AppendNode(vParentNode, rsotDomains,      17, 17, Pointer(Ord(otDomains)));
+        vNode := AppendNode(vParentNode, rsotRoles,        19, 19, Pointer(Ord(otRoles)));
+        vNode := AppendNode(vParentNode, rsotExceptions,   21, 21, Pointer(Ord(otExceptions)));
+        vNode := AppendNode(vParentNode, rsotUsers,        21, 21, Pointer(Ord(otUsers)));
+      end;
+      tvMain.PopupMenu:= pmDatabase;
+      // Add spaces at end of tree //JKOZ: Why?
+      tvMain.Items.Add(nil, '');
+      tvMain.Items.Add(nil, '');
+      tvMain.Items.Add(nil, '');
+
+    finally
+      tvMain.Items.EndUpdate;
     end;
-    tvMain.PopupMenu:= pmDatabase;
-    // Add spaces at end of tree //JKOZ: Why?
-    tvMain.Items.Add(nil, '');
-    tvMain.Items.Add(nil, '');
-    tvMain.Items.Add(nil, '');
   end;
 
-//var
-  //Rec: TDBDetails;
-  //F: file of TDBDetails;
-  //FileName: string;
-  //MainNode, CNode: TTreeNode;
-  //i: Integer;
-  //AServerName: string;
-  //ServerNode: TTreeNode;
+var
+  vDB :IEvsDatabaseInfo;
 
 begin
   try
     ReleaseRegisteredDatabases;
     LoadRegistrations(RegisteredDatabases);
+    Registry.LoadFrom(utbConfig.GetConfigurationDirectory + 'turbobird.reg');
     RebuildTree;
     Result := True;
   except

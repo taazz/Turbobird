@@ -1,0 +1,2404 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <META HTTP-EQUIV="Expires" content="0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Firebird SQL: The true open-source relational database" />
+<meta name="generator" content="FireWeb engine v 4.1 FBSQL edition" /> 
+<meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0, user-scalable=no">
+<title>Firebird: ISO 9075 SQL Standard Keywords/Reserved Words</title>
+
+
+ <meta property="fb:app_id" content="164106886965924" /> 
+ <meta property="fb:admins" content="591628600"/>
+
+
+ <meta property="og:title" content="Firebird: The true open source database for Windows, Linux, Mac OS X and more" />
+ <meta property="og:description" content="Firebird SQL: The true open-source relational database" />
+ 
+ <meta property="og:image" content="//firebirdsql.org/img/site/fb.jpg" />
+ <meta property="og:site_name" content="ISO 9075 SQL Standard Keywords/Reserved Words" />
+ 
+
+<link rel="stylesheet" type="text/css" href="/css/site-min.css?v=5.5" />
+
+<script type="text/javascript" src="/js/jquery-1.3.1.js"></script>
+<script type="text/javascript" src="/js/jquery.json-1.3.js"></script>
+<script type="text/javascript" src="/js/ajax-min.js"></script>
+
+<script type="text/javascript" src="/js/button-min.js"></script>
+<script type="text/javascript" src="/js/tab-min.js"></script>
+<script type="text/javascript" src="/js/functions-min.js?v=5.3"></script>
+
+
+
+<script type="text/javascript" src="/js/mailto-min.js"></script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2290083-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+</head>
+<body>
+<table border="0" cellspacing="0" cellpadding="0" class="all">
+ <tr>
+  <td valign="top"><img src="/img/site/vid.gif" alt="" /></td> 
+  <td valign="top" class="w985">     
+    <a href="#" id="top"></a>
+<div class="top_right_1" style="padding-top: 3px;">
+<table cellspacing="0" cellpadding="0" border="0" width="100%"><tr> 
+ <td align="right">
+                   <a href="//www.firebirdsql.org/en/contact-us/" class="menu_top">Contact Us</a>
+             <span class="cff">|</span>           <a href="//www.firebirdsql.org/en/map/" class="menu_top">Site Map</a>
+         </td>
+ <td class="lpad10" width="235"><table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+ <td class="bg02" width="5" valign="top"><img src="/img/site/c1_left.gif" alt="" /></td>
+ <td class="bg02 pad5 head-gcse">
+
+   
+   <script>
+  (function() {
+    var cx = '010633460585558258518:jpoa5mcegvg';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
+<gcse:search></gcse:search>
+
+      
+</td>
+  <td class="bg02" width="5" valign="top"><img src="/img/site/c1_right.gif" alt="" /></td>
+  </tr></table></td>
+</tr></table>
+</div>
+
+
+<div class="bg_top">
+<table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+ <td align="left"><a href="//www.firebirdsql.org/en/start/" title="Firebird is used by approximately 1 million of software developers worldwide."><img src="/img/site/firebird.jpg" alt="Firebird is used by approximately 1 million of software developers worldwide." /></a></td>
+ <td align="right"><img src="//www.firebirdsql.org/img/site/top_right.jpg" alt="High compatibility with industry standards on many fronts makes Firebird the obvious choice for developing interoperable applications for homogeneous and hybrid environments." title="High compatibility with industry standards on many fronts makes Firebird the obvious choice for developing interoperable applications for homogeneous and hybrid environments."
+ /></td>
+</tr></table>
+</div>
+ 
+    <div class="bg_info">
+    <table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+      <td valign="top" width="5"><img src="/img/site/c2_left.gif" alt="" /></td>
+      <td valign="top" class="pad5">
+        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+ <tr>
+   <td width="5"><img src="/img/site/c3_lt.gif" alt="" /></td>
+   <td class="c3_bg_t" height="5"><img src="/img/site/vid.gif" alt="" /></td>
+   <td width="5"><img src="/img/site/c3_rt.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td class="c3_bg_l"><img src="/img/site/vid.gif" alt="" /></td>
+   <td >
+    
+    <div class="bg_menu menu-top">
+      <table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+       <td width="5" valign="top"><img src="/img/site/c4_lt.gif" alt="" /></td>
+       <td class="tpad5 lpad15 rpad15 mcontainer">
+         <table border="0" cellspacing="0" cellpadding="0"><tr>
+                                                               <td class="lpad10 rpad10 tpad10 bpad5  mtag">
+              <a href="//www.firebirdsql.org/en/start/" class="up size12 txt_nund cff">Home</a>
+             </td>
+                                                               <td class="bg_menu_center" width="5" valign="top"><img src="/img/site/c5_lt.gif" alt="" /></td>             <td class="lpad10 rpad10 tpad10 bpad5 bg_menu_center mtag">
+              <a href="//www.firebirdsql.org/en/documentation/" class="up size12 txt_nund c00">Documentation</a>
+             </td>
+             <td class="bg_menu_center" width="5" valign="top"><img src="/img/site/c5_rt.gif" alt="" /></td>                                                               <td class="lpad10 rpad10 tpad10 bpad5  mtag">
+              <a href="//www.firebirdsql.org/en/server-packages/" class="up size12 txt_nund cff">Downloads</a>
+             </td>
+                                                                            <td class="lpad10 rpad10 tpad10 bpad5  mtag">
+              <a href="//www.firebirdsql.org/en/community/" class="up size12 txt_nund cff">Community</a>
+             </td>
+                                                                            <td class="lpad10 rpad10 tpad10 bpad5  mtag">
+              <a href="//www.firebirdsql.org/en/support/" class="up size12 txt_nund cff">Support</a>
+             </td>
+                                                                            <td class="lpad10 rpad10 tpad10 bpad5  mtag">
+              <a href="//www.firebirdsql.org/en/development/" class="up size12 txt_nund cff">Development</a>
+             </td>
+                                 </tr></table>
+       </td>
+       <td width="5" valign="top"><img src="/img/site/c4_rt.gif" alt="" /></td>
+      </tr></table>
+    </div>
+    
+    <div class="lpad20 tpad5"><div class="page-path">
+  <table cellspacing="0" cellpadding="0" border="0"><tr>  
+    <td><span class="tbold size11">You are here:</span></td>   
+      
+    <td align="left" class="lpad10">
+      <a href="//www.firebirdsql.org/en/start/" class="page_menu">Home</a>
+    </td>
+               <td class="lpad5 rpad5"><img src="/img/site/s1.gif" alt="" /></td>
+      <td><a href="//www.firebirdsql.org/en/documentation/" class=" page_menu ">Documentation</a></td>
+                    <td class="lpad5 rpad5"><img src="/img/site/s1.gif" alt="" /></td>
+      <td><a href="//www.firebirdsql.org/en/reference-manuals/" class=" page_menu ">Reference Manuals</a></td>
+                    <td class="lpad5 rpad5"><img src="/img/site/s1.gif" alt="" /></td>
+      <td><a href="//www.firebirdsql.org/en/iso-9075-sql-standard-keywords-reserved-words/" class=" page_menu_sel ">ISO 9075 SQL Standard Keywords/Reserved Words</a></td>
+             
+  </tr></table>
+</div></div> 
+    
+   </td>
+   <td class="c3_bg_r"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td ><img src="/img/site/c3_lb.gif" alt="" /></td>
+   <td class="c3_bg_b" height="5"><img src="/img/site/vid.gif" alt="" /></td>
+   <td ><img src="/img/site/c3_rb.gif" alt="" /></td>
+ </tr>
+</table> 
+        <div class="row container">
+        	<div class="col-2 menu-left">
+        	          	  <div><div class="menu-left-min">Documentation</div>
+
+<div class="bgMenuLeft">
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/release-notes/" class="menulvl_2">Release Notes</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/reference-manuals/" class="menulvl_2">Reference Manuals</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/white-papers-presentations/" class="menulvl_2">White Papers &amp; Presentations</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/faq/" class="menulvl_2">FAQ</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/books/" class="menulvl_2">Books</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/drivers-documentation/" class="menulvl_2">Drivers Documentation</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/third-party-docs-and-articles/" class="menulvl_2">Third-party Docs and Articles</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/external-documentation/" class="menulvl_2">External Documentation</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/licensing/" class="menulvl_2">Licensing</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/features/" class="menulvl_2">Features</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/sql-conformance/" class="menulvl_2">SQL Conformance</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/historical-reference/" class="menulvl_2">Historical Reference</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/firebird-brand-faq/" class="menulvl_2">Branding Policy</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+  
+    
+ 
+ 
+  
+   <div class="bgLVL_3">
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/firebird-brand-faq/" class="menulvl_3">Firebird Brand FAQ</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+   </div>  
+    
+ 
+ 
+    
+
+
+  
+    
+ 
+ 
+  
+   <div class="bgLVL_3">
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/firebird-brand-blacklist/" class="menulvl_3">Firebird Brand Blacklist</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+   </div>  
+    
+ 
+ 
+    
+
+
+  
+  
+    <div class="bgLVL_2">   
+     <table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+      <td ><a href="//www.firebirdsql.org/en/logos/" class="menulvl_2">Logos</a></td>
+      <td width="5" class="lpad5" align="left"><img src="/img/site/p1.gif" alt="" /></td>
+     </tr></table>   
+    </div>  
+    
+ 
+ 
+    
+ 
+ 
+    
+
+
+</div> 
+<div class="pad5"><img src="/img/site/vid.gif" alt="" /></div>
+</div>              
+              <div class="bpad10"><div id="banners_PLEFT">
+ <script type="text/javascript">
+   $(document).ready(function(){ GetBanners ('PLEFT',0) });
+ </script>
+</div></div>
+              <div class="bpad10"><table border="0" cellspacing="0" cellpadding="0" width="100%">
+ <tr>
+   <td width="4"><img src="/img/site/c7_lt.gif" alt="" /></td>
+   <td class="c7_bg_t lpad10 rpad5" height="4"><table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+       <td align="left" class="tpad5"><span class="cff size18">Join Firebird!</span></td>
+       <td align="right"><img src="/img/site/donate.png" alt="" /></td>
+     </tr></table></td>
+   <td width="4"><img src="/img/site/c7_rt.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td class="c7_bg_l"><img src="/img/site/vid.gif" alt="" /></td>
+   <td class="bg_block pad5">
+      <div class="bpad5"><span class="c80">Join Firebird Foundation to support Firebird SQL development and receive multiple bonuses</span></div>        
+      <div class="tpad10 bpad10">
+        <table cellspacing="0" cellpadding="0" border="0" align="right"><tr>
+          <td width="5"><img src="/img/site/btn_3_left.gif" alt="" /></td>
+          <td class="bg_btn_3 lpad10 rpad10">
+           <a href="//www.firebirdsql.org/en/membership/" class="btn_3">Join!</a>
+          </td>
+          <td width="5"><img src="/img/site/btn_3_right.gif" alt="" /></td>
+        </tr></table> 
+        
+      </div>
+   </td>
+   <td class="c7_bg_r"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td ><img src="/img/site/c7_lb.gif" alt="" /></td>
+   <td class="c7_bg_b" height="4"><img src="/img/site/vid.gif" alt="" /></td>
+   <td ><img src="/img/site/c7_rb.gif" alt="" /></td>
+ </tr>
+</table></div>
+              <div class="bpad10"><table border="0" cellspacing="0" cellpadding="0" width="100%">
+ <tr>
+   <td width="4"><img src="/img/site/c7_lt.gif" alt="" /></td>
+   <td class="c7_bg_t lpad10 rpad5" height="4">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+       <td align="left" class="tpad5"><span class="cff size18">Follow Us</span></td>
+       <td align="right"><img src="/img/site/join_us.png" alt="" /></td>
+     </tr></table>
+   </td>
+   <td width="4"><img src="/img/site/c7_rt.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td class="c7_bg_l"><img src="/img/site/vid.gif" alt="" /></td>
+   <td class="bg_block pad5">
+      <div class="bpad5"><span class="c80">Select your media preference</span></div>
+        
+      <div class="tpad10 bpad10 ">
+        <table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+          <td align="center"><a href="//plus.google.com/111558763769231855886" rel="publisher" target="_blank"><img src="/img/site/gp.png" width="32" height="32" alt="Google+" /></a></td>
+          <td align="center"><a href="//twitter.com/firebirdsql/" target="_blank"><img src="/img/site/tweeter.png" alt="Twitter" /></a></td>
+          <td align="center"><a href="//www.facebook.com/pages/FirebirdSQL/46546452369" target="_blank"><img src="/img/site/facebook.png" alt="Facebook" /></a></td>
+          <td align="center"><a href="//www.firebirdsql.org/rss/en/news.xml" target="_blank"><img src="/img/site/rss.png" alt="RSS" /></a></td>
+         
+        </tr></table>
+      </div>
+   </td>
+   <td class="c7_bg_r"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td ><img src="/img/site/c7_lb.gif" alt="" /></td>
+   <td class="c7_bg_b" height="4"><img src="/img/site/vid.gif" alt="" /></td>
+   <td ><img src="/img/site/c7_rb.gif" alt="" /></td>
+ </tr>
+</table></div>
+              <div class="bpad10"><table border="0" cellspacing="0" cellpadding="0" width="100%">
+ <tr>
+   <td width="4"><img src="/img/site/c7_lt.gif" alt="" /></td>
+   <td class="c7_bg_t lpad10 rpad5" height="4">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%"><tr>
+       <td align="left" class="tpad5"><span class="cff size18">Newsletter</span></td>
+       <td align="right"><img src="/img/site/newsletter.png" alt="" /></td>
+     </tr></table>
+   </td>
+   <td width="4"><img src="/img/site/c7_rt.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td class="c7_bg_l"><img src="/img/site/vid.gif" alt="" /></td>
+   <td class="bg_block pad5">              
+      <form action="//dfp.firebirdsql.org/en/subscribe/" method="post">
+       <div class="bpad5"><span class="c80">Subscribe to Firebird’s Newsletter to receive the latest news</span></div>
+       <table width="100%"><tr>
+        <td><input type="text" onfocus="clearForm()" value="e-mail" class="subscribe" name="email" id="email" /></td>
+        <td width="5"><input type="image" src="/img/site/btn_ok.gif" name="btn_ok" /> </td>
+       </tr></table>
+      </form>
+   </td>
+   <td class="c7_bg_r"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ 
+ <tr>
+   <td ><img src="/img/site/c7_lb.gif" alt="" /></td>
+   <td class="c7_bg_b" height="4"><img src="/img/site/vid.gif" alt="" /></td>
+   <td ><img src="/img/site/c7_rb.gif" alt="" /></td>
+ </tr>
+</table></div>
+        	</div>
+        	<div class="col-1">
+        	   
+              
+
+
+
+<div id="banners_PCENTER">
+ <script type="text/javascript">
+   $(document).ready(function(){ GetBanners ('PCENTER',1529) });
+ </script>
+</div>
+                  
+              
+              <fieldset>
+                   <legend>ISO 9075 SQL Standard Keywords/Reserved Words</legend>
+                   <div class="pad5 content"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+    <tbody>
+        <tr>
+            <td>Not all of the reserved keywords are reserved in Firebird and not all  are used (yet). However, anything new in Firebird will always use the  standard name if it is available. Thus, it is an excellent precaution to  avoid defining identifiers that have the potential to become reserved  in Firebird's SQL.</td>
+            <td><img width="67" height="62" src="/img/documentation/iso_logo.jpg" alt="ISO Logo" /></td>
+        </tr>
+    </tbody>
+</table>
+<br />
+<strong><span style="color: rgb(6, 134, 173); font-size: 16px;">The Cost of Blind Ignorance</span></strong><br />
+<br />
+If you decide to use potentially reserved words as identifiers for database objects, regardless of the consequences, you build a future cost into your databases: if a newer on-disk structure (ODS) version implements that word as a reserved keyword, both your databases and your applications will have to be modified in order to make your databases usable under the new server version. You will have two ways to do this, both pervasive:<br />
+<ul>
+    <li>Redefine the identifier by surrounding it with double-quotes. It then becomes case-sensitive. All references <em>everywhere</em> must refer to the identifier using the quoted name OR</li>
+    <li>Redefine the identifier by renaming it to a word that has no potential to become reserved (as should have been done originally, anyway!) So &mdash; for example &mdash; rename STATE to something like STATE0 or CNT_STATE.</li>
+</ul>
+Either way, you will have a lot of search-and-replace ahead of you. All dependencies on the object will have to be removed before you can perform either change. Compiled code that depends on this object (stored procedures, triggers, relational and CHECK constraints, etc.) will have to be modified in order to refer to the new object identifier. Likewise, all references to the object in application code will have to be corrected to the new situation.<br />
+<div style="color: rgb(86, 86, 86); font-size: 11px; padding: 10px 15px 10px 25px;">This document is not about the idiosyncrasies that exist in the various keyword sets of Firebird's several versions. Always consult the Reserved Words section of the relevant release notes and/or Language Reference Update, alongside this one, to determine your complete &quot;avoid list&quot;.<br />
+<br />
+Also consider that, as long as a word was ever reserved by the standard, it has the potential to be, or to become, a reserved word in any SQL language implementation, not excluding Firebird's.</div>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" class="Table">
+    <tbody>
+        <tr class="Table_Header">
+            <td>SQL-92</td>
+            <td>SQL-99</td>
+            <td>SQL-2003</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ABSOLUTE</td>
+            <td>ABSOLUTE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ACTION</td>
+            <td>ACTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ADD</td>
+            <td>ADD</td>
+            <td>ADD</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>AFTER</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ALL</td>
+            <td>ALL</td>
+            <td>ALL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ALLOCATE</td>
+            <td>ALLOCATE</td>
+            <td>ALLOCATE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ALTER</td>
+            <td>ALTER</td>
+            <td>ALTER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>AND</td>
+            <td>AND</td>
+            <td>AND</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ANY</td>
+            <td>ANY</td>
+            <td>ANY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ARE</td>
+            <td>ARE</td>
+            <td>ARE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>ARRAY</td>
+            <td>ARRAY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>AS</td>
+            <td>AS</td>
+            <td>AS</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ASC</td>
+            <td>ASC</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ASENSITIVE</td>
+            <td>ASENSITIVE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ASSERTION</td>
+            <td>ASSERTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ASYMMETRIC</td>
+            <td>ASYMMETRIC</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>AT</td>
+            <td>AT</td>
+            <td>AT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ATOMIC</td>
+            <td>ATOMIC</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>AUTHORIZATION</td>
+            <td>AUTHORIZATION</td>
+            <td>AUTHORIZATION</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>AVG</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>BEFORE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>BEGIN</td>
+            <td>BEGIN</td>
+            <td>BEGIN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>BETWEEN</td>
+            <td>BETWEEN</td>
+            <td>BETWEEN</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>BIGINT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>BINARY</td>
+            <td>BINARY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>BIT</td>
+            <td>BIT</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>BIT_LENGTH</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>BLOB</td>
+            <td>BLOB</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>BOOLEAN</td>
+            <td>BOOLEAN</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>BOTH</td>
+            <td>BOTH</td>
+            <td>BOTH</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>BREADTH</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>BY</td>
+            <td>BY</td>
+            <td>BY</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CALL</td>
+            <td>CALL</td>
+            <td>CALL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>CALLED</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CASCADE</td>
+            <td>CASCADE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CASCADED</td>
+            <td>CASCADED</td>
+            <td>CASCADED</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CASE</td>
+            <td>CASE</td>
+            <td>CASE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CAST</td>
+            <td>CAST</td>
+            <td>CAST</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CATALOG</td>
+            <td>CATALOG</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CHAR</td>
+            <td>CHAR</td>
+            <td>CHAR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CHAR_LENGTH</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CHARACTER</td>
+            <td>CHARACTER</td>
+            <td>CHARACTER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CHARACTER_LENGTH</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CHECK</td>
+            <td>CHECK</td>
+            <td>CHECK</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>CLOB</td>
+            <td>CLOB</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CLOSE</td>
+            <td>CLOSE</td>
+            <td>CLOSE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>COALESCE</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>COLLATE</td>
+            <td>COLLATE</td>
+            <td>COLLATE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>COLLATION</td>
+            <td>COLLATION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>COLUMN</td>
+            <td>COLUMN</td>
+            <td>COLUMN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>COMMIT</td>
+            <td>COMMIT</td>
+            <td>COMMIT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CONDITION</td>
+            <td>CONDITION</td>
+            <td>CONDITION</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CONNECT</td>
+            <td>CONNECT</td>
+            <td>CONNECT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CONNECTION</td>
+            <td>CONNECTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CONSTRAINT</td>
+            <td>CONSTRAINT</td>
+            <td>CONSTRAINT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CONSTRAINTS</td>
+            <td>CONSTRAINTS</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>CONSTRUCTOR</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CONTAINS</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CONTINUE</td>
+            <td>CONTINUE</td>
+            <td>CONTINUE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CONVERT</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CORRESPONDING</td>
+            <td>CORRESPONDING</td>
+            <td>CORRESPONDING</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>COUNT</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CREATE</td>
+            <td>CREATE</td>
+            <td>CREATE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CROSS</td>
+            <td>CROSS</td>
+            <td>CROSS</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>CUBE</td>
+            <td>CUBE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CURRENT</td>
+            <td>CURRENT</td>
+            <td>CURRENT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CURRENT_DATE</td>
+            <td>CURRENT_DATE</td>
+            <td>CURRENT_DATE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>CURRENT_DEFAULT_TRANSFORM_GROUP</td>
+            <td>CURRENT_DEFAULT_TRANSFORM_GROUP</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CURRENT_PATH</td>
+            <td>CURRENT_PATH</td>
+            <td>CURRENT_PATH</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>CURRENT_ROLE</td>
+            <td>CURRENT_ROLE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CURRENT_TIME</td>
+            <td>CURRENT_TIME</td>
+            <td>CURRENT_TIME</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CURRENT_TIMESTAMP</td>
+            <td>CURRENT_TIMESTAMP</td>
+            <td>CURRENT_TIMESTAMP</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>CURRENT_TRANSFORM_GROUP_FOR_TYPE</td>
+            <td>CURRENT_TRANSFORM_GROUP_FOR_TYPE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>CURRENT_USER</td>
+            <td>CURRENT_USER</td>
+            <td>CURRENT_USER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>CURSOR</td>
+            <td>CURSOR</td>
+            <td>CURSOR</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>CYCLE</td>
+            <td>CYCLE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>DATA</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DATE</td>
+            <td>DATE</td>
+            <td>DATE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DAY</td>
+            <td>DAY</td>
+            <td>DAY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DEALLOCATE</td>
+            <td>DEALLOCATE</td>
+            <td>DEALLOCATE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DEC</td>
+            <td>DEC</td>
+            <td>DEC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DECIMAL</td>
+            <td>DECIMAL</td>
+            <td>DECIMAL</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DECLARE</td>
+            <td>DECLARE</td>
+            <td>DECLARE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DEFAULT</td>
+            <td>DEFAULT</td>
+            <td>DEFAULT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DEFERRABLE</td>
+            <td>DEFERRABLE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DEFERRED</td>
+            <td>DEFERRED</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DELETE</td>
+            <td>DELETE</td>
+            <td>DELETE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>DEPTH</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>DEREF</td>
+            <td>DEREF</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DESC</td>
+            <td>DESC</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DESCRIBE</td>
+            <td>DESCRIBE</td>
+            <td>DESCRIBE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DESCRIPTOR</td>
+            <td>DESCRIPTOR</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DETERMINISTIC</td>
+            <td>DETERMINISTIC</td>
+            <td>DETERMINISTIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DIAGNOSTICS</td>
+            <td>DIAGNOSTICS</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DISCONNECT</td>
+            <td>DISCONNECT</td>
+            <td>DISCONNECT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DISTINCT</td>
+            <td>DISTINCT</td>
+            <td>DISTINCT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DO</td>
+            <td>DO</td>
+            <td>DO</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DOMAIN</td>
+            <td>DOMAIN</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>DOUBLE</td>
+            <td>DOUBLE</td>
+            <td>DOUBLE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>DROP</td>
+            <td>DROP</td>
+            <td>DROP</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>DYNAMIC</td>
+            <td>DYNAMIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>EACH</td>
+            <td>EACH</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>ELEMENT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ELSE</td>
+            <td>ELSE</td>
+            <td>ELSE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ELSEIF</td>
+            <td>ELSEIF</td>
+            <td>ELSEIF</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>END</td>
+            <td>END</td>
+            <td>END</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>EQUALS</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ESCAPE</td>
+            <td>ESCAPE</td>
+            <td>ESCAPE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>EXCEPT</td>
+            <td>EXCEPT</td>
+            <td>EXCEPT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>EXCEPTION</td>
+            <td>EXCEPTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>EXEC</td>
+            <td>EXEC</td>
+            <td>EXEC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>EXECUTE</td>
+            <td>EXECUTE</td>
+            <td>EXECUTE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>EXISTS</td>
+            <td>EXISTS</td>
+            <td>EXISTS</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>EXIT</td>
+            <td>EXIT</td>
+            <td>EXIT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>EXTERNAL</td>
+            <td>EXTERNAL</td>
+            <td>EXTERNAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>EXTRACT</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>FALSE</td>
+            <td>FALSE</td>
+            <td>FALSE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FETCH</td>
+            <td>FETCH</td>
+            <td>FETCH</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>FILTER</td>
+            <td>FILTER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FIRST</td>
+            <td>FIRST</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>FLOAT</td>
+            <td>FLOAT</td>
+            <td>FLOAT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FOR</td>
+            <td>FOR</td>
+            <td>FOR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>FOREIGN</td>
+            <td>FOREIGN</td>
+            <td>FOREIGN</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FOUND</td>
+            <td>FOUND</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>FREE</td>
+            <td>FREE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FROM</td>
+            <td>FROM</td>
+            <td>FROM</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>FULL</td>
+            <td>FULL</td>
+            <td>FULL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>FUNCTION</td>
+            <td>FUNCTION</td>
+            <td>FUNCTION</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>GENERAL</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>GET</td>
+            <td>GET</td>
+            <td>GET</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>GLOBAL</td>
+            <td>GLOBAL</td>
+            <td>GLOBAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>GO</td>
+            <td>GO</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>GOTO</td>
+            <td>GOTO</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>GRANT</td>
+            <td>GRANT</td>
+            <td>GRANT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>GROUP</td>
+            <td>GROUP</td>
+            <td>GROUP</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>GROUPING</td>
+            <td>GROUPING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>HANDLER</td>
+            <td>HANDLER</td>
+            <td>HANDLER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>HAVING</td>
+            <td>HAVING</td>
+            <td>HAVING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>HOLD</td>
+            <td>HOLD</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>HOUR</td>
+            <td>HOUR</td>
+            <td>HOUR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>IDENTITY</td>
+            <td>IDENTITY</td>
+            <td>IDENTITY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>IF</td>
+            <td>IF</td>
+            <td>IF</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>IMMEDIATE</td>
+            <td>IMMEDIATE</td>
+            <td>IMMEDIATE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>IN</td>
+            <td>IN</td>
+            <td>IN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INDICATOR</td>
+            <td>INDICATOR</td>
+            <td>INDICATOR</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INITIALLY</td>
+            <td>INITIALLY</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INNER</td>
+            <td>INNER</td>
+            <td>INNER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INOUT</td>
+            <td>INOUT</td>
+            <td>INOUT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INPUT</td>
+            <td>INPUT</td>
+            <td>INPUT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INSENSITIVE</td>
+            <td>INSENSITIVE</td>
+            <td>INSENSITIVE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INSERT</td>
+            <td>INSERT</td>
+            <td>INSERT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INT</td>
+            <td>INT</td>
+            <td>INT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INTEGER</td>
+            <td>INTEGER</td>
+            <td>INTEGER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INTERSECT</td>
+            <td>INTERSECT</td>
+            <td>INTERSECT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>INTERVAL</td>
+            <td>INTERVAL</td>
+            <td>INTERVAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>INTO</td>
+            <td>INTO</td>
+            <td>INTO</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>IS</td>
+            <td>IS</td>
+            <td>IS</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ISOLATION</td>
+            <td>ISOLATION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>ITERATE</td>
+            <td>ITERATE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>JOIN</td>
+            <td>JOIN</td>
+            <td>JOIN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>KEY</td>
+            <td>KEY</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LANGUAGE</td>
+            <td>LANGUAGE</td>
+            <td>LANGUAGE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>LARGE</td>
+            <td>LARGE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LAST</td>
+            <td>LAST</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>LATERAL</td>
+            <td>LATERAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LEADING</td>
+            <td>LEADING</td>
+            <td>LEADING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>LEAVE</td>
+            <td>LEAVE</td>
+            <td>LEAVE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LEFT</td>
+            <td>LEFT</td>
+            <td>LEFT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>LEVEL</td>
+            <td>LEVEL</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LIKE</td>
+            <td>LIKE</td>
+            <td>LIKE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>LOCAL</td>
+            <td>LOCAL</td>
+            <td>LOCAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>LOCALTIME</td>
+            <td>LOCALTIME</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>LOCALTIMESTAMP</td>
+            <td>LOCALTIMESTAMP</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>LOCATOR</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>LOOP</td>
+            <td>LOOP</td>
+            <td>LOOP</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>LOWER</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>MAP</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>MATCH</td>
+            <td>MATCH</td>
+            <td>MATCH</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>MAX</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>MEMBER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>MERGE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>METHOD</td>
+            <td>METHOD</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>MIN</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>MINUTE</td>
+            <td>MINUTE</td>
+            <td>MINUTE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>MODIFIES</td>
+            <td>MODIFIES</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>MODULE</td>
+            <td>MODULE</td>
+            <td>MODULE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>MONTH</td>
+            <td>MONTH</td>
+            <td>MONTH</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>MULTISET</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>NAMES</td>
+            <td>NAMES</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>NATIONAL</td>
+            <td>NATIONAL</td>
+            <td>NATIONAL</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>NATURAL</td>
+            <td>NATURAL</td>
+            <td>NATURAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>NCHAR</td>
+            <td>NCHAR</td>
+            <td>NCHAR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>NCLOB</td>
+            <td>NCLOB</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>NEW</td>
+            <td>NEW</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>NEXT</td>
+            <td>NEXT</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>NO</td>
+            <td>NO</td>
+            <td>NO</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>NONE</td>
+            <td>NONE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>NOT</td>
+            <td>NOT</td>
+            <td>NOT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>NULL</td>
+            <td>NULL</td>
+            <td>NULL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>NULLIF</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>NUMERIC</td>
+            <td>NUMERIC</td>
+            <td>NUMERIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>OBJECT</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>OCTET_LENGTH</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>OF</td>
+            <td>OF</td>
+            <td>OF</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>OLD</td>
+            <td>OLD</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>ON</td>
+            <td>ON</td>
+            <td>ON</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ONLY</td>
+            <td>ONLY</td>
+            <td>ONLY</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>OPEN</td>
+            <td>OPEN</td>
+            <td>OPEN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>OPTION</td>
+            <td>OPTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>OR</td>
+            <td>OR</td>
+            <td>OR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ORDER</td>
+            <td>ORDER</td>
+            <td>ORDER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ORDINALITY</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>OUT</td>
+            <td>OUT</td>
+            <td>OUT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>OUTER</td>
+            <td>OUTER</td>
+            <td>OUTER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>OUTPUT</td>
+            <td>OUTPUT</td>
+            <td>OUTPUT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>OVER</td>
+            <td>OVER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>OVERLAPS</td>
+            <td>OVERLAPS</td>
+            <td>OVERLAPS</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PAD</td>
+            <td>PAD</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>PARAMETER</td>
+            <td>PARAMETER</td>
+            <td>PARAMETER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PARTIAL</td>
+            <td>PARTIAL</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>PARTITION</td>
+            <td>PARTITION</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PATH</td>
+            <td>PATH</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>POSITION</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PRECISION</td>
+            <td>PRECISION</td>
+            <td>PRECISION</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>PREPARE</td>
+            <td>PREPARE</td>
+            <td>PREPARE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PRESERVE</td>
+            <td>PRESERVE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>PRIMARY</td>
+            <td>PRIMARY</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PRIOR</td>
+            <td>PRIOR</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>PRIVILEGES</td>
+            <td>PRIVILEGES</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>PROCEDURE</td>
+            <td>PROCEDURE</td>
+            <td>PROCEDURE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>PUBLIC</td>
+            <td>PUBLIC</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>RANGE</td>
+            <td>RANGE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>READ</td>
+            <td>READ</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>READS</td>
+            <td>READS</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>REAL</td>
+            <td>REAL</td>
+            <td>REAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>RECURSIVE</td>
+            <td>RECURSIVE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>REF</td>
+            <td>REF</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>REFERENCES</td>
+            <td>REFERENCES</td>
+            <td>REFERENCES</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>REFERENCING</td>
+            <td>REFERENCING</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>RELATIVE</td>
+            <td>RELATIVE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>RELEASE</td>
+            <td>RELEASE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>REPEAT</td>
+            <td>REPEAT</td>
+            <td>REPEAT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>RESIGNAL</td>
+            <td>RESIGNAL</td>
+            <td>RESIGNAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>RESTRICT</td>
+            <td>RESTRICT</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>RESULT</td>
+            <td>RESULT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>RETURN</td>
+            <td>RETURN</td>
+            <td>RETURN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>RETURNS</td>
+            <td>RETURNS</td>
+            <td>RETURNS</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>REVOKE</td>
+            <td>REVOKE</td>
+            <td>REVOKE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>RIGHT</td>
+            <td>RIGHT</td>
+            <td>RIGHT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ROLE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ROLLBACK</td>
+            <td>ROLLBACK</td>
+            <td>ROLLBACK</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ROLLUP</td>
+            <td>ROLLUP</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ROUTINE</td>
+            <td>ROUTINE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>ROW</td>
+            <td>ROW</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ROWS</td>
+            <td>ROWS</td>
+            <td>ROWS</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SAVEPOINT</td>
+            <td>SAVEPOINT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SCHEMA</td>
+            <td>SCHEMA</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SCOPE</td>
+            <td>SCOPE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SCROLL</td>
+            <td>SCROLL</td>
+            <td>SCROLL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SEARCH</td>
+            <td>SEARCH</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SECOND</td>
+            <td>SECOND</td>
+            <td>SECOND</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SECTION</td>
+            <td>SECTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SELECT</td>
+            <td>SELECT</td>
+            <td>SELECT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SENSITIVE</td>
+            <td>SENSITIVE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SESSION</td>
+            <td>SESSION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SESSION_USER</td>
+            <td>SESSION_USER</td>
+            <td>SESSION_USER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SET</td>
+            <td>SET</td>
+            <td>SET</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SETS</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SIGNAL</td>
+            <td>SIGNAL</td>
+            <td>SIGNAL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SIMILAR</td>
+            <td>SIMILAR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SIZE</td>
+            <td>SIZE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SMALLINT</td>
+            <td>SMALLINT</td>
+            <td>SMALLINT</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SOME</td>
+            <td>SOME</td>
+            <td>SOME</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SPACE</td>
+            <td>SPACE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SPECIFIC</td>
+            <td>SPECIFIC</td>
+            <td>SPECIFIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SPECIFICTYPE</td>
+            <td>SPECIFICTYPE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SQL</td>
+            <td>SQL</td>
+            <td>SQL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SQLCODE</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SQLERROR</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SQLEXCEPTION</td>
+            <td>SQLEXCEPTION</td>
+            <td>SQLEXCEPTION</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SQLSTATE</td>
+            <td>SQLSTATE</td>
+            <td>SQLSTATE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SQLWARNING</td>
+            <td>SQLWARNING</td>
+            <td>SQLWARNING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>START</td>
+            <td>START</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>STATE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>STATIC</td>
+            <td>STATIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>SUBMULTISET</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SUBSTRING</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>SUM</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>SYMMETRIC</td>
+            <td>SYMMETRIC</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>SYSTEM</td>
+            <td>SYSTEM</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>SYSTEM_USER</td>
+            <td>SYSTEM_USER</td>
+            <td>SYSTEM_USER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TABLE</td>
+            <td>TABLE</td>
+            <td>TABLE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>TABLESAMPLE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TEMPORARY</td>
+            <td>TEMPORARY</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>THEN</td>
+            <td>THEN</td>
+            <td>THEN</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TIME</td>
+            <td>TIME</td>
+            <td>TIME</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>TIMESTAMP</td>
+            <td>TIMESTAMP</td>
+            <td>TIMESTAMP</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TIMEZONE_HOUR</td>
+            <td>TIMEZONE_HOUR</td>
+            <td>TIMEZONE_HOUR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>TIMEZONE_MINUTE</td>
+            <td>TIMEZONE_MINUTE</td>
+            <td>TIMEZONE_MINUTE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TO</td>
+            <td>TO</td>
+            <td>TO</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>TRAILING</td>
+            <td>TRAILING</td>
+            <td>TRAILING</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TRANSACTION</td>
+            <td>TRANSACTION</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>TRANSLATE</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TRANSLATION</td>
+            <td>TRANSLATION</td>
+            <td>TRANSLATION</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>TREAT</td>
+            <td>TREAT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>TRIGGER</td>
+            <td>TRIGGER</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>TRIM</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>TRUE</td>
+            <td>TRUE</td>
+            <td>TRUE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>UNDER</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>UNDO</td>
+            <td>UNDO</td>
+            <td>UNDO</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>UNION</td>
+            <td>UNION</td>
+            <td>UNION</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>UNIQUE</td>
+            <td>UNIQUE</td>
+            <td>UNIQUE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>UNKNOWN</td>
+            <td>UNKNOWN</td>
+            <td>UNKNOWN</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>UNNEST</td>
+            <td>UNNEST</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>UNTIL</td>
+            <td>UNTIL</td>
+            <td>UNTIL</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>UPDATE</td>
+            <td>UPDATE</td>
+            <td>UPDATE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>UPPER</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>USAGE</td>
+            <td>USAGE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>USER</td>
+            <td>USER</td>
+            <td>USER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>USING</td>
+            <td>USING</td>
+            <td>USING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>VALUE</td>
+            <td>VALUE</td>
+            <td>VALUE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>VALUES</td>
+            <td>VALUES</td>
+            <td>VALUES</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>VARCHAR</td>
+            <td>VARCHAR</td>
+            <td>VARCHAR</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>VARYING</td>
+            <td>VARYING</td>
+            <td>VARYING</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>VIEW</td>
+            <td>VIEW</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>WHEN</td>
+            <td>WHEN</td>
+            <td>WHEN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>WHENEVER</td>
+            <td>WHENEVER</td>
+            <td>WHENEVER</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>WHERE</td>
+            <td>WHERE</td>
+            <td>WHERE</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>WHILE</td>
+            <td>WHILE</td>
+            <td>WHILE</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>WINDOW</td>
+            <td>WINDOW</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>WITH</td>
+            <td>WITH</td>
+            <td>WITH</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>&nbsp;</td>
+            <td>WITHIN</td>
+            <td>WITHIN</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>&nbsp;</td>
+            <td>WITHOUT</td>
+            <td>WITHOUT</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>WORK</td>
+            <td>WORK</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>WRITE</td>
+            <td>WRITE</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr class="Table_Row_Grey">
+            <td>YEAR</td>
+            <td>YEAR</td>
+            <td>YEAR</td>
+        </tr>
+        <tr class="Table_Row_White">
+            <td>ZONE</td>
+            <td>ZONE</td>
+            <td>&nbsp;</td>
+        </tr>
+
+
+    </tbody>
+</table>
+<br /></div>
+                   <div style="clear:both;"></div>
+<div class="tborder_cf"><div class="pad15 tborder_ff">
+<div id="div_comment" align="right">
+	        <table border="0" cellspacing="0" cellpadding="0"><tr>
+          <td align="center" class="rpad10">
+	          <a href="//www.firebirdsql.org/en/membership/" class="btn_join">Join Firebird!</a>	          
+          </td>
+          
+          <td align="center" class="rpad10">
+          	<a href="//twitter.com/share" class="twitter-share-button">Tweet</a>
+			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+	 	  </td>
+          <td align="left" class="rpad10">
+          
+          <!-- Load Facebook SDK for JavaScript -->
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+
+	<!-- Your share button code -->
+	<div class="fb-share-button" data-href="//{$siteURL}{$lang}/{$page.out_paddress}/"	data-layout="button_count"></div>
+                    
+          </td>
+          <td align="center" class="rpad10"><a href="//www.firebirdsql.org/rss/en/news.xml" target="_blank"><img src="/img/site/rss.png" alt="RSS" title="RSS" height="20" /></a></td>
+          <td align="center" class="rpad10">
+          	<a href="//dfp.firebirdsql.org/en/subscribe/"><img src="/img/site/mail.png" alt="Newsletter" title="Newsletter" height="20" /></a>           
+          </td>         
+        </tr></table>     
+
+</div>
+ 
+</div></div>
+              </fieldset>
+        	</div>
+        </div>       
+      </td>
+      <td valign="top" width="5"><img src="/img/site/c2_right.gif" alt="" /></td>
+    </tr></table>
+    </div>
+  </td>
+  <td><img src="/img/site/vid.gif" alt="" /></td> 
+ </tr>
+ 
+ 
+ <tr>
+  <td height="75" class="tborder_cf bborder_cf bgff"><img src="/img/site/vid.gif" alt="" /></td>
+  <td class="tborder_cf bborder_cf bgff" valign="middle"><table cellspacing="0" cellpadding="0" border="0" width="100%"><tr>
+ <td align="left">   
+    
+         
+      <a href="//www.firebirdsql.org/en/start/" class="c45 tbold lpad5 rpad5 txt_nund size11">Home</a>      
+         
+      <a href="//www.firebirdsql.org/en/about-firebird/" class="c45 tbold lpad5 rpad5 txt_nund size11">About Firebird</a>      
+         
+      <a href="//www.firebirdsql.org/en/documentation/" class="c45 tbold lpad5 rpad5 txt_nund size11">Documentation</a>      
+         
+      <a href="//www.firebirdsql.org/en/downloads/" class="c45 tbold lpad5 rpad5 txt_nund size11">Downloads</a>      
+         
+      <a href="//www.firebirdsql.org/en/community/" class="c45 tbold lpad5 rpad5 txt_nund size11">Community</a>      
+         
+      <a href="//www.firebirdsql.org/en/support/" class="c45 tbold lpad5 rpad5 txt_nund size11">Support</a>      
+         
+      <a href="//www.firebirdsql.org/en/development/" class="c45 tbold lpad5 rpad5 txt_nund size11">Development</a>      
+         
+      <a href="//www.firebirdsql.org/en/case-studies/" class="c45 tbold lpad5 rpad5 txt_nund size11">Case Studies</a>      
+           
+ </td>
+ 
+ <td align="right" class="rpad10"><a href="#top" class="c78 size11">Back to Top</a></td>
+ 
+</tr></table></td>
+  <td class="tborder_cf bborder_cf bgff"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ <tr>
+  <td height="50" class="tborder_ff"><img src="/img/site/vid.gif" alt="" /></td>
+  <td class="tborder_ff" valign="middle"><div class="rpad10">
+<table width="100%"><tr>
+ <td class="rpad5" width="30%"><span class="c76 size11">This site and the pages contained within are Copyright © 2000-2017, Firebird Project.
+Firebird® is a registered trademark of Firebird Foundation Incorporated.</span></td>
+ <td class="rpad5 lpad5" width="30%">
+   
+   
+ </td>
+ <td align="right" width="10%"><span class="c76 size11">Developed by</span> <a href="//www.dqteam.com/" class="size11" target="_blank">DQ Team</a>.</td>
+</tr></table>
+</div></td>
+  <td class="tborder_ff"><img src="/img/site/vid.gif" alt="" /></td>
+ </tr>
+ 
+</table>
+  <script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 1071663535;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1071663535/?guid=ON&amp;script=0"/>
+</div>
+</noscript> 
+
+</body>
+</html>

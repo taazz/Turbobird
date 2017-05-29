@@ -21,7 +21,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="2"/>
-      <BuildNr Value="1279"/>
+      <BuildNr Value="1288"/>
       <StringTable ProductVersion="0.9"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -109,7 +109,7 @@
         <PackageName Value="LCL"/>
       </Item8>
     </RequiredPackages>
-    <Units Count="52">
+    <Units Count="53">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -469,6 +469,14 @@
         <Filename Value="uFBCharSets.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit51>
+      <Unit52>
+        <Filename Value="Frames/ufrdatabaseedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DatabaseEditorFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="ufrDatabaseEdit"/>
+      </Unit52>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

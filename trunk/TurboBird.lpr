@@ -20,7 +20,7 @@ uses
   fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, utbcommon, csvdocument, uTBDBRegistry, dbInfo, main, QueryWindow, Reg, UDFInfo, About,
   BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec, EditTable, EnterPass, NewConstraint,
   NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions, uTBOptionsform, ViewDomain, ViewGen,
-  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsGenIntf;
+  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsGenIntf, ufrDatabaseEdit;
 
 const
   Major   = 1;
@@ -103,12 +103,12 @@ begin
   SAbout.Update;
   Application.CreateForm(TdmSysTables, dmSysTables);
   Application.CreateForm(TfmMain, fmMain);
-  fmMain.Version:= Format('%d.%d.%d', [Major, Minor, Release]);
-  fmMain.StatusBar1.Panels[1].Text:= 'Version: ' + fmMain.Version;
-  fmMain.VersionDate:= VersionDate;
-  fmMain.Major:= Major;
-  fmMain.Minor:= Minor;
-  fmMain.ReleaseVersion:= Release;
+  //fmMain.Version:= Format('%d.%d.%d', [Major, Minor, Release]);
+  fmMain.StatusBar1.Panels[1].Text:= 'Version: ' + Format('%d.%d.%d', [Major, Minor, Release]);//fmMain.Version;
+  //fmMain.VersionDate:= VersionDate;
+  //fmMain.Major:= Major;
+  //fmMain.Minor:= Minor;
+  //fmMain.ReleaseVersion:= Release;
   SAbout.Free;
   //Application.CreateForm(TfmCreateDB, fmCreateDB);
   //Application.CreateForm(TfmReg, fmReg);

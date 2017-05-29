@@ -1,11 +1,11 @@
 unit uTBFirebird;
 
 {$mode delphi}{$H+}
-{$Include EvsDefs.inc}
+{$I EvsDefs.inc}
 interface
 
 uses
-  Classes, SysUtils, db, MDODatabase, MDOQuery, MDODatabaseInfo, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes;
+  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes;
 
 type
 
@@ -87,7 +87,9 @@ type
     //the aTableName can be empty in which case it should either
     //return all the indices in the database or raise an exception.
     //function GetIndices(const aObject:IInterface):IEvsIndexList;
-    property Connection:IEvsConnection read GetConnection write SetConnection;
+    Function GetCharsets :PVarArray;extdecl;
+    Function Collations(const aCharSet:Widestring) :PVarArray;Extdecl;
+    Property Connection:IEvsConnection read GetConnection write SetConnection;
   end;
 
 //The Connection string must have all the required information to connect to the server separated semicolon.
@@ -95,6 +97,9 @@ type
 function ConncetionSting(const aDB:TDatabase):string;
 
 implementation
+
+uses uCharSets;
+
 const
   pnCharset  = 'lc_type';
   pnPwd      = 'password';
@@ -984,6 +989,16 @@ begin
     GetDomainDetails(vDmn);
     vDts.Next;
   end;
+end;
+
+function TEvsMDOConnection.GetCharsets:PVarArray;extdecl;
+begin
+  Result := VarArrayAsPSafeArray(_VarArray(uCharSets.SupportedCharacterSets));
+end;
+
+function TEvsMDOConnection.Collations(const aCharSet:Widestring) :PVarArray;Extdecl;
+begin
+  Result := VarArrayAsPSafeArray(_VarArray(uCharSets.SupportedCollations(aCharSet)));
 end;
 
 {$ENDREGION}

@@ -12,7 +12,7 @@ interface
 {.$DEFINE EVS_Internal}
 {$DEFINE EVS_NEW}
 uses
-  Classes, SysUtils, variants, sqldb, uTBTypes {$IFDEF EVS_Internal}, uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs,
+  Classes, SysUtils, variants, sqldb, uTBTypes, uCharSets {$IFDEF EVS_Internal}, uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs,
   Forms, Controls, StdCtrls, MDODatabase, MDOQuery, IBConnection;
 
 // Common definitions for TurboBird
@@ -108,33 +108,33 @@ const
                                            'SQLSTATE (2.5.1)',   'VIEW',   'TRAILING', 'VARYING',   'WHEN',       'WHILE',    'WHERE',   'CHAR_LENGTH',
                                            'RETURNING_VALUES',   'BEGIN',  'DELETE',   'VARIABLE',  'ESCAPE',     'FULL',     'DISCONNECT'
                                            );
-  FBCollations: array[0..147, 0..1] of string = (
-    ('ASCII',      'ASCII'),    ('BIG_5',       'BIG_5'),    ('BS_BA',      'WIN1250'),    ('CP943C',   'CP943C'),          ('CP943C_UNICODE','CP943C'),     ('CS_CZ',    'ISO8859_2'),
-    ('CYRL',       'CYRL'),     ('DA_DA',       'ISO8859_1'),('DB_CSY',     'DOS852'),     ('DB_DAN865','DOS865'),          ('DB_DEU437',     'DOS437'),     ('DB_DEU850','DOS850'),
-    ('DB_ESP437',  'DOS437'),   ('DB_ESP850',   'DOS850'),   ('DB_FIN437',  'DOS437'),     ('DB_FRA437','DOS437'),          ('DB_FRA850',     'DOS850'),     ('DB_FRC850','DOS850'),
-    ('DB_FRC863',  'DOS863'),   ('DB_ITA437',   'DOS437'),   ('DB_ITA850',  'DOS850'),     ('DB_NLD437','DOS437'),          ('DB_NLD850',     'DOS850'),     ('DB_NOR865','DOS865'),
-    ('DB_PLK',     'DOS852'),   ('DB_PTB850',   'DOS850'),   ('DB_PTG860',  'DOS860'),     ('DB_RUS',   'CYRL'),            ('DB_SLO',        'DOS852'),     ('DB_SVE437','DOS437'),
-    ('DB_SVE850',  'DOS850'),   ('DB_TRK',      'DOS857'),   ('DB_UK437',   'DOS437'),     ('DB_UK850', 'DOS850'),          ('DB_US437',      'DOS437'),     ('DB_US850', 'DOS850'),
-    ('DE_DE',      'ISO8859_1'),('DOS437',      'DOS437'),   ('DOS737',     'DOS737'),     ('DOS775',   'DOS775'),          ('DOS850',        'DOS850'),     ('DOS852',   'DOS852'),
-    ('DOS857',     'DOS857'),   ('DOS858',      'DOS858'),   ('DOS860',     'DOS860'),     ('DOS861',   'DOS861'),          ('DOS862',        'DOS862'),     ('DOS863',   'DOS863'),
-    ('DOS864',     'DOS864'),   ('DOS865',      'DOS865'),   ('DOS866',     'DOS866'),     ('DOS869',   'DOS869'),          ('DU_NL',         'ISO8859_1'),  ('EN_UK',    'ISO8859_1'),
-    ('EN_US',      'ISO8859_1'),('ES_ES',       'ISO8859_1'),('ES_ES_CI_AI','ISO8859_1'),  ('EUCJ_0208','EUCJ_0208'),       ('FI_FI',         'ISO8859_1'),  ('FR_CA',    'ISO8859_1'),
-    ('FR_FR',      'ISO8859_1'),('FR_FR_CI_AI', 'ISO8859_1'),('GB18030',    'GB18030'),    ('GB18030_UNICODE','GB18030'),   ('GBK',           'GBK'),        ('GBK_UNICODE','GBK'),
-    ('GB_2312',    'GB_2312'),  ('ISO8859_1',   'ISO8859_1'),('ISO8859_13', 'ISO8859_13'), ('ISO8859_2',      'ISO8859_2'), ('ISO8859_3',     'ISO8859_3'),  ('ISO8859_4',  'ISO8859_4'),
-    ('ISO8859_5',  'ISO8859_5'),('ISO8859_6',   'ISO8859_6'),('ISO8859_7',  'ISO8859_7'),  ('ISO8859_8',      'ISO8859_8'), ('ISO8859_9',     'ISO8859_9'),  ('ISO_HUN',    'ISO8859_2'),
-    ('ISO_PLK',    'ISO8859_2'),('IS_IS',       'ISO8859_1'),('IT_IT',      'ISO8859_1'),  ('KOI8R',          'KOI8R'),     ('KOI8R_RU',      'KOI8R'),      ('KOI8U',      'KOI8U'),
-    ('KOI8U_UA',   'KOI8U'),    ('KSC_5601',    'KSC_5601'), ('KSC_DICTIONARY','KSC_5601'),('LT_LT',          'ISO8859_13'),('NEXT',          'NEXT'),       ('NONE',       'NONE'),
-    ('NO_NO',      'ISO8859_1'),('NXT_DEU',     'NEXT'),     ('NXT_ESP',     'NEXT'),      ('NXT_FRA',        'NEXT'),      ('NXT_ITA',       'NEXT'),       ('NXT_US',     'NEXT'),
-    ('OCTETS',     'OCTETS'),   ('PDOX_ASCII',  'DOS437'),   ('PDOX_CSY',    'DOS852'),    ('PDOX_CYRL',      'CYRL'),      ('PDOX_HUN',      'DOS852'),     ('PDOX_INTL',  'DOS437'),
-    ('PDOX_ISL',   'DOS861'),   ('PDOX_NORDAN4','DOS865'),   ('PDOX_PLK',    'DOS852'),    ('PDOX_SLO',       'DOS852'),    ('PDOX_SWEDFIN',  'DOS437'),     ('PT_BR',      'ISO8859_1'),
-    ('PT_PT',      'ISO8859_1'),('PXW_CSY',     'WIN1250'),  ('PXW_CYRL',    'WIN1251'),   ('PXW_GREEK',      'WIN1253'),   ('PXW_HUN',       'WIN1250'),    ('PXW_HUNDC',  'WIN1250'),
-    ('PXW_INTL',   'WIN1252'),  ('PXW_INTL850', 'WIN1252'),  ('PXW_NORDAN4', 'WIN1252'),   ('PXW_PLK',        'WIN1250'),   ('PXW_SLOV',      'WIN1250'),    ('PXW_SPAN',   'WIN1252'),
-    ('PXW_SWEDFIN','WIN1252'),  ('PXW_TURK',    'WIN1254'),  ('SJIS_0208',   'SJIS_0208'), ('SV_SV',          'ISO8859_1'), ('TIS620',        'TIS620'),     ('TIS620_UNICODE','TIS620'),
-    ('UCS_BASIC',  'UTF8'),     ('UNICODE',     'UTF8'),     ('UNICODE_CI',  'UTF8'),      ('UNICODE_CI_AI',  'UTF8'),      ('UNICODE_FSS',   'UNICODE_FSS'),('UTF8',          'UTF8'),
-    ('WIN1250',    'WIN1250'),  ('WIN1251',     'WIN1251'),  ('WIN1251_UA',  'WIN1251'),   ('WIN1252',        'WIN1252'),   ('WIN1253',       'WIN1253'),    ('WIN1254',       'WIN1254'),
-    ('WIN1255',    'WIN1255'),  ('WIN1256',     'WIN1256'),  ('WIN1257',     'WIN1257'),   ('WIN1257_EE',     'WIN1257'),   ('WIN1257_LT',    'WIN1257'),    ('WIN1257_LV',    'WIN1257'),
-    ('WIN1258',    'WIN1258'),  ('WIN_CZ',      'WIN1250'),  ('WIN_CZ_CI_AI','WIN1250'),   ('WIN_PTBR',       'WIN1252')
-  );
+  //FBCollations: array[0..147, 0..1] of string = (
+  //  ('ASCII',      'ASCII'),    ('BIG_5',       'BIG_5'),    ('BS_BA',      'WIN1250'),    ('CP943C',   'CP943C'),          ('CP943C_UNICODE','CP943C'),     ('CS_CZ',    'ISO8859_2'),
+  //  ('CYRL',       'CYRL'),     ('DA_DA',       'ISO8859_1'),('DB_CSY',     'DOS852'),     ('DB_DAN865','DOS865'),          ('DB_DEU437',     'DOS437'),     ('DB_DEU850','DOS850'),
+  //  ('DB_ESP437',  'DOS437'),   ('DB_ESP850',   'DOS850'),   ('DB_FIN437',  'DOS437'),     ('DB_FRA437','DOS437'),          ('DB_FRA850',     'DOS850'),     ('DB_FRC850','DOS850'),
+  //  ('DB_FRC863',  'DOS863'),   ('DB_ITA437',   'DOS437'),   ('DB_ITA850',  'DOS850'),     ('DB_NLD437','DOS437'),          ('DB_NLD850',     'DOS850'),     ('DB_NOR865','DOS865'),
+  //  ('DB_PLK',     'DOS852'),   ('DB_PTB850',   'DOS850'),   ('DB_PTG860',  'DOS860'),     ('DB_RUS',   'CYRL'),            ('DB_SLO',        'DOS852'),     ('DB_SVE437','DOS437'),
+  //  ('DB_SVE850',  'DOS850'),   ('DB_TRK',      'DOS857'),   ('DB_UK437',   'DOS437'),     ('DB_UK850', 'DOS850'),          ('DB_US437',      'DOS437'),     ('DB_US850', 'DOS850'),
+  //  ('DE_DE',      'ISO8859_1'),('DOS437',      'DOS437'),   ('DOS737',     'DOS737'),     ('DOS775',   'DOS775'),          ('DOS850',        'DOS850'),     ('DOS852',   'DOS852'),
+  //  ('DOS857',     'DOS857'),   ('DOS858',      'DOS858'),   ('DOS860',     'DOS860'),     ('DOS861',   'DOS861'),          ('DOS862',        'DOS862'),     ('DOS863',   'DOS863'),
+  //  ('DOS864',     'DOS864'),   ('DOS865',      'DOS865'),   ('DOS866',     'DOS866'),     ('DOS869',   'DOS869'),          ('DU_NL',         'ISO8859_1'),  ('EN_UK',    'ISO8859_1'),
+  //  ('EN_US',      'ISO8859_1'),('ES_ES',       'ISO8859_1'),('ES_ES_CI_AI','ISO8859_1'),  ('EUCJ_0208','EUCJ_0208'),       ('FI_FI',         'ISO8859_1'),  ('FR_CA',    'ISO8859_1'),
+  //  ('FR_FR',      'ISO8859_1'),('FR_FR_CI_AI', 'ISO8859_1'),('GB18030',    'GB18030'),    ('GB18030_UNICODE','GB18030'),   ('GBK',           'GBK'),        ('GBK_UNICODE','GBK'),
+  //  ('GB_2312',    'GB_2312'),  ('ISO8859_1',   'ISO8859_1'),('ISO8859_13', 'ISO8859_13'), ('ISO8859_2',      'ISO8859_2'), ('ISO8859_3',     'ISO8859_3'),  ('ISO8859_4',  'ISO8859_4'),
+  //  ('ISO8859_5',  'ISO8859_5'),('ISO8859_6',   'ISO8859_6'),('ISO8859_7',  'ISO8859_7'),  ('ISO8859_8',      'ISO8859_8'), ('ISO8859_9',     'ISO8859_9'),  ('ISO_HUN',    'ISO8859_2'),
+  //  ('ISO_PLK',    'ISO8859_2'),('IS_IS',       'ISO8859_1'),('IT_IT',      'ISO8859_1'),  ('KOI8R',          'KOI8R'),     ('KOI8R_RU',      'KOI8R'),      ('KOI8U',      'KOI8U'),
+  //  ('KOI8U_UA',   'KOI8U'),    ('KSC_5601',    'KSC_5601'), ('KSC_DICTIONARY','KSC_5601'),('LT_LT',          'ISO8859_13'),('NEXT',          'NEXT'),       ('NONE',       'NONE'),
+  //  ('NO_NO',      'ISO8859_1'),('NXT_DEU',     'NEXT'),     ('NXT_ESP',     'NEXT'),      ('NXT_FRA',        'NEXT'),      ('NXT_ITA',       'NEXT'),       ('NXT_US',     'NEXT'),
+  //  ('OCTETS',     'OCTETS'),   ('PDOX_ASCII',  'DOS437'),   ('PDOX_CSY',    'DOS852'),    ('PDOX_CYRL',      'CYRL'),      ('PDOX_HUN',      'DOS852'),     ('PDOX_INTL',  'DOS437'),
+  //  ('PDOX_ISL',   'DOS861'),   ('PDOX_NORDAN4','DOS865'),   ('PDOX_PLK',    'DOS852'),    ('PDOX_SLO',       'DOS852'),    ('PDOX_SWEDFIN',  'DOS437'),     ('PT_BR',      'ISO8859_1'),
+  //  ('PT_PT',      'ISO8859_1'),('PXW_CSY',     'WIN1250'),  ('PXW_CYRL',    'WIN1251'),   ('PXW_GREEK',      'WIN1253'),   ('PXW_HUN',       'WIN1250'),    ('PXW_HUNDC',  'WIN1250'),
+  //  ('PXW_INTL',   'WIN1252'),  ('PXW_INTL850', 'WIN1252'),  ('PXW_NORDAN4', 'WIN1252'),   ('PXW_PLK',        'WIN1250'),   ('PXW_SLOV',      'WIN1250'),    ('PXW_SPAN',   'WIN1252'),
+  //  ('PXW_SWEDFIN','WIN1252'),  ('PXW_TURK',    'WIN1254'),  ('SJIS_0208',   'SJIS_0208'), ('SV_SV',          'ISO8859_1'), ('TIS620',        'TIS620'),     ('TIS620_UNICODE','TIS620'),
+  //  ('UCS_BASIC',  'UTF8'),     ('UNICODE',     'UTF8'),     ('UNICODE_CI',  'UTF8'),      ('UNICODE_CI_AI',  'UTF8'),      ('UNICODE_FSS',   'UNICODE_FSS'),('UTF8',          'UTF8'),
+  //  ('WIN1250',    'WIN1250'),  ('WIN1251',     'WIN1251'),  ('WIN1251_UA',  'WIN1251'),   ('WIN1252',        'WIN1252'),   ('WIN1253',       'WIN1253'),    ('WIN1254',       'WIN1254'),
+  //  ('WIN1255',    'WIN1255'),  ('WIN1256',     'WIN1256'),  ('WIN1257',     'WIN1257'),   ('WIN1257_EE',     'WIN1257'),   ('WIN1257_LT',    'WIN1257'),    ('WIN1257_LV',    'WIN1257'),
+  //  ('WIN1258',    'WIN1258'),  ('WIN_CZ',      'WIN1250'),  ('WIN_CZ_CI_AI','WIN1250'),   ('WIN_PTBR',       'WIN1252')
+  //);
 
   //why I did this?
   cFldName        = 'field_name';
@@ -337,11 +337,11 @@ procedure ReleaseQuery(const aQuery : TSQLQuery);deprecated 'use the MDO Query i
 procedure ReleaseQuery(const aQuery : TMDOQuery);
 procedure ReleaseConnection(const aConnection:TIBConnection);deprecated 'use the MDO Database instead';
 
-procedure Connect(const aCnn:TIBConnection; aDatabase,aUser,aPassword:String; aCharset:string = ''; aRole:String='');deprecated 'use the MDO Database instead';
-procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBDetails);overload;deprecated 'use the MDO Database instead';
-procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBInfo);overload;deprecated 'use the MDO Database instead';
+//procedure Connect(const aCnn:TIBConnection; aDatabase,aUser,aPassword:String; aCharset:string = ''; aRole:String='');deprecated 'use the MDO Database instead';
+//procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBDetails);overload;deprecated 'use the MDO Database instead';
+//procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBInfo);overload;deprecated 'use the MDO Database instead';
 //MDO Jump;
-procedure Connect(const aCnn:TMDODataBase; const aDatabase:TDBInfo);overload;
+procedure Connect(const aCnn:TMDODataBase;const aDatabase:TDBInfo);overload;
 procedure Connect(const aCnn:TMDODatabase;const aDatabase:TDBDetails);overload;
 
 function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBInfo):Boolean;overload;
@@ -376,6 +376,10 @@ function EOF(const aStream:TStream):Boolean;inline;
 function CharCount(const aChar : Char; const aString:string):Integer;
 function Split(const aSource:String; const aDelimiter:Char):TStringArray;
 function Split(const aSource:wideString; const aDelimiter:WideChar):TWideStringArray;
+function _VarArray(const aValues: array of const): Variant;
+function _VarArray(const aValues: TStringArray): Variant;
+
+Function Between(const LowValue, HighValue, aValue :Int64):Boolean;inline;
 
 implementation
 
@@ -708,18 +712,28 @@ end;
 
 function GetCollations(const Characterset: string; var Collations: TStringList): boolean;
 var
-  i: integer;
+  vCntr  :Integer;
+  vColls :TStringArray;
 begin
-  result := false;
-  Collations.Clear;
+  Result := False;
   Collations.BeginUpdate;
-  for i := low(FBCollations) to high(FBCollations) do begin
-    if FBCollations[i,1]=Characterset then begin
-      Collations.Add(FBCollations[i,0]);
+  try
+    Collations.Clear;
+    //for vCntr := low(FBCollations) to high(FBCollations) do begin  //old code
+    //  if FBCollations[vCntr,1]=Characterset then begin
+    //    Collations.Add(FBCollations[vCntr,0]);
+    //  end;
+    //end;
+    vColls := uCharSets.SupportedCollations(Characterset);
+    for vCntr := Low(vColls) to High(vColls) do begin
+      Collations.Add(vColls[vCntr]);
     end;
+
+  finally
+    Collations.EndUpdate;
+    vColls := Nil;
   end;
-  Collations.EndUpdate;
-  result:= true;
+  Result := true;
 end;
 
 procedure SetTransactionIsolation(Params: TStrings);
@@ -1434,6 +1448,57 @@ begin
   aDBInfo.Index := -1; //-1 not saved yet.
 end;
 {$ENDREGION}
+
+function _VarArray(const aValues: array of const): Variant;
+var
+  i: integer;
+begin
+  Result := VarArrayCreate([Low(aValues), High(aValues)], varVariant);
+  for i := Low(aValues) to High(aValues) do begin
+    with aValues[i] do begin
+      case VType of
+        vtInteger       : Result[i] := VInteger;
+        vtBoolean       : Result[i] := VBoolean;
+        vtChar          : Result[i] := VChar;
+{$ifndef FPUNONE}
+        vtExtended      : Result[i] := VExtended^;
+{$endif}
+        vtString        : Result[i] := VString^;
+        vtPointer       : Result[i] := PtrUInt(VPointer);
+        vtPChar         : Result[i] := StrPas(VPChar);
+        vtAnsiString    : Result[i] := string(VAnsiString);
+        vtCurrency      : Result[i] := VCurrency^;
+        vtVariant       : Result[i] := VVariant^;
+        vtObject        : Result[i] := Pointer(VObject);
+        vtInterface     : Result[i] := VInterface;
+        vtWideString    : Result[i] := WideString(VWideString);
+        vtUnicodeString : Result[i] := UnicodeString(VWideString);
+        vtInt64         : Result[i] := VInt64^;
+        vtQWord         : Result[i] := VQWord^;
+        vtClass         : Result[i] := Pointer(VClass);
+        vtWideChar      : Result[i] := VWideChar;
+        vtPWideChar     : Result[i] := VPWideChar;
+      else
+        raise ETBException.Create('Invalid data type')
+      end;
+    end;
+  end;
+end;
+
+function _VarArray(const aValues :TStringArray) :Variant;
+var
+  vCntr: Integer;
+begin
+  Result := VarArrayCreate([SizeInt(Low(aValues)), SizeInt(High(aValues))], varVariant);
+  for vCntr := Low(aValues) to High(aValues) do begin
+    Result[vCntr] := WideString(aValues[vCntr]);
+  end;
+end;
+
+Function Between(const LowValue, HighValue, aValue :Int64) :Boolean;inline;
+begin
+  Result := (aValue>=LowValue) and (aValue<=HighValue);
+end;
 
 initialization
   QueryPool := TEvsCustomComponentPool.Create(10, True, TEvsMDOQuery);

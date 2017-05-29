@@ -37,7 +37,6 @@ const  //negative numbers are for internal use only positive are for 3rd party s
   //negative IDs are reserved for internal use.
 
 type
-  TEvsGenAction =(gaUnknown, gaInsert, gaDelete, gaUpdate, gaDestroy, gaExtracting, gaDataChange);
 
   TEvsDBState  = (dbsChanged, //coold be removed
                   dbsData,    // no ddl statement exists you need to create the object with the new properties
@@ -861,23 +860,25 @@ type
   { IEvsCredentials }
   IEvsCredentials = interface(IEvsCopyable)  //OK
     ['{461C62B7-58AD-42D6-9059-1F82E1C485C7}']
-    function GetCharSet :WideString;
-    Function GetPassword :WideString;          extdecl;
-    Function GetRole     :WideString;          extdecl;
-    function GetSavePwd :LongBool;             extdecl;
-    Function GetUserName :WideString;          extdecl;
-    procedure SetCharset(aValue :WideString);  extdecl;
-    Procedure SetPassword(aValue :WideString); extdecl;
-    Procedure SetRole(aValue :WideString);     extdecl;
-    procedure SetSavePwd(aValue :LongBool);    extdecl;
-    Procedure SetUserName(aValue :WideString); extdecl;
+    function GetCharSet :WideString;            extdecl;
+    function GetLastChanged :TDateTime;         extdecl;
+    Function GetPassword :WideString;           extdecl;
+    Function GetRole     :WideString;           extdecl;
+    function GetSavePwd :LongBool;              extdecl;
+    Function GetUserName :WideString;           extdecl;
+    procedure SetCharset(aValue :WideString);   extdecl;
+    procedure SetLastChanged(aValue :TDateTime);extdecl;
+    Procedure SetPassword(aValue :WideString);  extdecl;
+    Procedure SetRole(aValue :WideString);      extdecl;
+    procedure SetSavePwd(aValue :LongBool);     extdecl;
+    Procedure SetUserName(aValue :WideString);  extdecl;
 
     Property UserName     :WideString read GetUserName    write SetUserName;
     Property Password     :WideString read GetPassword    write SetPassword;
     Property Role         :WideString read GetRole        write SetRole;
     Property Charset      :WideString read GetCharSet     write SetCharset;
     Property SavePassword :LongBool   read GetSavePwd     write SetSavePwd;
-    Property LastChanged  :TDateTime  read GetLastChanged write SetLastChanged
+    Property LastChanged  :TDateTime  read GetLastChanged write SetLastChanged;
   end;
 
 
@@ -958,7 +959,7 @@ type
     Procedure GetIndices(const aObject:IEvsDatabaseInfo);  overload;extdecl; //get all indices for all the tables in the database passed.
     Procedure GetIndices(const aObject:IEvsTableInfo);     overload;extdecl; //get all indices for the table passed.
     Procedure GetDomains(const aObject:IEvsDatabaseInfo);  overload;extdecl; //get all the domains for the database passed.
-
+    Function GetCharsets:pvararray;                                 extdecl;
     Property Connection:IEvsConnection read GetConnection write SetConnection;
   end;
 
@@ -1135,15 +1136,16 @@ type
 
   { TEvsDBInfoFactory }
   TEvsDBInfoFactory = class
-    class function NewDatabase(const aParent:IEvsParented=nil)   : IEvsDatabaseInfo;
-    class function NewTable(const aParent:IEvsParented=nil)      : IEvsTableInfo;
-    class Function NewField(const aParent:IEvsParented=nil)      : IEvsFieldInfo;
-    class function NewTrigger(const aParent:IEvsParented=nil)    : IEvsTriggerInfo;
-    class function NewSequence(const aParent:IEvsParented=nil)   : IEvsSequenceInfo;
-    class function NewIndex(const aParent:IEvsParented=nil)      : IEvsIndexInfo;
-    class function NewException(const aParent:IEvsParented=nil)  : IEvsExceptionInfo;
-    class function NewStoredProc(const aParent:IEvsParented=nil) : IEvsStoredInfo;
-    class function NewDomain(const aParent:IEvsParented=nil)     : IEvsDomainInfo;
+    class function NewDatabaseList:IEvsDatabaseList;
+    class function NewDatabase  (const aParent:IEvsParented=nil) :IEvsDatabaseInfo;
+    class function NewTable     (const aParent:IEvsParented=nil) :IEvsTableInfo;
+    class Function NewField     (const aParent:IEvsParented=nil) :IEvsFieldInfo;
+    class function NewTrigger   (const aParent:IEvsParented=nil) :IEvsTriggerInfo;
+    class function NewSequence  (const aParent:IEvsParented=nil) :IEvsSequenceInfo;
+    class function NewIndex     (const aParent:IEvsParented=nil) :IEvsIndexInfo;
+    class function NewException (const aParent:IEvsParented=nil) :IEvsExceptionInfo;
+    class function NewStoredProc(const aParent:IEvsParented=nil) :IEvsStoredInfo;
+    class function NewDomain    (const aParent:IEvsParented=nil) :IEvsDomainInfo;
   end;
 
 Procedure RegisterDBType(const aID:Integer; aTitle:string; aConnectProc:TConnectProc; aConnectMethod:TConnectMethod = nil; aIcon:TIcon = nil);
@@ -1152,6 +1154,9 @@ Function NewDatabase(const aType :Int32; const aHost, aDatabase, aUser, aPasswor
 Function NewDatabase(const aType :Int32) :IEvsDatabaseInfo;overload;
 Function Connect(const aDB:IEvsDatabaseInfo; aServerType : Integer = 0):IEvsConnection;
 Function Query(const aDB:IEvsDatabaseInfo; aSQL:widestring; ExclusiveConnection:Boolean = False):IEvsDataset;{$MESSAGE WARN 'Needs Implementation'}
+Function NewDatabaseList:IEvsDatabaseList;
+Function GetDatabase(const aObject:IEvsParented):IEvsDatabaseInfo;
+Function DatabaseList:IEvsDatabaseList;
 
 implementation
 
@@ -1431,28 +1436,33 @@ type
   { TEvsCredentials }
   TEvsCredentials = class(TEvsDBInfo, IEvsCredentials){$MESSAGE WARN 'Needs Testing'}
   private
-    FPassword :WideString;
-    FRole     :WideString;
-    FUserName :WideString;
-    FCharset  :WideString;
-    FSavePwd  :LongBool;
-    Function GetCharSet  :WideString;
-    Function GetPassword :WideString;           extdecl;
-    Function GetRole     :WideString;           extdecl;
-    Function GetSavePwd  :LongBool;             extdecl;
-    Function GetUserName :WideString;           extdecl;
-    Procedure SetCharset (aValue :WideString);  extdecl;
-    Procedure SetPassword(aValue :WideString);  extdecl;
-    Procedure SetRole    (aValue :WideString);  extdecl;
-    Procedure SetSavePwd (aValue :LongBool);    extdecl;
-    Procedure SetUserName(aValue :WideString);  extdecl;
+    FPassword    :WideString;
+    FRole        :WideString;
+    FUserName    :WideString;
+    FCharset     :WideString;
+    FSavePwd     :LongBool;
+    FLastChanged :TDateTime;
+    Function GetCharSet  :WideString;            extdecl;
+    Function GetPassword :WideString;            extdecl;
+    Function GetRole     :WideString;            extdecl;
+    Function GetSavePwd  :LongBool;              extdecl;
+    Function GetUserName :WideString;            extdecl;
+    function GetLastChanged :TDateTime;          extdecl;
+    Procedure SetCharset (aValue :WideString);   extdecl;
+    Procedure SetPassword(aValue :WideString);   extdecl;
+    Procedure SetRole    (aValue :WideString);   extdecl;
+    Procedure SetSavePwd (aValue :LongBool);     extdecl;
+    Procedure SetUserName(aValue :WideString);   extdecl;
+    Procedure SetLastChanged(aValue :TDateTime); extdecl;
   published
-    Property UserName :WideString   read GetUserName write SetUserName;
-    Property Password :WideString   read GetPassword write SetPassword;
-    Property Role     :WideString   read GetRole     write SetRole;
-    Property Charset  :WideString   read GetCharSet  write SetCharset;
-    Property SavePassword :LongBool read GetSavePwd  write SetSavePwd;
+    Property UserName     :WideString read GetUserName    write SetUserName;
+    Property Password     :WideString read GetPassword    write SetPassword;
+    Property Role         :WideString read GetRole        write SetRole;
+    Property Charset      :WideString read GetCharSet     write SetCharset;
+    Property SavePassword :LongBool   read GetSavePwd     write SetSavePwd;
+    property LastChanged  :TDateTime  read GetLastChanged write SetLastChanged;
   end;
+
   { TEvsDatabaseInfo }
   TEvsDatabaseInfo = class(TEvsDBInfo, IEvsDatabaseInfo)
   private
@@ -2224,6 +2234,11 @@ begin
   Result := vCnn.Query(aSQL);
 end;
 
+Function NewDatabaseList :IEvsDatabaseList;
+begin
+  Result := TEvsDBInfoFactory.NewDatabaseList;
+end;
+
 function NewDBKind:PDBKindReg;
 begin
   Result := New(PDBKindReg);
@@ -2331,6 +2346,21 @@ begin
   Result := TEvsIndexFieldInfo.Create(aOwner, True);
   Result.Field := aField;
   Result.Order := aOrder;
+end;
+
+Function GetDatabase(const aObject:IEvsParented):IEvsDatabaseInfo;
+var
+  vRes :IEvsParented;
+begin
+  Result := Nil;
+  vRes   := aObject;
+  while not Supports(vRes, IEvsDatabaseInfo, Result) do
+    vRes := vRes.Parent;
+end;
+
+Function DatabaseList :IEvsDatabaseList;
+begin
+  Result := TEvsDatabaseList.Create(Nil, True);
 end;
 
 {$ENDREGION}
@@ -2809,6 +2839,11 @@ end;
 {$ENDREGION}
 
 {$REGION ' TEvsDBInfoFactory '}
+
+class function TEvsDBInfoFactory.NewDatabaseList :IEvsDatabaseList;
+begin
+  Result := TEvsDatabaseList.Create(nil, True);
+end;
 
 class function TEvsDBInfoFactory.NewDatabase(const aParent:IEvsParented=nil) : IEvsDatabaseInfo;
 begin
@@ -4866,55 +4901,65 @@ end;
 
 {$REGION ' TEvsCredentials '}
 
-procedure TEvsCredentials.SetUserName(aValue :WideString);extdecl;
+Procedure TEvsCredentials.SetUserName(aValue :WideString); extdecl;
 begin
   if FUserName=aValue then Exit;
   FUserName:=aValue;
 end;
 
-function TEvsCredentials.GetUserName :WideString;extdecl;
+procedure TEvsCredentials.SetLastChanged(aValue :TDateTime); extdecl;
+begin
+  FLastChanged := aValue;
+end;
+
+Function TEvsCredentials.GetUserName :WideString; extdecl;
 begin
   Result := FUserName;
 end;
 
-procedure TEvsCredentials.SetCharset(aValue :WideString);
+function TEvsCredentials.GetLastChanged :TDateTime; extdecl;
+begin
+  Result := FLastChanged;
+end;
+
+Procedure TEvsCredentials.SetCharset(aValue :WideString); extdecl;
 begin
   FCharset := aValue;
 end;
 
-function TEvsCredentials.GetPassword :WideString; extdecl;
+Function TEvsCredentials.GetPassword :WideString; extdecl;
 begin
   Result := FPassword;
 end;
 
-function TEvsCredentials.GetCharSet :WideString;
+Function TEvsCredentials.GetCharSet :WideString;extdecl;
 begin
-  Result := FCharset
+  Result := FCharset;
 end;
 
-function TEvsCredentials.GetRole :WideString; extdecl;
+Function TEvsCredentials.GetRole :WideString; extdecl;
 begin
   Result := FRole;
 end;
 
-function TEvsCredentials.GetSavePwd :LongBool;
+Function TEvsCredentials.GetSavePwd :LongBool; extdecl;
 begin
   Result := FSavePwd
 end;
 
-procedure TEvsCredentials.SetPassword(aValue :WideString); extdecl;
+Procedure TEvsCredentials.SetPassword(aValue :WideString); extdecl;
 begin
   if FPassword=aValue then Exit;
   FPassword:=aValue;
 end;
 
-procedure TEvsCredentials.SetRole(aValue :WideString); extdecl;
+Procedure TEvsCredentials.SetRole(aValue :WideString); extdecl;
 begin
   if FRole=aValue then Exit;
   FRole:=aValue;
 end;
 
-procedure TEvsCredentials.SetSavePwd(aValue :LongBool);
+Procedure TEvsCredentials.SetSavePwd(aValue :LongBool); extdecl;
 begin
   FSavePwd := aValue;
 end;

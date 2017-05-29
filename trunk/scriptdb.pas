@@ -2,11 +2,11 @@ unit Scriptdb;
 
 { Non-GUI unit that allows you to script a database's object DDL statements }
 {$mode objfpc}{$H+}
-
+{$I EvsDefs.inc}
 interface
 
 uses
-  Classes, SysUtils, utbcommon, uTBTypes, dialogs, MDOQuery, sqldb;
+  Classes, SysUtils, utbcommon, uTBTypes, utbDBRegistry, uEvsDBSchema, dialogs, MDOQuery, sqldb;
 
 
 // Scripts all roles; changes List to contain the CREATE ROLE SQL statements
@@ -82,16 +82,19 @@ var
 begin
   HasRDBAdmin:= false;
   {$IFDEF EVS_New}
-  dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, List);
+  for vCntr := 0 to Registry.Database[dbIndex].RoleCount do begin
+    List.Add(Registry.Database[vCntr].Role[vCntr].Name);
+  end;
   {$ELSE}
   List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
   {$ENDIF}
+  //end;
   //List.CommaText := dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
   { Wwrap creates role RDB$Admin statement - in FB 2.5+ this role is present
   by default, in lower dbs it isn't. No way to find out in advance when writing
   a script. No support in FB yet for CREATE OR UPDATE ROLE so best
   to do it in execute block with error handling }
-  vCntr:= 0;
+  vCntr := 0;
 
   while vCntr<List.Count do begin
     if uppercase(List[vCntr]) = AdminRole then begin
@@ -146,12 +149,15 @@ end;
 function ScriptAllFunctions(dbIndex: Integer; var List: TStringList): Boolean;
 var
   Count: Integer;
-  i: Integer;
+  vCntr, i: Integer;
   FunctionsList: TStringList;
   ModuleName, EntryPoint, Params: string;
 begin
   FunctionsList:= TStringList.Create;
-  FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], uTBTypes.otUDFs, Count);
+  //FunctionsList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], uTBTypes.otUDFs, Count);
+  for vCntr := 0 to Registry.Database[dbIndex].UdfCount -1 do begin
+    FunctionsList.Add(Registry.Database[dbIndex].UDF[vCntr].Name);
+  end;
   // Get functions in dependency order:
   dmSysTables.SortDependencies(FunctionsList);
   List.Clear;
@@ -174,21 +180,34 @@ end;
 
 (********************  Script Exceptions   ***********************)
 
+function ScriptException(aExcept :IEvsExceptionInfo; aCreateOrAlter:Boolean):string;
+var
+  CreatePart :string;
+begin
+  if aCreateOrAlter then
+    CreatePart:= 'CREATE OR ALTER EXCEPTION ' {Since Firebird 2.0; create or replace existing}
+  else
+    CreatePart := 'CREATE EXCEPTION ';
+  Result := CreatePart + aExcept.Name + LineEnding + QuotedStr(aExcept.Message) + ';';
+  if aExcept.Description <> '' then
+    Result := Result + LineEnding +
+      'UPDATE RDB$EXCEPTIONS set '    + LineEnding +
+      'RDB$DESCRIPTION = '''          + aExcept.Description + ''' ' + LineEnding +
+      'where RDB$EXCEPTION_NAME = ''' + aExcept.Name        + ''';';
+end;
+
 function ScriptAllExceptions(dbIndex: Integer; var List: TStringList): Boolean;
 var
-  Count: Integer;
-  CreateStatement: string;
-  Description,Message: string; {not actually used here}
-  i: Integer;
+  //Count           :Integer;
+  i               :Integer;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otExceptions, Count);
-  for i:= 0 to List.Count - 1 do
-  begin
-    dmSysTables.GetExceptionInfo(dbIndex, List[i],
-      Message, Description, CreateStatement, false);
-    List[i]:= CreateStatement;
+  //List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otExceptions, Count);
+  List.Clear;
+  for i := 0 to Registry.Database[dbIndex].ExceptionCount -1 do begin
+    List.Add(ScriptException(Registry.Database[dbIndex].Exception[i], False));//Registry.Database[dbIndex].Exception[i].Name);
   end;
-  Result:= List.Count > 0;
+
+  Result := List.Count > 0;
 end;
 
 (********************  Script Generators/Sequences   ***********************)
@@ -198,9 +217,9 @@ var
   Count: Integer;
   i: Integer;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otGenerators, Count);
-  for i:= 0 to List.Count - 1 do
-    List[i]:= 'Create Generator ' + List[i] + ' ;';
+  //List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otGenerators, Count);
+  for i:= 0 to Registry.Database[dbIndex].SequenceCount - 1 do
+    List[i] := 'Create Generator ' + Registry.Database[dbIndex].Sequence[i].GeneratorName + ' ;';
   Result:= List.Count > 0;
 end;
 
@@ -218,9 +237,10 @@ var
   CheckConstraint: string;
   DefaultValue: string;
 begin
-  List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otDomains, Count);
+  //List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otDomains, Count);
   // Get domains in dependency order (if dependencies can exist between domains)
-  dmSysTables.SortDependencies(List);
+  //dmSysTables.SortDependencies(List);
+
   for i:= 0 to List.Count - 1 do
   begin
     dmSysTables.GetDomainInfo(dbIndex, List[i], DomainType, DomainSize, DefaultValue, CheckConstraint, CharacterSet, Collation);

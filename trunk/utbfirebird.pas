@@ -62,7 +62,7 @@ type
     //procedure SetConnection(aValue :IEvsConnection);extdecl;
 
     procedure GetTables(const aDB:IEvsTableList);       overload;extdecl; //append the tables in the list passed
-    procedure GetTables(const aDB:IEvsDatabaseInfo);    overload;extdecl; //append the tables in the database passed.
+    procedure GetTables(const aDB:IEvsDatabaseInfo; const IncludeSystem:ByteBool = False);    overload;extdecl; //append the tables in the database passed.
     procedure GetFields(const aObject:IEvsTableInfo);   overload;extdecl; //find all the fields of the table and return them in the table's field list.
     //function GetFields(const aObject:IEvsStoredInfo):IEvsFieldList;extdecl;
     //function GetFields(const aObject:IEvsDatabaseInfo):IEvsFieldList;extdecl;
@@ -385,7 +385,7 @@ begin
   aField.DataGroup    := vDataGroup;
 
   if not IsSystemDomain(aDsFields.Field[15]) then begin
-    aField.DataTypeName := aDsFields.Field[15].AsString;
+    aField.DataTypeName := Trim(aDsFields.Field[15].AsString);
     aField.DataGroup    := dtgCustomType; //user specified domain.
   end;
 
@@ -501,14 +501,14 @@ begin
   vDts := Query(cSql);
   vDts.First;
   while not vDts.EOF do begin
-    vTbl := aDB.New;//(,);
-    vTbl.TableName := vDts.Field[0].AsString;
+    vTbl := aDB.New;
+    vTbl.TableName := Trim(vDts.Field[0].AsString);
     vTbl.ClearState;
     vDts.Next;
   end;
 end;
 
-procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo);overload;extdecl;
+procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo;const IncludeSystem:ByteBool = False);overload;extdecl;
 const
   cSql = 'select rdb$relation_name, rdb$system_flag from rdb$relations '+
          'WHERE rdb$view_blr is null ' +
@@ -522,10 +522,12 @@ begin
   vDts := Query(cSql);
   vDts.First;
   while not vDts.EOF do begin
-    vTbl := aDB.NewTable(vDts.Field[0].AsString);
     vSys := FieldValueDef(vDts.Field[1],0);
-    if vSys = 0 then vTbl.SystemTable := False else vTbl.SystemTable := True;
-    vTbl.ClearState;
+    if (vSys = 0) or IncludeSystem then begin
+      vTbl := aDB.NewTable(Trim(vDts.Field[0].AsString));
+      if vSys = 0 then vTbl.SystemTable := False else vTbl.SystemTable := True;
+      vTbl.ClearState;
+    end;
     vDts.Next;
   end;
 end;

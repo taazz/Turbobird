@@ -953,7 +953,7 @@ type
     ['{6358D2B3-7042-46B3-BC0B-C930A0A5C2D0}']
     Function GetConnection :IEvsConnection;                         extdecl;
     Procedure SetConnection(aValue :IEvsConnection);                extdecl;
-    Procedure GetTables(const aObject:IEvsDatabaseInfo);   overload;extdecl;   //get tables for the database passed.
+    Procedure GetTables(const aObject:IEvsDatabaseInfo;const IncludeSystem:ByteBool = False);   overload;extdecl;   //get tables for the database passed.
     Procedure GetFields(const aObject:IEvsTableInfo);      overload;extdecl;   //get fields for the table passed.
     Procedure GetTriggers(const aObject:IEvsTableInfo);    overload;extdecl;   //triggers for the table passed
     Procedure GetTriggers(const aObject:IEvsDatabaseInfo); overload;extdecl;   //database triggers only.

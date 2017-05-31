@@ -5,7 +5,7 @@ unit uTBFirebird;
 interface
 
 uses
-  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes;
+  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes, uWideStrings;
 
 type
 
@@ -38,7 +38,7 @@ type
     class function NewQuery:TMDOQuery;
 
   protected
-    function GetConnection :IEvsConnection;extdecl;
+    function GetConnection :IEvsConnection; extdecl;
     function GetMetaData   :IEvsMetaData; override;extdecl;
     procedure SetParamValue(const aParamName, aParamValue:String);inline;//all code in one place.
     //called by the Interface directly.
@@ -84,6 +84,9 @@ type
     procedure GetIndices(const aObject:IEvsTableInfo);      overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
     procedure GetDomains(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
 
+    //DDL creationg Procedures
+    function GetFieldDDL(Const aObject :IEvsFieldInfo):widestring; overload; extdecl;
+    function GetTableDDL(Const aObject :IEvsTableInfo):widestring; overload; extdecl;
     //the aTableName can be empty in which case it should either
     //return all the indices in the database or raise an exception.
     //function GetIndices(const aObject:IInterface):IEvsIndexList;
@@ -98,7 +101,7 @@ function ConncetionSting(const aDB:TDatabase):string;
 
 implementation
 
-uses uCharSets;
+uses uCharSets, strutils;
 
 const
   pnCharset  = 'lc_type';
@@ -262,10 +265,17 @@ var
   vScale,
   vLength,
   vPrecision,
-  vSubType    : Integer;
+  vSubType    :Integer;
   vCharSet,
   vCollation,
-  vFieldType  : Widestring;
+  vFieldType  :Widestring;
+  vDataGroup  :TEvsDataGroup;
+  function IsSystemDomain(const aField:IEvsField):Boolean;
+  begin
+    Result := uWideStrings.WideStartsText('RDB$', aField.AsString) or
+              uWideStrings.WideStartsText('EVS$', aField.AsString) //used internally when the minimize system domains is checked;
+  end;
+
 begin
   vScale     := Abs(aDsFields.Field[7].AsInt32);
   vLength    := FieldValueDef(aDsFields.Field[04], 0);
@@ -277,37 +287,49 @@ begin
     14,
     15: begin
           vFieldType := 'Char';//blr_text, blr_text2, uftChar;
+          vDataGroup := dtgAlpha;
         end;
     37,
     38: begin //blr_varying, blr_varying2
           vFieldType := 'Varchar';
+          vDataGroup := dtgAlpha;
         end;
     40,
     41: begin //blr_cstring, blr_cstring2
           vFieldType := 'Char';
+          vDataGroup := dtgAlpha;
         end;
     7:  begin //blr_short
           vFieldType := 'Smallint';
+          vLength    := -2;//16bit
+          vDataGroup := dtgNumeric;
         end;
     8:  begin //blr_long
           vFieldType := 'Integer';
+          vLength    := -4;//32bit
+          vDataGroup := dtgNumeric;
         end;
     9:  begin
           vFieldType := 'Binary';
           vLength := vPrecision;
+          vDataGroup := dtgBinary;
         end;
     10,
     11: begin //blr_float, blr_d_float
           vFieldType := 'Float';
-          vLength := vPrecision; //aDsFields.Field[6].AsInt32;//Precision;
+          vLength    :=  -4;//32bit floating point // aDsFields.Field[6].AsInt32;//Precision;
+          vDataGroup := dtgNumeric;
         end;
     27: begin //blr_double
           vFieldType := 'Double Precision';
-          vLength := -8;
+          vLength    := -8;//64bit floating point
+          vDataGroup := dtgNumeric;
         end;
     35: begin  //blr_timestamp
           vFieldType := 'Timestamp';
-          vLength    := vPrecision;// aDsFields.Field[6].AsInt32;//Precision;
+          //vLength    := vPrecision;// aDsFields.Field[6].AsInt32;//Precision;
+          vLength    := -8;
+          vDataGroup := dtgDateTime;
         end;
     261: begin //blr_blob
            vSubType   := aDsFields.Field[9].AsInt32;//subtype.
@@ -315,15 +337,20 @@ begin
            vLength    := aDsFields.Field[13].AsInt32;//Segment_Length
            if vSubType = 1 then vFieldType := 'Memo';
            if vSubType = 2 then vFieldType := 'BLR';
+           vDataGroup := dtgBlob;
          end;
     45: begin //blr_blob_id
           raise ETBException.CreateFmt('Unsupported Data Type %D, %S',[aDsFields.Field[8].AsInt32,'blr_BlobID']);
         end;
     12: begin //blr_sql_date
           vFieldType := 'Date';
+          vLength    := -4;
+          vDataGroup := dtgDateTime;
         end;
     13: begin  //blr_sql_time
           vFieldType := 'Time';
+          vLength    := 4;
+          vDataGroup := dtgDateTime;
         end;
     16: begin //blr_int64
           if vScale <> 0 then begin
@@ -331,15 +358,18 @@ begin
               0 : vFieldType := 'Numeric';
               1 : vFieldType := 'Decimal';
             end;
+            vDataGroup := dtgNumeric;
             vLength := vPrecision;
           end else begin
-            vFieldType := 'BigInt';
-            vLength := 8;
+            vFieldType :='BigInt';
+            vLength    := -8;
+            vDataGroup :=dtgInteger;
           end;
         end;
     23,
     17: begin
           vFieldType := 'Boolean';
+          vLength    := -1;
           raise ETBException.CreateFmt('Unsupported Data Type %D, %S',[aDsFields.Field[8].AsInt32,'blr_bool']);
         end;
   end;
@@ -352,6 +382,12 @@ begin
   aField.Collation    := vCollation;
   aField.AutoNumber   := False;
   aField.DefaultValue := Null;
+  aField.DataGroup    := vDataGroup;
+
+  if not IsSystemDomain(aDsFields.Field[15]) then begin
+    aField.DataTypeName := aDsFields.Field[15].AsString;
+    aField.DataGroup    := dtgCustomType; //user specified domain.
+  end;
 
   if not aDsFields.Field[2].IsNull then
     aField.DefaultValue := Trim(aDsFields.Field[2].AsString);
@@ -991,12 +1027,22 @@ begin
   end;
 end;
 
-function TEvsMDOConnection.GetCharsets:PVarArray;extdecl;
+function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
+begin
+
+end;
+
+function TEvsMDOConnection.GetTableDDL(Const aObject :IEvsTableInfo) :widestring; extdecl;
+begin
+
+end;
+
+Function TEvsMDOConnection.GetCharsets :PVarArray; extdecl;
 begin
   Result := VarArrayAsPSafeArray(_VarArray(uCharSets.SupportedCharacterSets));
 end;
 
-function TEvsMDOConnection.Collations(const aCharSet:Widestring) :PVarArray;Extdecl;
+Function TEvsMDOConnection.Collations(const aCharSet :Widestring) :PVarArray; extdecl;
 begin
   Result := VarArrayAsPSafeArray(_VarArray(uCharSets.SupportedCollations(aCharSet)));
 end;

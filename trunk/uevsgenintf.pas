@@ -42,8 +42,9 @@ type
   { IEvsCopyable }
   IEvsCopyable = interface(IInterface)
     ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
-    Procedure CopyFrom(const aSource:IEvsCopyable); extdecl;
-    Procedure CopyTo(const aDest:IEvsCopyable);     extdecl;
+    Procedure CopyFrom(const aSource  :IEvsCopyable);         extdecl;
+    Procedure CopyTo  (const aDest    :IEvsCopyable);         extdecl;
+    function EqualsTo (const aCompare :IEvsCopyable):Boolean; extdecl;
   end;
 
   IEvsObjectRef = interface(IEvsCopyable)

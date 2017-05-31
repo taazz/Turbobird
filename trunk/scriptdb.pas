@@ -23,6 +23,7 @@ function ScriptAllExceptions(dbIndex: Integer; var List: TStringList): Boolean;
 function ScriptAllGenerators(dbIndex: Integer; var List: TStringList): Boolean;
 // Scripts a single table as CREATE TABLE DDL
 procedure ScriptTableAsCreate(dbIndex: Integer; ATableName: string; ScriptList: TStringList);
+procedure ScriptTableAsCreate(constref aTable: IEvsTableInfo; constref ScriptList: TStringList);
 // Scripts all tables calling ScriptTableAsCreate for each table
 function ScriptAllTables(dbIndex: Integer; var List: TStringList): Boolean;
 // Scripts all stored procedures
@@ -60,6 +61,10 @@ procedure RemoveParamClosing(var AParams: string);
 implementation
 
 uses SysTables, Main;
+
+const
+  SpaceW    = WideChar(' ');
+  EmptyStrW = WideString('');
 
 // Indicates if a constraint name is system-generated.
 function IsConstraintSystemGenerated(ConstraintName: string): boolean;
@@ -283,7 +288,9 @@ var
   //vFields        :TSQLQuery;
   vFields        :TMDOQuery;
 begin
-  vFields  := GetQuery(fmMain.RegisteredDatabases[dbIndex].Conn, cTmplFields, [aTableName]);
+  {!$ERROR 'Needs clean up'}
+  //vFields  := GetQuery(fmMain.RegisteredDatabases[dbIndex].Conn, cTmplFields, [aTableName]);
+  raise DeprecatedException; {$MESSAGE WARN 'Needs Implementation'}
   //fmMain.GetFields(dbIndex, ATableName, nil);
   ScriptList.Clear;
   ScriptList.Add('create table ' + ATableName + ' (');
@@ -337,7 +344,153 @@ begin
           FieldLine := FieldLine + ' ' + DefaultValue;
         end;
 
-        // Null/Not null
+        if vFields.FieldByName(cFldNullFlag).AsString = '1' then
+           FieldLine := FieldLine + ' not null ';
+      end else begin
+        Skipped:= True;
+      end;
+
+      // Computed Fields
+      if vFields.FieldByName(cFldComputedSrc).AsString <> '' then
+        CalculatedList.Add('ALTER TABLE ' + ATableName + ' ADD ' +
+          Trim(vFields.FieldByName(cFldName).AsString) + ' COMPUTED BY ' + vFields.FieldByName(cFldComputedSrc).AsString + ';');
+
+      vFields.Next;
+
+      if not Skipped then
+      begin
+        if not vFields.EOF then
+          FieldLine:= FieldLine + ',';
+        ScriptList.Add(FieldLine);
+      end;
+    end;
+
+    if Pos(',', ScriptList[ScriptList.Count - 1]) > 0 then
+      ScriptList[ScriptList.Count - 1]:= Copy(ScriptList[ScriptList.Count - 1], 1,
+        Length(ScriptList[ScriptList.Count - 1]) - 1);
+
+    vFields.Close;
+
+    // Primary Keys
+    PKFieldsList:= TStringList.Create;
+    try
+      PKeyIndexName:= fmMain.GetPrimaryKeyIndexName(dbIndex, ATableName, ConstraintName);
+      if PKeyIndexName <> '' then begin
+        fmMain.GetConstraintFields(ATableName, PKeyIndexName, PKFieldsList);
+        // Follow isql -x (not FlameRobin) by omitting system-generated
+        // constraint names and let the system generate its own names
+        if IsConstraintSystemGenerated(ConstraintName) then
+          FieldLine:= ' primary key ('
+        else // User-specified, so explicilty mention constraint name
+          FieldLine:= 'constraint ' + ConstraintName + ' primary key (';
+        for i:= 0 to PKFieldsList.Count - 1 do
+          FieldLine:= FieldLine + PKFieldsList[i] + ', ';
+        if PKFieldsList.Count > 0 then
+        begin
+          Delete(FieldLine, Length(FieldLine) - 1, 2);
+          FieldLine:= FieldLine + ')';
+          ScriptList.Add(', ' + FieldLine);
+        end;
+      end;
+    finally
+      PKFieldsList.Free;
+    end;
+    ScriptList.Add(');');
+    ScriptList.Add(CalculatedList.Text);
+  finally
+    CalculatedList.Free;
+    ReleaseQuery(vFields)
+  end;
+end;
+
+procedure ScriptTableAsCreate(constref aTable: IEvsTableInfo; constref ScriptList: TStringList);
+var
+  i: Integer;
+  PKeyIndexName  :string;
+  PKFieldsList   :TStringList;
+  FieldLine      :string;
+  Skipped        :Boolean;
+  BlobSubType    :string;
+  ConstraintName :string;
+  CalculatedList :TStringList; // for calculated fields
+  DefaultValue   :string;
+  vCntr          :Integer;
+  //vFields        :TSQLQuery;
+  //vFields        :TMDOQuery;
+begin
+  ScriptList.Clear;
+  ScriptList.Add('Create Table ' + aTable.TableName + ' (');
+  CalculatedList:= TStringList.Create;
+  try
+    //Fields
+    //with vFields do
+    for vCntr := 0 to aTable.FieldCount -1 do
+    //while not vFields.EOF do
+    begin
+      Skipped := False;
+      //if (vFields.FieldByName('computed_source').AsString = '') then begin
+      if (aTable.Field[vCntr].Calculated = EmptyStrW) then begin
+        // Field Name
+        FieldLine := aTable.Field[vCntr].FieldName+SpaceW; //Trim(vFields.FieldByName('Field_Name').AsString) + ' ';
+
+        //if (vFields.FieldByName(cFldSource).IsNull) or
+        //  (Trim(vFields.FieldByName(cFldSource).AsString)='') or
+        //  (IsFieldDomainSystemGenerated(Trim(vFields.FieldByname(cFldSource).AsString))) then
+        if aTable.Field[vCntr].Calculated = EmptyStrW then
+        begin
+          // Field type is not based on a domain but a standard SQL type
+          // Field type
+          //FieldLine := FieldLine + GetFBTypeName(vFields.FieldByName(cfldType).AsInteger,
+          //vFields.FieldByName(cFldSubType).AsInteger,
+          //vFields.FieldByName(cFldLength).AsInteger,
+          //vFields.FieldByName(cFldPrecision).AsInteger,
+          //vFields.FieldByName(cFldScale).AsInteger);
+          FieldLine := FieldLine + aTable.Field[vCntr].DataTypeName;
+
+          if aTable.Field[vCntr].DataGroup = dtgAlpha then begin //(vFields.FieldByName(cfldType).AsInteger) in [CharType, CStringType, VarCharType] then
+            FieldLine := FieldLine + '(' + IntToStr(aTable.Field[vCntr].FieldSize)+ ') ';
+            //CURRENCY VARCHAR(10) CHARACTER SET ISO8859_2 NOT NULL COLLATE ISO_HUN
+            if aTable.Field[vCntr].Charset <> '' then
+              FieldLine := FieldLine + 'CHARACTER SET ' + aTable.Field[vCntr].Charset;
+
+            if not aTable.Field[vCntr].AllowNulls then
+              FieldLine := FieldLine + 'NOT NULL ';// + aTable.Field[vCntr].Charset;
+
+            if aTable.Field[vCntr].Collation <> '' then
+              FieldLine := FieldLine + 'COLLATE ' + aTable.Field[vCntr].Collation;
+
+          end;
+
+          //if (vFields.FieldByName(cfldType).AsInteger = BlobType) then begin
+          if (aTable.Field[vCntr].DataGroup = dtgBlob) then begin
+            //BlobSubType := fmMain.GetBlobSubTypeName(vFields.FieldByName(cFldSubType).AsInteger);
+            FieldLine := FieldLine + 'BLOB ';
+            if aTable.Field[vCntr].FieldSize <> 0 then FieldLine := FieldLine + '('+IntToStr(aTable.Field[vCntr].FieldSize)+')';
+            if CompareText(aTable.Field[vCntr].DataTypeName, 'memo') = 0 then
+              FieldLine := FieldLine + ' SUB_TYPE TEXT'
+            else if CompareText(aTable.Field[vCntr].DataTypeName, 'blob') = 0 then
+              FieldLine := FieldLine + ' SUB_TYPE BINARY'
+            else
+              FieldLine := FieldLine + ' SUB_TYPE BLR';
+          end;
+
+          // Rudimentary support for array datatypes (only covers 0 dimension types):
+          {todo: (low priority) expand to proper array type detection though arrays are
+           virtually unused}
+          //if not(vFields.FieldByName(cArrUpBound).IsNull) then
+          //  FieldLine := FieldLine + ' [' + vFields.FieldByName(cArrUpBound).AsString + '] ';
+        end else begin
+          // Field is based on a domain
+          FieldLine := FieldLine + ' ' + aTable.Field[vCntr].Calculated;
+        end;
+        // Default value
+        //DefaultValue := Trim(vFields.FieldByName(cFldDefSource).AsString);
+        if aTable.Field[vCntr].DefaultValue <> '' then begin
+          if pos('default', LowerCase(DefaultValue)) <> 1 then
+            DefaultValue := ' default ' + QuotedStr(DefaultValue);
+          FieldLine := FieldLine + ' ' + DefaultValue;
+        end;
+
         if vFields.FieldByName(cFldNullFlag).AsString = '1' then
            FieldLine := FieldLine + ' not null ';
       end else begin

@@ -1,4 +1,4 @@
-unit utbcommon;
+unit uTBCommon;
 
   //--------------------------------------------------------------------
   //JKOZ: move the firebird specific code to the utbFirebird unit.

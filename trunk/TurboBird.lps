@@ -4,15 +4,14 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="debug"/>
-    <Units Count="126">
+    <Units Count="127">
       <Unit0>
         <Filename Value="TurboBird.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="14"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="73"/>
         <CursorPos Y="107"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="systables.pas"/>
@@ -21,20 +20,20 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="SysTables"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="930"/>
         <CursorPos X="3" Y="957"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="scriptdb.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Scriptdb"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="175"/>
-        <CursorPos X="78" Y="207"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="421"/>
+        <CursorPos X="24" Y="476"/>
+        <FoldState Value=" T3nI0{kq"/>
         <UsageCount Value="211"/>
         <Bookmarks Count="1">
           <Item0 X="50" Y="89"/>
@@ -79,11 +78,10 @@
         <Filename Value="utbtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTBTypes"/>
-        <EditorIndex Value="16"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="121"/>
         <CursorPos Y="167"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
         <Filename Value="utbconfig.pas"/>
@@ -98,9 +96,9 @@
         <Filename Value="utbfirebird.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTBFirebird"/>
-        <EditorIndex Value="20"/>
-        <TopLine Value="65"/>
-        <CursorPos X="18" Y="91"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="4"/>
+        <CursorPos X="23" Y="57"/>
         <UsageCount Value="207"/>
         <Loaded Value="True"/>
       </Unit10>
@@ -108,9 +106,9 @@
         <Filename Value="utbdbregistry.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="utbDBRegistry"/>
-        <EditorIndex Value="17"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="193"/>
-        <CursorPos Y="232"/>
+        <CursorPos X="25" Y="231"/>
         <FoldState Value=" TJnW1Tq"/>
         <UsageCount Value="215"/>
         <Loaded Value="True"/>
@@ -155,12 +153,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="5"/>
         <CursorPos X="23" Y="7"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="Forms\backuprestore.pas"/>
@@ -269,10 +265,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditDataFullRec"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="76"/>
         <CursorPos X="15" Y="97"/>
-        <FoldState Value=" TLjC2R@"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit25>
@@ -295,7 +290,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EnterPass"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="20"/>
         <CursorPos X="20" Y="47"/>
         <UsageCount Value="200"/>
@@ -318,7 +313,8 @@
         <ComponentName Value="fmMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <CursorPos Y="36"/>
+        <TopLine Value="4749"/>
+        <CursorPos X="27" Y="4753"/>
         <FoldState Value=" T3.W06032~"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -365,7 +361,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewGen"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="206"/>
         <CursorPos X="56" Y="233"/>
         <UsageCount Value="200"/>
@@ -413,11 +409,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Reg"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="18" Y="106"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="Forms\sqlhistory.pas"/>
@@ -459,12 +453,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Update"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="228"/>
         <CursorPos X="3" Y="270"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit41>
       <Unit42>
         <Filename Value="Forms\userpermissions.pas"/>
@@ -541,10 +533,10 @@
         <Filename Value="uevsdbschema.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsDBSchema"/>
-        <EditorIndex Value="22"/>
-        <TopLine Value="2335"/>
-        <CursorPos X="30" Y="2357"/>
-        <FoldState Value=" T7+WEi4 pjTl2LN2 TJ*61#vP p0*d1}y2 plAqS1u]9mOo01r1]jGkU1%2]92kf1v[I4Lkd1{Q[A5m31{R[A4Mm5]A[K641{[KKW[K6A1:]9z2-S1~y]AlSt11Q[94XmK1{}V"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="899"/>
+        <CursorPos X="65" Y="969"/>
+        <FoldState Value=" T7+cEi013 pj5l4LN2 TJitE1}y2 plAqS1u]9mOo01r1]bGkU1%2]92kf1v[I4Lkd1{Q[A5m31{R[A4Mm5]A[K641{[KKW[K6A1:]9z2-S1~y]AlSt11Q1Q"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit49>
@@ -552,9 +544,9 @@
         <Filename Value="uevsgenintf.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsGenIntf"/>
-        <EditorIndex Value="15"/>
+        <EditorIndex Value="7"/>
         <CursorPos Y="13"/>
-        <UsageCount Value="145"/>
+        <UsageCount Value="173"/>
         <Loaded Value="True"/>
       </Unit50>
       <Unit51>
@@ -564,7 +556,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="99"/>
+        <UsageCount Value="127"/>
       </Unit51>
       <Unit52>
         <Filename Value="Frames\ufrdatabaseedit.pas"/>
@@ -573,11 +565,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="ufrDatabaseEdit"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="38" Y="29"/>
-        <UsageCount Value="72"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="100"/>
       </Unit52>
       <Unit53>
         <Filename Value="uevsnullables.pas"/>
@@ -585,7 +575,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="74" Y="70"/>
-        <UsageCount Value="133"/>
+        <UsageCount Value="130"/>
       </Unit53>
       <Unit54>
         <Filename Value="main.pas"/>
@@ -595,7 +585,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="234"/>
         <CursorPos X="33" Y="262"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
         <Bookmarks Count="1">
           <Item0 X="3" Y="705"/>
         </Bookmarks>
@@ -609,7 +599,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="31"/>
         <CursorPos X="144" Y="62"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit55>
       <Unit56>
         <Filename Value="reg.pas"/>
@@ -620,7 +610,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="310"/>
         <CursorPos Y="361"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit56>
       <Unit57>
         <Filename Value="querywindow.pas"/>
@@ -631,7 +621,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2138"/>
         <CursorPos X="6" Y="2147"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit57>
       <Unit58>
         <Filename Value="viewview.pas"/>
@@ -639,7 +629,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ViewView"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit58>
       <Unit59>
         <Filename Value="viewtrigger.pas"/>
@@ -647,7 +637,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ViewTrigger"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit59>
       <Unit60>
         <Filename Value="viewsproc.pas"/>
@@ -655,7 +645,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ViewSProc"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit60>
       <Unit61>
         <Filename Value="viewgen.pas"/>
@@ -663,7 +653,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ViewGen"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit61>
       <Unit62>
         <Filename Value="newtable.pas"/>
@@ -671,7 +661,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewTable"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit62>
       <Unit63>
         <Filename Value="newgen.pas"/>
@@ -679,7 +669,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewGen"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit63>
       <Unit64>
         <Filename Value="enterpass.pas"/>
@@ -687,7 +677,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EnterPass"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit64>
       <Unit65>
         <Filename Value="about.pas"/>
@@ -695,7 +685,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit65>
       <Unit66>
         <Filename Value="createtrigger.pas"/>
@@ -703,7 +693,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CreateTrigger"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit66>
       <Unit67>
         <Filename Value="edittable.pas"/>
@@ -712,7 +702,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditTable"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit67>
       <Unit68>
         <Filename Value="callproc.pas"/>
@@ -720,7 +710,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CallProc"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit68>
       <Unit69>
         <Filename Value="editdatafullrec.pas"/>
@@ -728,7 +718,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="EditDataFullRec"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit69>
       <Unit70>
         <Filename Value="udfinfo.pas"/>
@@ -739,7 +729,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="14"/>
         <CursorPos X="4" Y="28"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit70>
       <Unit71>
         <Filename Value="viewdomain.pas"/>
@@ -747,7 +737,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ViewDomain"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit71>
       <Unit72>
         <Filename Value="newdomain.pas"/>
@@ -755,7 +745,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewDomain"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit72>
       <Unit73>
         <Filename Value="newconstraint.pas"/>
@@ -763,7 +753,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewConstraint"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit73>
       <Unit74>
         <Filename Value="neweditfield.pas"/>
@@ -771,7 +761,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewEditField"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit74>
       <Unit75>
         <Filename Value="calen.pas"/>
@@ -779,7 +769,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Calen"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit75>
       <Unit76>
         <Filename Value="userpermissions.pas"/>
@@ -787,7 +777,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UserPermissions"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit76>
       <Unit77>
         <Filename Value="tablemanage.pas"/>
@@ -795,7 +785,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TableManage"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit77>
       <Unit78>
         <Filename Value="backuprestore.pas"/>
@@ -803,7 +793,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BackupRestore"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit78>
       <Unit79>
         <Filename Value="createuser.pas"/>
@@ -814,7 +804,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
         <CursorPos X="15" Y="46"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit79>
       <Unit80>
         <Filename Value="changepass.pas"/>
@@ -822,7 +812,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="ChangePass"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit80>
       <Unit81>
         <Filename Value="permissionmanage.pas"/>
@@ -830,7 +820,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PermissionManage"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit81>
       <Unit82>
         <Filename Value="sqlhistory.pas"/>
@@ -838,7 +828,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SQLHistory"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit82>
       <Unit83>
         <Filename Value="copytable.pas"/>
@@ -846,7 +836,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CopyTable"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit83>
       <Unit84>
         <Filename Value="dbinfo.pas"/>
@@ -857,7 +847,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="97"/>
         <CursorPos Y="148"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit84>
       <Unit85>
         <Filename Value="comparison.pas"/>
@@ -868,7 +858,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1847"/>
         <CursorPos X="30" Y="1876"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
         <Bookmarks Count="1">
           <Item0 X="47" Y="663" ID="1"/>
         </Bookmarks>
@@ -879,42 +869,42 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Update"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit86>
       <Unit87>
         <Filename Value="importtable.pas"/>
         <ComponentName Value="fmImportTable"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="157"/>
+        <UsageCount Value="154"/>
       </Unit87>
       <Unit88>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2029"/>
         <CursorPos X="10" Y="2084"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="92"/>
       </Unit88>
       <Unit89>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\stringl.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="371"/>
         <CursorPos X="12" Y="398"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="14"/>
       </Unit89>
       <Unit90>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\sqldb\sqldb.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="835"/>
         <CursorPos X="28" Y="866"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="23"/>
       </Unit90>
       <Unit91>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="938"/>
         <CursorPos X="11" Y="966"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit91>
       <Unit92>
         <Filename Value="..\..\..\1.4.4\lcl\controls.pp"/>
@@ -922,14 +912,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2210"/>
         <CursorPos X="3" Y="2238"/>
-        <UsageCount Value="77"/>
+        <UsageCount Value="74"/>
       </Unit92>
       <Unit93>
         <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1925"/>
         <CursorPos X="3" Y="1943"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="30"/>
       </Unit93>
       <Unit94>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\win32\system.pp"/>
@@ -937,30 +927,29 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="626"/>
         <CursorPos X="27" Y="671"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="9"/>
       </Unit94>
       <Unit95>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\except.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="307"/>
         <CursorPos X="36" Y="359"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="9"/>
       </Unit95>
       <Unit96>
         <Filename Value="..\..\..\1.4.4\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="3033"/>
         <CursorPos X="14" Y="3060"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="26"/>
       </Unit96>
       <Unit97>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="222"/>
         <CursorPos X="8" Y="250"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="16"/>
       </Unit97>
       <Unit98>
         <Filename Value="..\..\..\1.4.4\components\synedit\synhighlightersql.pas"/>
@@ -968,34 +957,33 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="168"/>
         <CursorPos X="14" Y="196"/>
-        <UsageCount Value="22"/>
+        <UsageCount Value="19"/>
       </Unit98>
       <Unit99>
         <Filename Value="..\..\..\1.4.4\lcl\include\wincontrol.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="4388"/>
         <CursorPos X="3" Y="4410"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit99>
       <Unit100>
         <Filename Value="..\..\..\1.4.4\lcl\include\tabsheet.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos Y="62"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit100>
       <Unit101>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\compon.inc"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="5"/>
       </Unit101>
       <Unit102>
         <Filename Value="..\..\..\Components\mdo\Source\runtime\MDODatabase.pas"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="584"/>
         <CursorPos X="3" Y="608"/>
-        <UsageCount Value="66"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="63"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit102>
       <Unit103>
@@ -1004,7 +992,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="914"/>
         <CursorPos X="14" Y="938"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="22"/>
       </Unit103>
       <Unit104>
         <Filename Value="..\..\..\1.4.4\lcl\lcltype.pp"/>
@@ -1012,19 +1000,19 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2648"/>
         <CursorPos X="3" Y="2676"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="22"/>
       </Unit104>
       <Unit105>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\finah.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="10" Y="20"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit105>
       <Unit106>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\fina.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="29"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit106>
       <Unit107>
         <Filename Value="..\..\..\Workbench\GUI\AGGPas\uevsdirect2d.pas"/>
@@ -1032,7 +1020,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="142"/>
         <CursorPos X="5" Y="33"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="92"/>
       </Unit107>
       <Unit108>
         <Filename Value="..\..\WebCrawler\uevsvirtualtreehelpers.pas"/>
@@ -1040,21 +1028,22 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos X="30" Y="73"/>
-        <UsageCount Value="95"/>
+        <UsageCount Value="92"/>
       </Unit108>
       <Unit109>
         <Filename Value="utbcommon.pas"/>
-        <EditorIndex Value="19"/>
-        <TopLine Value="317"/>
-        <CursorPos X="11" Y="345"/>
-        <UsageCount Value="96"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="124"/>
+        <CursorPos X="3" Y="152"/>
+        <UsageCount Value="104"/>
         <Loaded Value="True"/>
       </Unit109>
       <Unit110>
         <Filename Value="EvsDefs.inc"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="27" Y="10"/>
-        <UsageCount Value="91"/>
+        <EditorIndex Value="11"/>
+        <CursorPos X="27" Y="4"/>
+        <UsageCount Value="101"/>
+        <Loaded Value="True"/>
       </Unit110>
       <Unit111>
         <Filename Value="..\..\..\1.4.4\components\synedit\syneditmiscclasses.pp"/>
@@ -1062,7 +1051,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="66"/>
         <CursorPos X="3" Y="94"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="22"/>
       </Unit111>
       <Unit112>
         <Filename Value="..\..\..\1.4.4\lcl\clipbrd.pp"/>
@@ -1070,21 +1059,21 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="97"/>
         <CursorPos X="17" Y="134"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="22"/>
       </Unit112>
       <Unit113>
         <Filename Value="..\..\..\1.4.4\lcl\include\clipbrd.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="421"/>
         <CursorPos X="13" Y="446"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="22"/>
       </Unit113>
       <Unit114>
         <Filename Value="uevswidestring.pas"/>
         <UnitName Value="uEvsWideString"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="6"/>
         <CursorPos X="45" Y="20"/>
-        <UsageCount Value="46"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
       </Unit114>
       <Unit115>
@@ -1092,7 +1081,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="227"/>
         <CursorPos Y="270"/>
-        <UsageCount Value="3"/>
+        <UsageCount Value="0"/>
       </Unit115>
       <Unit116>
         <Filename Value="..\..\..\1.4.4\lcl\forms.pp"/>
@@ -1100,7 +1089,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="694"/>
         <CursorPos X="15" Y="722"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="7"/>
       </Unit116>
       <Unit117>
         <Filename Value="..\..\..\1.4.4\lcl\lclintf.pas"/>
@@ -1108,187 +1097,189 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="38"/>
         <CursorPos X="10" Y="66"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="4"/>
       </Unit117>
       <Unit118>
         <Filename Value="..\..\..\Components\mdo\Source\runtime\MDO.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="12"/>
         <CursorPos X="3" Y="64"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit118>
       <Unit119>
         <Filename Value="uevsoptions.pas"/>
         <UnitName Value="uEvsOptions"/>
-        <EditorIndex Value="18"/>
-        <TopLine Value="41"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="40"/>
         <CursorPos X="49" Y="32"/>
-        <UsageCount Value="31"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="42"/>
       </Unit119>
       <Unit120>
         <Filename Value="..\..\..\1.6.4\fpc\3.0.2\source\packages\rtl-objpas\src\inc\variants.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="99"/>
         <CursorPos X="22" Y="127"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit120>
       <Unit121>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\varianth.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="45"/>
         <CursorPos X="13" Y="73"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit121>
       <Unit122>
         <Filename Value="..\..\..\1.4.4\components\PascalScript\Source\uPSRuntime.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1222"/>
         <CursorPos X="15" Y="1250"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit122>
       <Unit123>
         <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsmisc.pas"/>
         <UnitName Value="UEvsMisc"/>
-        <EditorIndex Value="21"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="25"/>
-        <CursorPos X="15" Y="53"/>
-        <UsageCount Value="29"/>
-        <Loaded Value="True"/>
+        <CursorPos X="38" Y="50"/>
+        <UsageCount Value="40"/>
       </Unit123>
       <Unit124>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\variants.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="3259"/>
         <CursorPos X="5" Y="3263"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit124>
       <Unit125>
         <Filename Value="..\..\..\1.4.4\lcl\include\treeview.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="2381"/>
         <CursorPos X="15" Y="2398"/>
-        <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="10"/>
       </Unit125>
+      <Unit126>
+        <Filename Value="uCharSets.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="37"/>
+        <UsageCount Value="7"/>
+      </Unit126>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="29" HistoryIndex="27">
       <Position1>
-        <Filename Value="uevsdbschema.pas"/>
-        <Caret Line="2363" Column="3" TopLine="2361"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="195" Column="5" TopLine="156"/>
       </Position1>
       <Position2>
-        <Filename Value="utbdbregistry.pas"/>
-        <Caret Line="447" Column="29" TopLine="419"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="207" Column="78" TopLine="175"/>
       </Position2>
       <Position3>
-        <Filename Value="utbdbregistry.pas"/>
-        <Caret Line="463" Column="53" TopLine="422"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="222" Column="24" TopLine="184"/>
       </Position3>
       <Position4>
-        <Filename Value="utbdbregistry.pas"/>
-        <Caret Line="471" TopLine="444"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="255" Column="31" TopLine="221"/>
       </Position4>
       <Position5>
-        <Filename Value="utbdbregistry.pas"/>
-        <Caret Line="89" Column="16" TopLine="62"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="291" TopLine="269"/>
       </Position5>
       <Position6>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="4574" Column="18" TopLine="4457"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="288" Column="27" TopLine="258"/>
       </Position6>
       <Position7>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="4646" Column="23" TopLine="4608"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="448" Column="37" TopLine="419"/>
       </Position7>
       <Position8>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="4648" Column="17" TopLine="4604"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="377" Column="14" TopLine="350"/>
       </Position8>
       <Position9>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="4600" Column="12" TopLine="4567"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="171" Column="69" TopLine="153"/>
       </Position9>
       <Position10>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="4625" TopLine="4591"/>
+        <Filename Value="scriptdb.pas"/>
+        <Caret Line="448" Column="37" TopLine="419"/>
       </Position10>
       <Position11>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="388" Column="14" TopLine="361"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="381" Column="14" TopLine="354"/>
       </Position11>
       <Position12>
-        <Filename Value="Forms\editdatafullrec.pas"/>
-        <Caret Line="106" Column="31" TopLine="54"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="202" Column="5" TopLine="167"/>
       </Position12>
       <Position13>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="203" Column="23" TopLine="174"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="193" Column="36" TopLine="139"/>
       </Position13>
       <Position14>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="87" Column="50" TopLine="57"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="1266" Column="88" TopLine="1211"/>
       </Position14>
       <Position15>
-        <Filename Value="Forms\main.pas"/>
-        <Caret Line="354" Column="11" TopLine="336"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="45" Column="40" TopLine="17"/>
       </Position15>
       <Position16>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="5" Column="5"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="6511" Column="64" TopLine="6301"/>
       </Position16>
       <Position17>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="86" Column="35" TopLine="58"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="6677" Column="64" TopLine="6628"/>
       </Position17>
       <Position18>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="87" Column="16" TopLine="40"/>
+        <Filename Value="uevsdbschema.pas"/>
       </Position18>
       <Position19>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="97" Column="9" TopLine="67"/>
+        <Filename Value="utbfirebird.pas"/>
+        <Caret Line="88" Column="14" TopLine="62"/>
       </Position19>
       <Position20>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="159" Column="55" TopLine="126"/>
+        <Filename Value="utbfirebird.pas"/>
+        <Caret Line="57" Column="23" TopLine="4"/>
       </Position20>
       <Position21>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="163" Column="18" TopLine="124"/>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="970" Column="79" TopLine="944"/>
       </Position21>
       <Position22>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="159" TopLine="131"/>
+        <Caret Line="448" Column="37" TopLine="419"/>
       </Position22>
       <Position23>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="198" Column="16" TopLine="162"/>
+        <Caret Line="468" Column="53" TopLine="427"/>
       </Position23>
       <Position24>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="199" Column="18" TopLine="148"/>
+        <Caret Line="467" Column="66" TopLine="425"/>
       </Position24>
       <Position25>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="196" Column="28" TopLine="168"/>
+        <Caret Line="462" Column="38" TopLine="425"/>
       </Position25>
       <Position26>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="214" Column="5" TopLine="186"/>
+        <Caret Line="480" Column="34" TopLine="440"/>
       </Position26>
       <Position27>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="213" Column="78" TopLine="173"/>
+        <Caret Line="478" Column="62" TopLine="436"/>
       </Position27>
       <Position28>
         <Filename Value="scriptdb.pas"/>
-        <Caret Line="210" Column="12" TopLine="174"/>
+        <Caret Line="468" Column="51" TopLine="433"/>
       </Position28>
       <Position29>
-        <Filename Value="scriptdb.pas"/>
-        <Caret Line="195" Column="5" TopLine="156"/>
+        <Filename Value="Forms\main.pas"/>
+        <Caret Line="4753" Column="27" TopLine="4749"/>
       </Position29>
     </JumpHistory>
   </ProjectSession>

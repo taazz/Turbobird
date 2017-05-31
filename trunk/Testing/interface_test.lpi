@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="9"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="interface_test"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N LFM="False"/>
+    </i18n>
+    <VersionInfo>
+      <StringTable ProductVersion=""/>
+    </VersionInfo>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="9">
+      <Item1>
+        <PackageName Value="RunTimeTypeInfoControls"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="virtualtreesextra"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="SQLDBLaz"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="KControlsLaz"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="laz_synapse"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="LazControls"/>
+      </Item6>
+      <Item7>
+        <PackageName Value="SynEdit"/>
+      </Item7>
+      <Item8>
+        <PackageName Value="mdolaz"/>
+      </Item8>
+      <Item9>
+        <PackageName Value="LCL"/>
+      </Item9>
+    </RequiredPackages>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="interface_test.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="umain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uMain"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\uevsdbschema.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsDBSchema"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\Forms\reg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fmReg"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Reg"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\utbcommon.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\utbfirebird.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTBFirebird"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\EvsDefs.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\uevswidestring.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsWideString"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="uobjinsp.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmObjectInspector"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uobjInsp"/>
+      </Unit8>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="interface_test"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..;..\Forms"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="4">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+      <Item4>
+        <Name Value="ETBNotImplemented"/>
+      </Item4>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

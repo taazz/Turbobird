@@ -31,62 +31,61 @@ type
   TEvsMDOConnection = class(TEvsAbstractConnectionProxy, IEvsMetaData)
   private
     //FActiveConnection : TMDODataBase;
-
-
-    class var FQryPool : TMDOQueryPool; //static;
-    class var FCnnPool : TMDODatabasePool;//static;
-    class function NewQuery:TMDOQuery;
+    Class var FQryPool : TMDOQueryPool; //static;
+    Class var FCnnPool : TMDODatabasePool;//static;
+    Class Function NewQuery:TMDOQuery;
 
   protected
-    function GetConnection :IEvsConnection; extdecl;
-    function GetMetaData   :IEvsMetaData; override;extdecl;
-    procedure SetParamValue(const aParamName, aParamValue:String);inline;//all code in one place.
+    Function GetConnection :IEvsConnection; extdecl;
+    Function GetMetaData   :IEvsMetaData; override;extdecl;
+    Procedure SetParamValue(const aParamName, aParamValue:String);inline;//all code in one place.
     //called by the Interface directly.
-    function  InternalExecute(aSQL :WideString) :ByteBool;  override;extdecl; {$MESSAGE WARN 'Needs Testing'}
-    function  InternalQuery(aSQL :wideString) :IEvsDataset; override;extdecl; {$MESSAGE WARN 'Needs Testing'}
-    function  InternalGetCharSet :widestring;               override;extdecl;
-    function  InternalGetPassword :widestring;              override;extdecl;
-    function  InternalGetRole :widestring;                  override;extdecl;
-    function  InternalGetUserName :widestring;              override;extdecl;
-    procedure InternalSetCharSet(aValue :WideString);       override;extdecl;
-    procedure InternalSetPassword(aValue :widestring);      override;extdecl;
-    procedure InternalSetRole(aValue :widestring);          override;extdecl;
-    procedure InternalSetUserName(aValue :widestring);      override;extdecl;
+    Function  InternalExecute(aSQL :WideString) :ByteBool;  override;extdecl; {$MESSAGE WARN 'Needs Testing'}
+    Function  InternalQuery(aSQL :wideString) :IEvsDataset; override;extdecl; {$MESSAGE WARN 'Needs Testing'}
+    Function  InternalGetCharSet :widestring;               override;extdecl;
+    Function  InternalGetPassword :widestring;              override;extdecl;
+    Function  InternalGetRole :widestring;                  override;extdecl;
+    Function  InternalGetUserName :widestring;              override;extdecl;
+    Procedure InternalSetCharSet(aValue :WideString);       override;extdecl;
+    Procedure InternalSetPassword(aValue :widestring);      override;extdecl;
+    Procedure InternalSetRole(aValue :widestring);          override;extdecl;
+    Procedure InternalSetUserName(aValue :widestring);      override;extdecl;
 
-    procedure SetConnection(aValue :IEvsConnection);extdecl;{extdecl;}{$MESSAGE WARN 'Needs Implementation'}
-    procedure ParseFieldData(constref aDsFields :IEvsDataset; const aField:IEvsFieldInfo);extdecl;
+    Procedure SetConnection(aValue :IEvsConnection);extdecl;{extdecl;}{$MESSAGE WARN 'Needs Implementation'}
+    Procedure ParseFieldData(constref aDsFields :IEvsDataset; const aField:IEvsFieldInfo);extdecl;
   public
-    procedure BeforeDestruction; override;
+    Procedure BeforeDestruction; override;
 
     //function GetConnection :IEvsConnection;extdecl;
     //procedure SetConnection(aValue :IEvsConnection);extdecl;
 
-    procedure GetTables(const aDB:IEvsTableList);       overload;extdecl; //append the tables in the list passed
-    procedure GetTables(const aDB:IEvsDatabaseInfo; const IncludeSystem:ByteBool = False);    overload;extdecl; //append the tables in the database passed.
-    procedure GetFields(const aObject:IEvsTableInfo);   overload;extdecl; //find all the fields of the table and return them in the table's field list.
+    Procedure GetTables(const aDB:IEvsTableList);       overload;extdecl; //append the tables in the list passed
+    Procedure GetTableInfo(const aTable:IEvsTableInfo); extdecl;
+    Procedure GetTables(const aDB:IEvsDatabaseInfo; const IncludeSystem:ByteBool = False);    overload;extdecl; //append the tables in the database passed.
+    Procedure GetFields(const aObject:IEvsTableInfo);   overload;extdecl; //find all the fields of the table and return them in the table's field list.
     //function GetFields(const aObject:IEvsStoredInfo):IEvsFieldList;extdecl;
     //function GetFields(const aObject:IEvsDatabaseInfo):IEvsFieldList;extdecl;
     //procedure GetTriggers(const aObject:IEvsTriggerList); overload;extdecl;
-    procedure GetTriggers(const aObject :IEvsTableInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetTriggers(const aObject :IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetStored(const aObject:IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetViews(const aObject:IEvsDatabaseInfo);     overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetSequences(const aDB:IEvsDatabaseInfo);              extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetUDFs(const aObject:IEvsDatabaseInfo);               extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    procedure GetUsers(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    procedure GetRoles(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    procedure GetExceptions(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetTriggers(const aObject :IEvsTableInfo; const System:ByteBool = False);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetTriggers(const aObject :IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetStored(const aObject:IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetViews(const aObject:IEvsDatabaseInfo);     overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetSequences(const aDB:IEvsDatabaseInfo);              extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetUDFs(const aObject:IEvsDatabaseInfo);               extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetUsers(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetRoles(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetExceptions(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
     //procedure GetDomains(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
     //the aTableName can be empty in which case it should either
     //return all the indices in the database or raise an exception.
     //procedure GetIndices(const aObject:IEvsIndexList);      overload;extdecl;
-    procedure GetIndices(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetIndices(const aObject:IEvsTableInfo);      overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    procedure GetDomains(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetIndices(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetIndices(const aObject:IEvsTableInfo);      overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetDomains(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
 
     //DDL creationg Procedures
-    function GetFieldDDL(Const aObject :IEvsFieldInfo):widestring; overload; extdecl;
-    function GetTableDDL(Const aObject :IEvsTableInfo):widestring; overload; extdecl;
+    Function GetFieldDDL(Const aObject :IEvsFieldInfo):widestring; overload; extdecl;
+    Function GetTableDDL(Const aObject :IEvsTableInfo):widestring; overload; extdecl;
     //the aTableName can be empty in which case it should either
     //return all the indices in the database or raise an exception.
     //function GetIndices(const aObject:IInterface):IEvsIndexList;
@@ -97,6 +96,7 @@ type
 
 //The Connection string must have all the required information to connect to the server separated semicolon.
 //function Connect(aHost, aDatabase, aUser, aPwd, aRole, aCharset:Widestring) :IEvsConnection;
+
 function ConncetionSting(const aDB:TDatabase):string;
 
 implementation
@@ -140,10 +140,10 @@ begin
   if not aField.IsNull then Result := aField.AsInt32;
 end;
 
-function FieldValueDef(Const aField:IEvsField; const aDefault:Widestring):Widestring;overload;inline;
+function FieldValueDef(Const aField:IEvsField; const aDefault:Widestring; const AutoTrim:Boolean = True):Widestring;overload;inline;
 begin
   Result := aDefault;
-  if not aField.IsNull then Result := aField.AsString;
+  if not aField.IsNull then Result := IfThen(AutoTrim, Trim(aField.AsString), aField.AsString);
 end;
 
 function FieldValueDef(Const aField:IEvsField; const aDefault:Boolean):Boolean;overload;inline;
@@ -261,12 +261,15 @@ begin
 end;
 
 procedure TEvsMDOConnection.ParseFieldData(constref aDsFields :IEvsDataset; const aField :IEvsFieldInfo); extdecl;
+const DoTrim   :Boolean = True;
+      DontTrim :Boolean = False;
 var
   vScale,
   vLength,
   vPrecision,
   vSubType    :Integer;
   vCharSet,
+  vFieldName,
   vCollation,
   vFieldType  :Widestring;
   vDataGroup  :TEvsDataGroup;
@@ -277,11 +280,12 @@ var
   end;
 
 begin
+  vFieldName := Trim(aDsFields.Field[0].AsString);
   vScale     := Abs(aDsFields.Field[7].AsInt32);
   vLength    := FieldValueDef(aDsFields.Field[04], 0);
   vPrecision := FieldValueDef(aDsFields.Field[06], 0);
-  vCharSet   := FieldValueDef(aDsFields.Field[11], '');
-  vCollation := FieldValueDef(aDsFields.Field[10], '');
+  vCharSet   := FieldValueDef(aDsFields.Field[11], '', DoTrim);
+  vCollation := FieldValueDef(aDsFields.Field[10], '', DoTrim);
 
   case aDsFields.Field[8].AsInt32 of
     14,
@@ -378,10 +382,10 @@ begin
   aField.DataTypeName := Trim(vFieldType);
   aField.FieldSize    := vLength;
   aField.FieldScale   := vScale;
-  aField.Charset      := vCharSet;
-  aField.Collation    := vCollation;
+  aField.Charset      := trim(vCharSet);
+  aField.Collation    := trim(vCollation);
   aField.AutoNumber   := False;
-  aField.DefaultValue := Null;
+  aField.DefaultValue := Null;   {$MESSAGE WARN 'Retrieve default value from the dataset'}
   aField.DataGroup    := vDataGroup;
 
   if not IsSystemDomain(aDsFields.Field[15]) then begin
@@ -508,6 +512,14 @@ begin
   end;
 end;
 
+Procedure TEvsMDOConnection.GetTableInfo(const aTable:IEvsTableInfo); extdecl;
+begin
+  GetFields(aTable);
+  GetTriggers(aTable);
+  GetIndices(aTable);
+  //GetConstraints(aTable);
+end;
+
 procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo;const IncludeSystem:ByteBool = False);overload;extdecl;
 const
   cSql = 'select rdb$relation_name, rdb$system_flag from rdb$relations '+
@@ -554,19 +566,15 @@ begin
   end;
 end;
 
-//procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsTriggerList); extdecl;
-//begin
-//  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
-//end;
-
 procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsDatabaseInfo); extdecl;
 const
    cSQL = 'SELECT RDB$TRIGGER_NAME     AS TrName, '       + //0
           '       RDB$RELATION_NAME    AS TblName, '      + //1
           '       RDB$TRIGGER_SOURCE   AS TrBody, '       + //2
           '       RDB$TRIGGER_TYPE     AS TrType, '       + //3
-          '       RDB$TRIGGER_INACTIVE AS TrInactive, '   + //4
-          '       RDB$DESCRIPTION      AS trComment '     + //5
+          '       RDB$SYSTEM_FLAG    AS System,'          + //4
+          '       RDB$TRIGGER_INACTIVE AS TrInactive, '   + //5
+          '       RDB$DESCRIPTION      AS trComment '     + //6
           'FROM RDB$TRIGGERS '                            +
           'WHERE RDB$Trigger_Type between 8192 and 8196 ';
   cType : array[0..1] of TEvsTriggerType = (trAfter, trBefore); //trigger_type mod 2
@@ -587,7 +595,7 @@ begin
     vTrg             := aObject.NewTrigger;
     vTrg.Name        := vDts.Field[0].AsString;
     vTrg.SQL         := vDts.Field[2].AsString;
-    vTrg.Description := vDts.Field[5].AsString;
+    vTrg.Description := vDts.Field[6].AsString;
     vTrg.TriggerType := trDatabase;// cType[vDts.Field[3].AsInt32 mod 2];
     case vDts.Field[3].AsInt32 of
       //database triggers.
@@ -606,20 +614,21 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsTableInfo); extdecl;
+procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsTableInfo; const System:ByteBool = False); extdecl;
 const
    cSQL = 'SELECT RDB$TRIGGER_NAME   AS trigger_name, ' + //0
                  'RDB$RELATION_NAME  AS table_name, '   + //1
                  'RDB$TRIGGER_SOURCE AS trigger_body, ' + //2
                  'RDB$TRIGGER_TYPE   AS Trigger_Type, ' + //3
-                 ' RDB$TRIGGER_INACTIVE as Inactive, '  + //4
-                 'RDB$DESCRIPTION AS trigger_comment '  + //5
+                 'RDB$SYSTEM_FLAG    AS System,'        + //4
+                 'RDB$TRIGGER_INACTIVE as Inactive, '   + //5
+                 'RDB$DESCRIPTION AS trigger_comment '  + //6
         'FROM RDB$TRIGGERS '                            +
         'WHERE UPPER(RDB$RELATION_NAME)=%S';
   cType : array[0..1] of TEvsTriggerType = (trAfter, trBefore); //trigger_type mod 2
 
 var
-  vSql : string;
+  vSql :String;
   vDts :IEvsDataset;
   vTrg :IEvsTriggerInfo;
   procedure Clear;inline;
@@ -628,15 +637,17 @@ var
     vTrg := nil;
   end;
 begin
-  vSql := Format(cSQL,[QuotedStr(aObject.TableName)]);
+  vSql := Format(cSQL,[QuotedStr(UpperCase(aObject.TableName))]);
   vDts := Query(vSql);
   vDts.First;
   while not vDts.EOF do begin
+    if (vDts.Field[4].AsInt32 > 1) and (not System)then begin vDts.Next; Continue; end;
     vTrg := aObject.NewTrigger;
-    vTrg.Name := vDts.Field[0].AsString;
-    vTrg.SQL  := vDts.Field[2].AsString;
-    vTrg.Description := vDts.Field[5].AsString;
+    vTrg.Name := Trim(vDts.Field[0].AsString);
+    vTrg.SQL  := Trim(vDts.Field[2].AsString);
+    vTrg.Description := Trim(vDts.Field[6].AsString);
     vTrg.TriggerType := cType[vDts.Field[3].AsInt32 mod 2];
+    vTrg.Active      := vDts.Field[5].AsInt32 = 0;
     case vDts.Field[3].AsInt32 of
       1,2    : vTrg.Event := [teInsert];
       3,4    : vTrg.Event := [teUpdate];
@@ -646,7 +657,7 @@ begin
       27,28  : vTrg.Event := [teDelete,teUpdate];
       113,114: vTrg.Event := [teInsert,teDelete,teUpdate];
       //database triggers.
-      8192..8196 : begin Clear; Continue; end;
+      8192..8196 : Clear;
     else begin
         Clear;
         raise ETBException.CreateFmt('Unsupported trigger %D',[vDts.Field[3].AsInt32]);
@@ -702,14 +713,14 @@ begin
   vDts.First;
   while not vDts.EOF do begin
     //vPrc := aObject.NewStored(FieldValueDef(vDts.Field[0],''), vDts.Field[4].AsString);
-    vName := FieldValueDef(vDts.Field[0],'');
-    vSQL  := FieldValueDef(vDts.Field[3],'');
+    vName := FieldValueDef(vDts.Field[0],'', True);
+    vSQL  := FieldValueDef(vDts.Field[3],'', True);
     vPrc := aObject.NewStored(vName, vSQL);
-    vPrc.Description := vDts.Field[1].AsString;
-    vFlds := Query(Format(cParamSql,[QuotedStr(vDts.Field[0].AsString)]));
+    vPrc.Description := Trim(vDts.Field[1].AsString);
+    vFlds := Query(Format(cParamSql,[QuotedStr(Trim(vDts.Field[0].AsString))]));
     vFlds.First;
     while not vFlds.EOF do begin
-      vFld := vPrc.NewField(vFlds.Field[0].AsString);
+      vFld := vPrc.NewField(Trim(vFlds.Field[0].AsString));
       ParseFieldData(vFlds, vFld);
       vFld.ClearState;
       vFlds.Next;

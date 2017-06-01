@@ -7,6 +7,7 @@ interface
 
 uses
   Classes, SysUtils;//, uTBTypes;
+
 type
   TEvsGenAction =(gaUnknown, gaInsert, gaDelete, gaUpdate, gaDestroy, gaExtracting, gaDataChange);
 
@@ -42,9 +43,9 @@ type
   { IEvsCopyable }
   IEvsCopyable = interface(IInterface)
     ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
-    Procedure CopyFrom(const aSource  :IEvsCopyable);         extdecl;
-    Procedure CopyTo  (const aDest    :IEvsCopyable);         extdecl;
-    function EqualsTo (const aCompare :IEvsCopyable):Boolean; extdecl;
+    function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
+    function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;
+    function EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
   end;
 
   IEvsObjectRef = interface(IEvsCopyable)
@@ -104,6 +105,31 @@ type
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount write SetCount;
     property Items[Index: Integer]: IEvsObserver read Get write Put; default;
+  end;
+
+  IEvsInterfaceList<T> = interface(IEvsCopyable) //OK
+    Function  Get(aIndex : Integer) : T;          extdecl;
+    Function  GetCapacity : Integer;              extdecl;
+    Function  GetCount : Integer;                 extdecl;
+    Procedure Put(aIndex : Integer;aItem : T);    extdecl;
+    Procedure SetCapacity(NewCapacity : Integer); extdecl;
+    Procedure SetCount(NewCount : Integer);       extdecl;
+    Procedure Clear;                              extdecl;
+    Procedure Delete(index : Integer);            extdecl;
+    Procedure Exchange(index1,index2 : Integer);  extdecl;
+    Function  New   :T;                           extdecl;
+    Function  First :T;                           extdecl;
+    Function  IndexOf(aItem : T) : Integer;       extdecl;
+    Function  Add(aItem : T) : Integer;           extdecl;
+    Procedure Insert(aIndex : Integer;aItem : T); extdecl;
+    Function  Last :T;                            extdecl;
+    Function  Remove(aItem : T): Integer;         extdecl;
+    Procedure Lock;                               extdecl;
+    Procedure Unlock;                             extdecl;
+
+    Property Capacity :Integer read GetCapacity write SetCapacity;
+    Property Count    :Integer read GetCount    write SetCount;
+    Property Items[aIndex :Integer] :T read Get write Put; default;
   end;
 
 implementation

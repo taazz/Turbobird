@@ -3,13 +3,12 @@ program MetaDataTest;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, mdolaz, GuiTestRunner, uGetTablesTest;
+  Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields;
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TGuiTestRunner, TestRunner);
-  Application.Run;
+  RunRegisteredTests;
 end.
 

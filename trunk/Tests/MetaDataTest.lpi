@@ -33,7 +33,7 @@
         <PackageName Value="mdolaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="FPCUnitTestRunner"/>
+        <PackageName Value="fptest_lcl"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>
@@ -42,21 +42,36 @@
         <PackageName Value="FCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="6">
       <Unit0>
         <Filename Value="MetaDataTest.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="ugettablestest.pas"/>
+        <Filename Value="ufbtestcase.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uGetTablesTest"/>
+        <UnitName Value="uFBTestcase"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\utbfirebird.pas"/>
+        <Filename Value="..\uevsdbschema.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uTBFirebird"/>
+        <UnitName Value="uEvsDBSchema"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="ufptesthelper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ufptestHelper"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TFB_TableInfoTester"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="Schema\uevsfields.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsFields"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -64,11 +79,18 @@
     <PathDelim Value="\"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value=".."/>
+      <OtherUnitFiles Value="D:\Lazarus\Projects\TurboBird\trunk\;Schema"/>
     </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="4">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -78,6 +100,9 @@
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="ETestFailure"/>
+      </Item4>
     </Exceptions>
   </Debugging>
 </CONFIG>

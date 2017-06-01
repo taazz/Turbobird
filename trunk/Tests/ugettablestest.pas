@@ -71,7 +71,7 @@ begin
   DoConnect;// Fail('No test written');
   FDB.Connection.MetaData.GetTables(FDB);
   CheckEquals(10, FDB.TableCount, 'Not enough tables found');
-  CheckEquals('COUNTRY',FDB.Table[0].TableName);
+  CheckEquals('COUNTRY', FDB.Table[0].TableName);
   CheckEquals('SALES',FDB.Table[9].TableName);
   FDB.ClearTables;
   FDB.Connection.MetaData.GetTables(FDB, True);
@@ -79,12 +79,23 @@ end;
 
 procedure TFirebirdMetaDataTest.TestReverseExceptions;
 begin
-  Fail('No test written');
+  DoConnect;
+  FDB.Connection.MetaData.GetExceptions(FDB);
 end;
 
 procedure TFirebirdMetaDataTest.TestReverseTriggers;
+var
+  vTbl :IEvsTableInfo;
 begin
-  Fail('No test written');
+  //Fail('No test written');
+  DoConnect;
+  FDB.Connection.MetaData.GetTriggers(FDB);
+  CheckEquals(FDB.TriggerCount,0,'Trigger count does not much');
+  vTbl := fdb.NewTable('Customer');
+  FDB.Connection.MetaData.GetTriggers(vTbl);
+  CheckEquals(1, vTbl.TriggerCount, 'Trigger count not much');
+  CheckEquals('SET_CUST_NO', vTbl.Trigger[0].Name, 'Invalid name');
+  CheckEquals(True, vTbl.Trigger[0].Active, 'Invalid name');
 end;
 
 procedure TFirebirdMetaDataTest.TestReverseFields;
@@ -97,13 +108,15 @@ begin
   CheckEquals(12, vTbl.FieldCount, 'Invalid number of fields');
   CheckEquals('CUST_NO', UpperCase(vTbl.Field[0].FieldName), 'Invalid field name');
   CheckEquals('CUSTNO',  UpperCase(vTbl.Field[0].DataTypeName), 'Invalid field data type');
-  CheckNotEquals(False,  vTbl.Field[0].AllowNulls, 'Not null expected for the primary key');
+  CheckEquals(False,  vTbl.Field[0].AllowNulls, 'Not null expected for the primary key');
   CheckEquals('ON_HOLD', UpperCase(vTbl.Field[11].FieldName), 'Invalid field name');
 end;
 
 procedure TFirebirdMetaDataTest.TestReverseStored;
 begin
-  Fail('No test written');
+  DoConnect;
+  FDB.Connection.MetaData.GetStored(FDB);
+  check
 end;
 
 procedure TFirebirdMetaDataTest.TestReverseViews;

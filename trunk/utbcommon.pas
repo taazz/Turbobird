@@ -369,7 +369,8 @@ function ExtractDBName(const aDBName: string): string;
 function ExtractHost(const aDBName: string): string;
 
 function NotImplementedException:ETBException;
-function ReplaceException:ETBException;
+function ReplaceException(const aMessage:string):ETBException;
+function SilentException(const aMessage:String):ETBSilentException;
 
 function DeprecatedException:ETBException;
 function EOF(const aStream:TStream):Boolean;inline;
@@ -428,9 +429,14 @@ begin
   Result := ETBNotImplemented.Create('Not Implemented');
 end;
 
-function ReplaceException:ETBException;
+function ReplaceException(const aMessage:String):ETBException;
 begin
-  Result := ETBException.Create('needs to be replaced');
+  Result := ETBException.Create(aMessage);
+end;
+
+function SilentException(const aMessage :String) :ETBSilentException;
+begin
+  ETBSilentException.Create(aMessage);
 end;
 
 function DeprecatedException :ETBException;

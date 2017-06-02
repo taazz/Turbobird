@@ -24,6 +24,11 @@ type
 
   { TEvsMDODatasetProxy }
   TEvsMDODatasetProxy = class(TEvsDatasetProxy)
+  protected
+    function GetInTrans :ByteBool;override;extdecl;
+  public
+    Procedure Commit; override; extdecl;
+    procedure RollBack; override; extdecl;
     procedure BeforeDestruction; override;
   end;
 
@@ -66,15 +71,16 @@ type
     //function GetFields(const aObject:IEvsStoredInfo):IEvsFieldList;extdecl;
     //function GetFields(const aObject:IEvsDatabaseInfo):IEvsFieldList;extdecl;
     //procedure GetTriggers(const aObject:IEvsTriggerList); overload;extdecl;
-    Procedure GetTriggers(const aObject :IEvsTableInfo; const System:ByteBool = False);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetTriggers(const aObject :IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetStored(const aObject:IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetViews(const aObject:IEvsDatabaseInfo);     overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetSequences(const aDB:IEvsDatabaseInfo);              extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetUDFs(const aObject:IEvsDatabaseInfo);               extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    Procedure GetUsers(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    Procedure GetRoles(const aDB:IEvsDatabaseInfo);                  extdecl;{$MESSAGE WARN 'Needs Implementation'}
-    Procedure GetExceptions(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetTriggers (const aObject :IEvsTableInfo; const System:ByteBool = False);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetTriggers (const aObject :IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetStored   (const aObject :IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetViews    (const aObject :IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetViewInfo (const aObject :IEvsViewInfo);        Overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetSequences(const aDB     :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetUDFs     (const aObject :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetUsers    (const aDB     :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetRoles    (const aDB     :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetExceptions(const aDB    :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
     //procedure GetDomains(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
     //the aTableName can be empty in which case it should either
     //return all the indices in the database or raise an exception.
@@ -207,11 +213,27 @@ end;
 
 {$REGION ' TEvsMDODatasetProxy '}
 
+function TEvsMDODatasetProxy.GetInTrans :ByteBool; extdecl;
+begin
+  Result := TMDOQuery(FDS).Transaction.InTransaction;
+end;
+
+Procedure TEvsMDODatasetProxy.Commit; extdecl;
+begin
+  TMDOQuery(FDS).Transaction.Commit;
+end;
+
+procedure TEvsMDODatasetProxy.RollBack; extdecl;
+begin
+  TMDOQuery(FDS).Transaction.Rollback;
+end;
+
 procedure TEvsMDODatasetProxy.BeforeDestruction;
 begin
   inherited BeforeDestruction;
   if TMDOQuery(FDS).Transaction.Active then TMDOQuery(FDS).Transaction.Rollback;
   TEvsMDOConnection.FQryPool.Return(FDS);
+  Abort;
 end;
 
 {$ENDREGION}
@@ -227,6 +249,7 @@ constructor TMDODatabasePool.Create(const aMaxCount :Integer; const aNeededOnly 
 begin
   inherited Create(aMaxCount, aNeededOnly, TMDODataBase);
 end;
+
 {$ENDREGION}
 
 {$REGION ' TMDOQueryPool '}
@@ -518,6 +541,9 @@ begin
   GetTriggers(aTable);
   GetIndices(aTable);
   //GetConstraints(aTable);
+  //  GetPrimarykey
+  //  GetForeignKey
+  //  GetChecks
 end;
 
 procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo;const IncludeSystem:ByteBool = False);overload;extdecl;
@@ -582,7 +608,7 @@ var
   vSql : string;
   vDts :IEvsDataset;
   vTrg :IEvsTriggerInfo;
-  procedure Clear;inline;
+  procedure vClr;inline;
   begin
     aObject.Remove(vTrg);
     vTrg := nil;
@@ -593,9 +619,9 @@ begin
   vDts.First;
   while not vDts.EOF do begin
     vTrg             := aObject.NewTrigger;
-    vTrg.Name        := vDts.Field[0].AsString;
-    vTrg.SQL         := vDts.Field[2].AsString;
-    vTrg.Description := vDts.Field[6].AsString;
+    vTrg.Name        := Trim(vDts.Field[0].AsString);
+    vTrg.SQL         := Trim(vDts.Field[2].AsString);
+    vTrg.Description := Trim(vDts.Field[6].AsString);
     vTrg.TriggerType := trDatabase;// cType[vDts.Field[3].AsInt32 mod 2];
     case vDts.Field[3].AsInt32 of
       //database triggers.
@@ -605,7 +631,7 @@ begin
       8195 : vTrg.Event := [teTransCommit];   //- on transaction commit
       8196 : vTrg.Event := [teTransRollback]; //- on transaction rollback
     else begin
-        Clear;
+        vClr;
         raise ETBException.CreateFmt('Unsupported trigger %D',[vDts.Field[3].AsInt32]);
       end;
     end;
@@ -631,7 +657,7 @@ var
   vSql :String;
   vDts :IEvsDataset;
   vTrg :IEvsTriggerInfo;
-  procedure Clear;inline;
+  procedure vClr;inline;
   begin
     aObject.Remove(vTrg);
     vTrg := nil;
@@ -657,9 +683,9 @@ begin
       27,28  : vTrg.Event := [teDelete,teUpdate];
       113,114: vTrg.Event := [teInsert,teDelete,teUpdate];
       //database triggers.
-      8192..8196 : Clear;
+      8192..8196 : vClr;
     else begin
-        Clear;
+        vClr;
         raise ETBException.CreateFmt('Unsupported trigger %D',[vDts.Field[3].AsInt32]);
       end;
     end;
@@ -731,17 +757,8 @@ begin
   //raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
-procedure TEvsMDOConnection.GetViews(const aObject :IEvsDatabaseInfo);   overload;extdecl;
+Procedure TEvsMDOConnection.GetViewInfo (const aObject :IEvsViewInfo);    Overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
 const
-  cSql = 'SELECT RDB$RELATION_NAME        AS View_Name, '        +//0
-               ' RDB$VIEW_BLR		  AS View_BLR, '         +//1
-               ' RDB$VIEW_SOURCE	  AS View_Body, '        +//2
-               ' RDB$DESCRIPTION	  AS View_Description, ' +//3
-               ' RDB$RELATION_ID	  AS View_ID, '          +//4
-               ' RDB$SYSTEM_FLAG	  AS View_Flag '         +//5
-         'FROM RDB$RELATIONS '                                   +
-         'WHERE RDB$VIEW_SOURCE IS NOT NULL ';
-
   cFldSql = 'SELECT f.rdb$field_name, '            + //0       'SELECT r.RDB$FIELD_NAME            AS field_name, '                                       + //0
                    'f.RDB$DESCRIPTION,  '          + //1       '       r.RDB$DESCRIPTION           AS field_description, '                                + //1
                    'f.rdb$default_source, '        + //2       '       r.RDB$DEFAULT_SOURCE        AS field_default_source, ' {SQL text for default value}+ //2
@@ -772,22 +789,38 @@ const
             'WHERE f.rdb$relation_name = %S ' +
             'ORDER BY f.rdb$field_position, d.rdb$dimension ';
 var
-  vDts  :IEvsDataset;
-  vVw   :IEvsViewInfo;
   vFld  :IEvsFieldInfo;
   vFlds :IEvsDataset;
+begin
+  vFlds := Query(Format(cFldSql,[QuotedStr(aObject.Name)]));
+  while not vFlds.EOF do begin
+    vFld := aObject.FieldList.New;
+    ParseFieldData(vFlds, vFld);
+    vFlds.Next;
+  end;
+end;
+
+procedure TEvsMDOConnection.GetViews(const aObject :IEvsDatabaseInfo);   overload;extdecl;
+const
+  cSql = 'SELECT RDB$RELATION_NAME  AS View_Name, '        +//0
+               'RDB$VIEW_BLR        AS View_BLR, '         +//1
+               'RDB$VIEW_SOURCE     AS View_Body, '        +//2
+               'RDB$DESCRIPTION     AS View_Description, ' +//3
+               'RDB$RELATION_ID     AS View_ID, '          +//4
+               'RDB$SYSTEM_FLAG     AS View_Flag '         +//5
+         'FROM RDB$RELATIONS '                             +
+         'WHERE RDB$VIEW_SOURCE IS NOT NULL ';
+
+var
+  vDts  :IEvsDataset;
+  vVw   :IEvsViewInfo;
 begin
   vDts := Query(cSql);
   vDts.First;
   while not vDts.EOF do begin
-    vVw := aObject.NewView(vDts.Field[0].AsString, vDts.Field[2].AsString);
-    vVw.Description := vDts.Field[3].AsString;
-    vFlds := Query(Format(cFldSql,[QuotedStr(vVw.Name)]));
-    while not vFlds.EOF do begin
-      vFld := vVw.FieldList.New;
-      ParseFieldData(vFlds, vFld);
-      vFlds.Next;
-    end;
+    vVw := aObject.NewView(Trim(vDts.Field[0].AsString), Trim(vDts.Field[2].AsString));
+    vVw.Description := Trim(vDts.Field[3].AsString);
+    GetViewInfo(vVw);
     vDts.Next;
   end;
 end;
@@ -828,7 +861,7 @@ var
                       vDts.Field[6].AsInt32, //qryMain.FieldByName('RDB$FIELD_SUB_TYPE').AsInteger,
                       vDts.Field[5].AsInt32, //qryMain.FieldByName('RDB$FIELD_LENGTH').AsInteger,
                       vDts.Field[8].AsInt32, //qryMain.FieldByName('RDB$FIELD_PRECISION').AsInteger,
-                      vDts.Field[4].AsInt32 //qryMain.FieldByName('RDB$FIELD_SCALE').AsInteger
+                      vDts.Field[4].AsInt32  //qryMain.FieldByName('RDB$FIELD_SCALE').AsInteger
                      );
       //if qryMain.FieldByName('RDB$FIELD_TYPE').AsInteger in [CharType, CStringType, VarCharType] then
       //  Params:= Params + '(' + qryMain.FieldByName('RDB$Character_LENGTH').AsString + ')';
@@ -847,8 +880,8 @@ begin
   vDts := Query(cSQL);
   vDts.First;
   While Not vDts.EOF do begin
-    vUdf := aObject.NewUDF(vDts.Field[0].AsString);
-    vUdf.ModuleName := vDts.Field[1].AsString;
+    vUdf := aObject.NewUDF(Trim(vDts.Field[0].AsString));
+    vUdf.ModuleName := Trim(vDts.Field[1].AsString);
     GetDetails(vUdf);
     vDts.Next;
   end;
@@ -867,7 +900,7 @@ begin
   vDts.First;
   while not vDts.EOF do begin
     vUsr := aDB.NewUser;
-    vUsr.UserName := vDts.Field[0].AsString;
+    vUsr.UserName := Trim(vDts.Field[0].AsString);
     vDts.Next;
   end;
 end;
@@ -887,7 +920,7 @@ begin
   vDts.First;
   while not vDts.EOF do begin
     vRole := aDB.NewRole;
-    vRole.Name := vDts.Field[0].AsString;
+    vRole.Name := Trim(vDts.Field[0].AsString);
     vDts.Next;
   end;
 end;
@@ -908,7 +941,7 @@ begin
   vDts := Query(cSQL);
   vDts.First;
   while not vDts.EOF do begin
-    vExc := aDB.NewException(vDts.Field[0].AsString, vDts.Field[1].AsString);
+    vExc := aDB.NewException(Trim(vDts.Field[0].AsString), Trim(vDts.Field[1].AsString));
     vExc.ClearState;
     vDts.Next;
   end;
@@ -927,7 +960,7 @@ begin
   vDts.First;
   while not vDts.EOF do begin
     vGen := aDB.NewSequence;
-    vGen.GeneratorName := vDts.Field[0].AsString;
+    vGen.Name := Trim(vDts.Field[0].AsString);
     vDts.Next;
   end;
 end;
@@ -971,9 +1004,9 @@ begin
   vDts := Query(Format(cIndicesSQL, [QuotedStr(UpperCase(aObject.TableName))]));
   vDts.First;
   while not vDts.EOF do begin //while the index name is the same keep adding fields.
-    if (Not Assigned(vIndex)) or (CompareText(vIndex.IndexName, vDts.Field[1].AsString)<>0) then begin //this is a new index
-      vIndex := aObject.AddIndex(vDts.Field[1].AsString, orUnSupported);
-      vIndex.IndexName := vDts.Field[1].AsString;
+    if (Not Assigned(vIndex)) or (CompareText(vIndex.IndexName, trim(vDts.Field[1].AsString))<>0) then begin //this is a new index
+      vIndex := aObject.AddIndex(trim(vDts.Field[1].AsString), orUnSupported);
+      vIndex.IndexName := Trim(vDts.Field[1].AsString);
       vIndex.Order     := GetOrder;
       vIndex.Unique    := FieldValueDef(vDts.Field[4],False);
     end;
@@ -1012,17 +1045,17 @@ const
     vDtls.First;
     while Not vDtls.EOF do begin
       //aDomain.DataType := vDtls.Field[0].AsString;
-      aDomain.DataType := GetFBTypeName(vDtls.Field[0].AsInt32, //FieldByName('RDB$FIELD_TYPE').AsInteger,
-                                        vDtls.Field[1].AsInt32, //MDOQuery.FieldByName('RDB$FIELD_SUB_TYPE').AsInteger,
-                                        vDtls.Field[2].AsInt32, //MDOQuery.FieldByName('RDB$FIELD_LENGTH').AsInteger,
-                                        vDtls.Field[3].AsInt32, //MDOQuery.FieldByName('RDB$FIELD_PRECISION').AsInteger,
-                                        vDtls.Field[4].AsInt32 //MDOQuery.FieldByName('RDB$FIELD_SCALE').AsInteger
+      aDomain.DataType := GetFBTypeName(vDtls.Field[0].AsInt32,
+                                        vDtls.Field[1].AsInt32,
+                                        vDtls.Field[2].AsInt32,
+                                        vDtls.Field[3].AsInt32,
+                                        vDtls.Field[4].AsInt32
                                        );
-      aDomain.Size            := vDtls.Field[5].AsInt32; //ByName('RDB$FIELD_LENGTH')
-      aDomain.DefaultValue    := Trim(vDtls.Field[6].AsString); //MDOQuery.FieldByName('RDB$DEFAULT_SOURCE').AsString);
-      aDomain.CheckConstraint := Trim(vDtls.Field[7].AsString); //MDOQuery.FieldByName('RDB$VALIDATION_SOURCE').AsString); //e.g. CHECK (VALUE > 10000 AND VALUE <= 2000000)
-      aDomain.CharSet         := Trim(vDtls.Field[8].AsString); //MDOQuery.FieldByName('rdb$character_set_name').AsString);
-      aDomain.Collation       := Trim(vDtls.Field[9].AsString); //MDOQuery.FieldByName('rdb$collation_name').AsString);
+      aDomain.Size            := vDtls.Field[5].AsInt32;
+      aDomain.DefaultValue    := Trim(vDtls.Field[6].AsString);
+      aDomain.CheckConstraint := Trim(vDtls.Field[7].AsString);
+      aDomain.CharSet         := Trim(vDtls.Field[8].AsString);
+      aDomain.Collation       := Trim(vDtls.Field[9].AsString);
       vDtls.Next;
     end;
   end;
@@ -1033,8 +1066,7 @@ begin
   vDts := Query(cSQL);
   vDts.First;
   While Not vDts.EOF do begin
-    vDmn := aObject.NewDomain(vDts.Field[0].AsString,'',0);
-    //vDmn.Name := vDts.Field[0].AsString;
+    vDmn := aObject.NewDomain(Trim(vDts.Field[0].AsString),'',0);
     GetDomainDetails(vDmn);
     vDts.Next;
   end;

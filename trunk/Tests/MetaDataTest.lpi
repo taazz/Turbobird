@@ -42,7 +42,7 @@
         <PackageName Value="FCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="MetaDataTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -72,6 +72,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsFields"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="ufbviewtestcase.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uFBViewTestCase"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -80,6 +85,7 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
       <OtherUnitFiles Value="D:\Lazarus\Projects\TurboBird\trunk\;Schema"/>
+      <UnitOutputDirectory Value="D:\Lazarus\Projects\TurboBird\trunk\Tests\Bin"/>
     </SearchPaths>
     <Linking>
       <Options>
@@ -90,7 +96,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="4">
+    <Exceptions Count="6">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -103,6 +109,12 @@
       <Item4>
         <Name Value="ETestFailure"/>
       </Item4>
+      <Item5>
+        <Name Value="ETBNotImplemented"/>
+      </Item5>
+      <Item6>
+        <Name Value="EConvertError"/>
+      </Item6>
     </Exceptions>
   </Debugging>
 </CONFIG>

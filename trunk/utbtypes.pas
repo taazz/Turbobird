@@ -62,6 +62,8 @@ type
   TWideStringArray = array of WideString;
   //JKOZ: moved here from Reg.pas
   ETBException = class( {$IFDEF EVS_Internal} EEVSException {$ELSE} Exception {$EndIf} );
+  ETBSilentException = class(EAbort)
+  end;
 
   { ETBNotImplemented }
 

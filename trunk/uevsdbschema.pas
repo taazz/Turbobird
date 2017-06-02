@@ -69,7 +69,9 @@ type
     Property ObjectState:TEvsDBStates read GetStates;// write SetStates;
   end;
 
-  TEvsDBInfo = class(TPersistent, IInterface, IEvsObjectRef, IEvsObjectState, IEvsParented, IEvsObservable, IEvsObserver)
+  TEvsDBInfo = class(TPersistent, IInterface,   IEvsObjectRef,  IEvsObjectState,
+                                  IEvsParented, IEvsObservable, IEvsObserver,
+                                  IEvsCopyable)
   private
     FOwner        : TEvsDBInfo;
     FOwned        : TObjectList;
@@ -81,7 +83,7 @@ type
     FObservers    : IEvsObserverList;
     function GetStates :TEvsDBStates;
   protected
-    function ObjectRef:TObject;extdecl;
+    function ObjectRef:TObject;      extdecl;
     procedure AddOwned(aObj:TEvsDBInfo);
     procedure ExtractOwned(aObj:TEvsDBInfo);
     procedure BeginUpdate;
@@ -387,6 +389,7 @@ type
     Property Description :WideString read GetDescription write SetDescription;
     Property CharSet     :WideString read GetCharset     write SetCharSet;
     Property Collation   :WideString read GetCollation   write SetCollation; // probably will not keep it.
+    Property SystemTable :LongBool   read GetSystemTable write SetSystemTable;
 
     Property FieldCount   :Integer read GetFieldCount;
     Property IndexCount   :Integer read GetIndexCount;
@@ -394,7 +397,6 @@ type
     Property Index[aIndex:Integer]   :IEvsIndexInfo   read GetIndex       write SetIndex;
     Property Field[aIndex:Integer]   :IEvsFieldInfo   read GetField       write SetField;   default;
     Property Trigger[aIndex:Integer] :IEvsTriggerInfo read GetTrigger     write SetTrigger;
-    Property SystemTable             :LongBool        read GetSystemTable write SetSystemTable;
   end;
   { IEvsTableList }
   IEvsTableList = interface(IInterface) //OK
@@ -482,7 +484,7 @@ type
     Procedure AddField(const aField:IEvsFieldInfo);            extdecl;
     Function NewField(const aName:WideString):IEvsFieldInfo;   extdecl;
 
-    Property ProcedureName:WideString read GetSPName write SetSPName;
+    Property Name:WideString read GetSPName write SetSPName;
     Property Description:Widestring read GetDescription write SetDescription;
     Property Fields[aIndex:Integer]:IEvsFieldInfo read GetField;// write SetField; // the fields returned by the stored procedure.
     Property FieldCount:integer read GetFieldCount;
@@ -517,10 +519,10 @@ type
   IEvsSequenceInfo = interface(IEvsParented)  //OK
     ['{8C36E1FF-FB18-4FEB-A220-0739D038C5B6}']
     Function GetCurrentValue :Int64;extdecl;
-    Function GetGeneratorName :widestring;extdecl;
+    Function GetName :widestring;extdecl;
     Procedure SetCurrentValue(aValue :Int64);extdecl;
-    Procedure SetGeneratorName(aValue :widestring);extdecl;
-    Property GeneratorName:widestring read GetGeneratorName write SetGeneratorName;
+    Procedure SetName(aValue :widestring);extdecl;
+    Property Name:WideString read GetName write SetName;
     Property CurrentValue:Int64 read GetCurrentValue write SetCurrentValue;
   end;
   IEvsSequenceList = interface(IInterface)  //OK
@@ -907,7 +909,7 @@ type
 
   IEvsDataset = interface;
 
-{ IEvsField }
+  { IEvsField }
   IEvsField = interface(IInterface)
     ['{33E146B2-91A2-4627-9C3C-720DBD7D623A}']
     Function GetAsBoolean :LongBool;  extdecl;
@@ -968,7 +970,8 @@ type
     Procedure GetStored(const aObject:IEvsDatabaseInfo);   overload;extdecl;   //stored procedures in the database.
     //Procedure GetViews(const aObject:IEvsViewList);       overload;extdecl;  //
     Procedure GetViews(const aObject:IEvsDatabaseInfo);    overload;extdecl;  //get views for the database passed.
-    Procedure GetUDFs (const aObject:IEvsDatabaseInfo);              extdecl;  //get UDFs for the database passed
+    Procedure GetViewInfo(const aObject:IEvsViewInfo);     overload;extdecl;  //get view details (fields mostly).
+    Procedure GetUDFs (const aObject:IEvsDatabaseInfo);             extdecl;  //get UDFs for the database passed
     Procedure GetUsers(const aDB:IEvsDatabaseInfo);                 extdecl;  //Get users for the  database passed.
     Procedure GetExceptions(const aDB:IEvsDatabaseInfo);            extdecl;  //Get exceptions for the database passed.
     Procedure GetSequences(const aDB:IEvsDatabaseInfo);             extdecl;  //Get Generators for the database passed.
@@ -993,7 +996,6 @@ type
     Function GetTableDDL(Const aObject:IEvsTableInfo):widestring; overload;extdecl;
     Function GetCharsets:pvararray; extdecl;
     Property Connection:IEvsConnection read GetConnection write SetConnection;
-
   end;
 
   { IEvsConnection }
@@ -1024,6 +1026,7 @@ type
   { IEvsDataset }
   IEvsDataset = interface(IInterface)
     ['{41F0B671-25C5-4AAF-89FE-BDDB5DD3A826}']
+    function GetInTrans:ByteBool;                  extdecl;
     function GetAutoTrim :ByteBool;                extdecl;
     Function GetEOF :ByteBool;                     extdecl;
     Function GetField(aIndex :Integer) :IEvsField; extdecl;
@@ -1035,12 +1038,15 @@ type
     procedure SetAutoTrim(aValue :ByteBool);       extdecl;
     procedure SetSQL(aValue :WideString);          extdecl;
 
+    procedure Commit;                              extdecl;
+    procedure Rollback;                            extdecl;
     Property EOF        :ByteBool   read GetEOF;
     Property FieldCount :Int32      read GetFieldCount;
     Property SQL        :WideString read GetSQL         write SetSQL;
 
     Property Field[aIndex:Integer] :IEvsField read GetField;
-    property AutoTrimStrings :ByteBool read GetAutoTrim write SetAutoTrim;
+    Property AutoTrimStrings :ByteBool read GetAutoTrim write SetAutoTrim;
+    Property InTransaction   :Bytebool read GetInTrans;
   end;
 
   { TEvsFieldProxy }
@@ -1107,8 +1113,9 @@ type
     function GetSQL :Widestring; extdecl;
     procedure SetSQL(aValue :Widestring);extdecl;{$MESSAGE WARN 'Needs Implementation'}
   protected
-    FDS : TDataSet;
+    FDS       :TDataSet;
     FAutoTrim :Boolean;
+    function GetInTrans :ByteBool;virtual;extdecl;
     Function GetBOF :ByteBool;                     extdecl;
     Function GetEOF :ByteBool;                     extdecl;
     Function GetField(aIndex :Integer) :IEvsField; extdecl;
@@ -1120,6 +1127,8 @@ type
     Procedure Next;extdecl;
     Procedure Previous;extdecl;
     Procedure First;extdecl;
+    Procedure Commit;virtual;extdecl;
+    Procedure RollBack;virtual;extdecl;
     //procedure Edit;
     //procedure Post;
     //procedure Cancel;
@@ -1128,7 +1137,8 @@ type
     Property FieldCount :Int32 read GetFieldCount;
     Property Field[aIndex:Integer]:IEvsField read GetField;
     Property SQL :Widestring read GetSQL write SetSQL;
-    property AutoTrimStrings:ByteBool read GetAutoTrim write SetAutoTrim;
+    property AutoTrimStrings :ByteBool read GetAutoTrim write SetAutoTrim;
+    property InTransaction   :ByteBool read GetInTrans;
   end;
 
   { TEvsAbstractConnectionProxy }
@@ -1189,6 +1199,7 @@ type
     class function NewException (const aParent:IEvsParented=nil) :IEvsExceptionInfo;
     class function NewStoredProc(const aParent:IEvsParented=nil) :IEvsStoredInfo;
     class function NewDomain    (const aParent:IEvsParented=nil) :IEvsDomainInfo;
+    class function NewView      (Const aParent:IEvsparented=nil) :IEvsViewInfo;
   end;
 
 Procedure RegisterDBType(const aID:Integer; aTitle:string; aConnectProc:TConnectProc; aConnectMethod:TConnectMethod = nil; aIcon:TIcon = nil);
@@ -1217,6 +1228,11 @@ resourcestring
 
 {$REGION ' Internal Types '}
 type
+  THackTrans = class(TDBTransaction)
+  public
+    //procedure EndTransaction; override;
+  end;
+
 
   { TEvsObserverList }
   TEvsObserverList = class(TInterfacedPersistent, IEvsObserverList)
@@ -1298,6 +1314,7 @@ type
     Procedure SetFieldSize(aValue :integer);extdecl;
   public
     Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
+    procedure Assign(Source :TPersistent); override;
   published
     Property FieldName    : widestring read GetFieldName write SetFieldName;
     Property Description  : widestring read GetFieldDescription write SetFieldDescription;
@@ -1326,15 +1343,16 @@ type
   { TEvsIndexFieldInfo }
   TEvsIndexFieldInfo = class(TEvsDBInfo, IEvsIndexFieldInfo)
   private
-    FField :IEvsFieldInfo;
-    FOrder :TEvsSortOrder;
+    FField :IEvsFieldInfo; // this is a reference not a value.
+    FOrder :TEvsSortOrder; // value not reference
     Function GetField :IEvsFieldInfo;extdecl;
     Function GetOrder :TEvsSortOrder;extdecl;
     Procedure SetField(aValue :IEvsFieldInfo);extdecl;
     Procedure SetOrder(aValue :TEvsSortOrder);extdecl;
   public
     Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
-  published
+    procedure Assign(aSource :TPersistent); override;
+  public
     Property Field :IEvsFieldInfo read GetField write SetField;
     Property Order :TEvsSortOrder read GetOrder write SetOrder;
   end;
@@ -1342,12 +1360,12 @@ type
   TEvsIndexInfo = class(TEvsDBInfo, IEvsIndexInfo)
   private
     //FTable      : TEVSDBTableInfo;
-    FList       : TInterfaceList;
-    FUnique     : Boolean;
-    FPrimary    : Boolean;
-    FOrder      : TEvsSortOrder;
-    FIndexName  : Widestring;
-    FDescription: WideString;
+    FList       : TInterfaceList;  // value : a list of IEvsIndexFieldInfo.
+    FUnique     : Boolean;         // value
+    FPrimary    : Boolean;         // value
+    FOrder      : TEvsSortOrder;   // value
+    FIndexName  : Widestring;      // value
+    FDescription: WideString;      // value
     function GetDescription :widestring;extdecl;
     function GetField(aIndex: Integer): IEvsFieldInfo;extdecl;
     function GetFieldCount: Integer;extdecl;
@@ -1400,7 +1418,7 @@ type
     //procedure Assign(Source : TPersistent); override;
     //procedure SaveToStream(const aStream:TStream);override;extdecl;
     //procedure LoadFromStream(const aStream:TStream);override;extdecl;
-
+    procedure Assign(Source :TPersistent); override;
     procedure SwapFields(const Index1,Index2:Integer);extdecl;
     procedure AppendField(const aField:IEVSFieldInfo; const aOrder: TEvsSortOrder);extdecl;
     procedure DeleteField(const aIndex : Integer);overload;extdecl;
@@ -1515,6 +1533,8 @@ type
     Procedure SetSavePwd (aValue :LongBool);     extdecl;
     Procedure SetUserName(aValue :WideString);   extdecl;
     Procedure SetLastChanged(aValue :TDateTime); extdecl;
+  public
+    procedure Assign(Source :TPersistent); override;
   published
     Property UserName     :WideString read GetUserName    write SetUserName;
     Property Password     :WideString read GetPassword    write SetPassword;
@@ -1686,6 +1706,8 @@ type
     FName        :WideString;
     FNumber      :WideString;
     FSystem      :ByteBool;
+  public
+    procedure Assign(Source :TPersistent); override;
   published
     function GetDescription :WideString;extdecl;
     function GetMessage     :WideString;extdecl;
@@ -1704,17 +1726,19 @@ type
     property Message     : WideString read FMessage     write SetMessage;
     property System      : ByteBool   read FSystem      write SetSystem;
   end;
-  { TEvsGeneratorInfo }
-  TEvsGeneratorInfo = class(TEvsDBInfo, IEvsGeneratorInfo)
+  { TEvsSequenceInfo }
+  TEvsSequenceInfo = class(TEvsDBInfo, IEvsGeneratorInfo)
   private
-    FName:WideString;
+    FName :WideString;
+    FStep :Int64; //is it possible to have fractional steps? // not applicable on firebird.
   public
+    procedure Assign(Source :TPersistent); override;
     function  GetCurrentValue :Int64;extdecl; {$MESSAGE WARN 'Needs Implementation'}
-    function  GetGeneratorName :WideString;extdecl;
+    function  GetName :WideString;extdecl;
     procedure SetCurrentValue(aValue :Int64);extdecl;
-    procedure SetGeneratorName(aValue :widestring);extdecl;
+    procedure SetName(aValue :widestring);extdecl;
 
-    property GeneratorName :WideString read GetGeneratorName write SetGeneratorName;
+    property Name :WideString read GetName write SetName;
     property CurrentValue  :Int64      read GetCurrentValue  write SetCurrentValue;
   end;
   { TEvsStoredInfo }
@@ -1741,12 +1765,13 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    procedure Assign(Source :TPersistent); override;
     //the following two methods are used exclusively from the drivers to add the
     //return fields of stored procedure.
     Procedure AddField(const aField:IEvsFieldInfo);extdecl;//adds the passed field in the list.
     Function NewField(const aName:WideString):IEvsFieldInfo;extdecl;//creates a new field adds it in the list and returns it for farther initialization.
 
-    Property ProcedureName:WideString read GetSPName write SetSPName;
+    Property Name:WideString read GetSPName write SetSPName;
     Property Description:Widestring read GetDescription write SetDescription;
     Property Fields[aIndex:Integer]:IEvsFieldInfo read GetField write SetField; // the fields returned by the stored procedure. do i need then?
     Property FieldCount:Integer read GetFieldCount;
@@ -1771,6 +1796,8 @@ type
     Procedure SetMiddleName(aValue :WideString);extdecl;
     Procedure SetPassword(aValue :WideString);extdecl;
     Procedure SetUserName(aValue :WideString);extdecl;
+  public
+    procedure Assign(Source :TPersistent); override;
   published
     Property UserName   :WideString read GetUserName   write SetUserName;
     Property Password   :WideString read GetPassword   write SetPassword;
@@ -1790,7 +1817,6 @@ type
     FName       :WideString;
     FSql        :WideString;
     FSize       :Integer;
-  published
     Function GetCharSet :WideString;                  extdecl;
     Function GetCheckConstraint :WideString;          extdecl;
     Function GetCollation :WideString;                extdecl;
@@ -1807,7 +1833,9 @@ type
     Procedure SetName(aValue :WideString);            extdecl;
     Procedure SetSQL(aValue :WideString);             extdecl;
     Procedure SetSize(aValue :Integer);               extdecl;
-
+  public
+    procedure Assign(Source :TPersistent); override;
+  published
     Property Datatype        :WideString read GetDatatype        write SetDatatype;
     Property DefaultValue    :OLEVariant read GetDefaultValue    write SetDefaultValue;
     Property CheckConstraint :WideString read GetCheckConstraint write SetCheckConstraint;
@@ -1821,7 +1849,7 @@ type
   { TEvsTriggerInfo }
   TEvsTriggerInfo = class(TEvsDBInfo, IEvsTriggerInfo){$MESSAGE WARN 'Needs EqualsTo implementation'}
   private                                             {$MESSAGE WARN 'Copyable implementation'}
-    FEvent     :TEvsTriggerEvents;
+    FEvent     :TEvsTriggerEvents;  //value types
     FEventType :TEvsTriggerType;
     FSQL       :WideString;
     FDescr     :Widestring;
@@ -1841,6 +1869,7 @@ type
     Procedure SetTriggerDscription(aValue :WideString);extdecl;
     Procedure SetTriggerName(aValue :WideString);      extdecl;
   public
+    procedure Assign(Source :TPersistent); override;
     Property Name        :WideString        read GetTriggerName        write SetTriggerName;
     Property Description :WideString        read GetTriggerDescription write SetTriggerDscription;
     Property SQL         :WideString        read GetSQL                write SetSQL; //the DDL command no partial commands here.
@@ -1850,7 +1879,7 @@ type
   end;
 
   { TEvsViewInfo }
-  TEvsViewInfo =  class(TEvsDBInfo, IEvsViewInfo)
+  TEvsViewInfo = class(TEvsDBInfo, IEvsViewInfo)
   private
     FDescription :WideString;
     FName        :WideString;
@@ -1869,6 +1898,7 @@ type
     Procedure SetSQL(aValue :WideString);extdecl;
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
+    procedure Assign(Source :TPersistent); override;
 
     Function FieldCount:integer;extdecl;
     Property SQL:WideString read GetSQL write SetSQL;
@@ -1877,6 +1907,10 @@ type
     Property Field[aIndex:Integer]:IEvsFieldInfo read GetField write SetField;
     property Description:WideString read GetDescription write SetDescription;
   end;
+
+  //------------------------------------------------------
+  //-- L  I  S  T  s  --
+  //------------------------------------------------------
   { TEvsTableList }
   TEvsTableList = class(TEvsDBInfo, IEvsTableList)
   private
@@ -1893,6 +1927,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    procedure Assign(Source :TPersistent); override;
     Procedure Clear;extdecl;
     Procedure Delete(aIndex : Integer);extdecl;
     Procedure Exchange(aIndex1,aIndex2 : Integer);extdecl;
@@ -2468,6 +2503,391 @@ end;
 
 {$ENDREGION}
 
+{$Region ' DATA CLASSES '}
+
+{$REGION ' TEvsFieldProxy '}
+
+Procedure TEvsFieldProxy.SetAsBoolean(aValue :LongBool); extdecl;
+begin
+  FField.AsBoolean := aValue;
+end;
+
+Function TEvsFieldProxy.GetAsBoolean :LongBool; extdecl;
+begin
+  Result := FField.AsBoolean;
+end;
+
+Function TEvsFieldProxy.GetFieldName :WideString; extdecl;
+begin
+  Result := FField.FieldName;
+end;
+
+Function TEvsFieldProxy.GetReadOnly :Boolean; extdecl;
+begin
+  Result := FField.ReadOnly;
+end;
+
+Function TEvsFieldProxy.GetRequired :Boolean; extdecl;
+begin
+  Result := FField.Required;
+end;
+
+Function TEvsFieldProxy.GetAsVariant :OLEVariant; extdecl;
+begin
+  Result := FField.AsVariant;
+end;
+
+Function TEvsFieldProxy.GetCalculated :Boolean; extdecl;
+begin
+  Result := FField.Calculated;
+end;
+
+Function TEvsFieldProxy.GetCanModify :Boolean; extdecl;
+begin
+  Result := FField.CanModify;
+end;
+
+Function TEvsFieldProxy.GetEditText :widestring; extdecl;
+begin
+  Result := FField.Text;
+end;
+
+Function TEvsFieldProxy.GetFullName :WideString; extdecl;
+begin
+  Result := FField.FieldName;
+end;
+
+Function TEvsFieldProxy.GetIsNull :Boolean; extdecl;
+begin
+  Result := FField.IsNull;
+end;
+
+function TEvsFieldProxy.GetIsNumeric :LongBool;extdecl;
+begin
+  Result := FField.DataType in [ftCurrency, ftInteger, ftWord, ftSmallint, ftFloat, ftBCD, ftFMTBcd, ftLargeint];
+end;
+
+function TEvsFieldProxy.GetSize:Integer;extdecl;
+begin
+  Result := FField.Size;
+end;
+
+function TEvsFieldProxy.GetPrecision:Integer;extdecl;
+begin
+  Result := 0;
+  case FField.DataType of
+    ftCurrency : Result := TCurrencyField(FField).Precision;// Result := 4;
+    ftBCD      : Result := TBCDField(FField).Precision;//.
+    ftFMTBcd   : Result := TFMTBCDField(FField).Precision;//,
+    ftFloat    : Result := TFloatField(FField).Precision; //8;
+  end;
+end;
+
+function TEvsFieldProxy.GetLength :Integer;extdecl;
+begin
+  Result := FField.Size;
+  case FField.DataType of
+    ftSmallint : Result := 3;
+    ftInteger  : Result := 10;
+    ftWord     : Result := 5;
+    ftBoolean  : Result := 4;
+    ftFloat    : Result := 18;
+    ftCurrency : Result := 20;
+    ftBCD      : Result := 30;
+    ftDate     : Result := 10;
+    ftTime     : Result := 10;
+    ftDateTime : Result := 20;
+    ftBytes    : Result := -1;
+    ftVarBytes: Result := -1;
+    ftAutoInc  : Result := 20;
+    ftBlob     : Result := -1;
+    ftMemo     : Result := -1;
+    ftGraphic  : Result := -1;
+    ftFmtMemo  : Result := -1;
+    ftParadoxOle : Result := -1;
+    ftDBaseOle   : Result := -1;
+    ftTypedBinary: Result := -1;
+    ftCursor     : Result := -1;
+    ftFixedChar  : Result := -1;
+    //ftWideString : Result := Size div 2;
+    ftLargeint   : Result := 22;
+    ftADT        : Result := -1;
+    //ftArray      : Result := -1; Size;
+    ftReference  : Result := -1;
+    ftDataSet    : Result := -1;
+    ftOraBlob    : Result := -1;
+    ftOraClob    : Result := -1;
+    ftVariant    : Result := -1;
+    ftInterface  : Result := -1;
+    ftIDispatch  : Result := -1;
+    ftGuid       : Result := 43;
+    ftTimeStamp  : Result := 20;
+    ftFMTBcd     : Result := 20;
+    //ftFixedWideChar: Result := Size;
+    //ftWideMemo     : Result := Size;
+  end;
+end;
+
+Procedure TEvsFieldProxy.SetAsVariant(aValue :OLEVariant); extdecl;
+begin
+  FField.Value := aValue;
+end;
+
+Procedure TEvsFieldProxy.SetCalculated(aValue :Boolean); extdecl;
+begin
+  FField.Calculated := aValue;
+end;
+
+Procedure TEvsFieldProxy.SetEditText(aValue :widestring); extdecl;
+begin
+  FField.AsWideString := aValue;
+end;
+
+Procedure TEvsFieldProxy.SetFieldName(aValue :WideString); extdecl;
+begin
+  FField.FieldName := aValue;
+end;
+
+Procedure TEvsFieldProxy.SetReadOnly(aValue :Boolean); extdecl;
+begin
+  FField.ReadOnly := aValue;
+end;
+
+Constructor TEvsFieldProxy.Create(aField :TField; aDataSet :IEvsDataset);
+begin
+  inherited Create;
+  FField := aField;
+  FDts := aDataSet;
+end;
+
+Destructor TEvsFieldProxy.Destroy;
+begin
+  FDts := Nil;
+  inherited Destroy;
+end;
+
+Function TEvsFieldProxy.AsString :Widestring; extdecl;
+begin
+  Result := FField.AsWideString;
+  if FDts.AutoTrimStrings then Result := Trim(Result);
+end;
+
+Function TEvsFieldProxy.AsInt32 :Int32; extdecl;
+begin
+  Result := FField.AsInteger;
+end;
+
+Function TEvsFieldProxy.AsByte :Byte; extdecl;
+begin
+  Result := FField.AsInteger;
+end;
+
+Function TEvsFieldProxy.AsDouble :Double; extdecl;
+begin
+  Result := FField.AsFloat;
+end;
+
+Function TEvsFieldProxy.AsDateTime :TDateTime; extdecl;
+begin
+  Result := FField.AsDateTime;
+end;
+
+{$ENDREGION}
+
+{$REGION ' TEvsDatasetProxy '}
+
+function TEvsDatasetProxy.GetInTrans :ByteBool;
+begin
+  Result := False;
+  if (FDS is TDBDataset) then begin
+    if Assigned(TDBDataset(FDS).Transaction) then
+      Result := TDBDataset(FDS).Transaction.Active;
+  end;
+  Result := Result or (FDS.State in [dsEdit, dsInsert]) ;
+end;
+
+function TEvsDatasetProxy.GetSQL :Widestring;extdecl;
+begin
+  Result := '';
+end;
+
+procedure TEvsDatasetProxy.SetSQL(aValue :Widestring); stdcall;
+begin
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+end;
+
+Function TEvsDatasetProxy.GetBOF :ByteBool; extdecl;
+begin
+  Result := FDS.BOF;
+end;
+
+Function TEvsDatasetProxy.GetEOF :ByteBool; extdecl;
+begin
+  Result := FDS.EOF;
+end;
+
+Function TEvsDatasetProxy.GetField(aIndex :Integer) :IEvsField; extdecl;
+begin
+  Result := TEvsFieldProxy.Create(FDS.Fields[aIndex], Self);
+end;
+
+Function TEvsDatasetProxy.GetFieldCount :Int32; extdecl;
+begin
+  Result := FDS.Fields.Count;
+end;
+
+Procedure TEvsDatasetProxy.Next; extdecl;
+begin
+  FDS.Next;
+end;
+
+Procedure TEvsDatasetProxy.Previous; extdecl;
+begin
+  FDS.Prior;
+end;
+
+Procedure TEvsDatasetProxy.First; extdecl;
+begin
+  FDS.First;
+end;
+
+Procedure TEvsDatasetProxy.Commit;extdecl;
+begin
+  if FDS is TDBDataset then THackTrans(TDBDataset(FDS).Transaction).EndTransaction;
+end;
+
+Procedure TEvsDatasetProxy.RollBack;extdecl;
+begin
+  if FDS is TDBDataset then THackTrans(TDBDataset(FDS).Transaction).EndTransaction;
+end;
+
+function TEvsDatasetProxy.GetAutoTrim:ByteBool; extdecl;
+begin
+  Result := FAutoTrim;
+end;
+
+procedure TEvsDatasetProxy.SetAutoTrim(aValue :ByteBool); extdecl;
+begin
+  FAutoTrim := aValue;
+end;
+
+Constructor TEvsDatasetProxy.Create(aDataset :TDataset);
+begin
+  inherited Create;
+  FDS := aDataset;
+  FAutoTrim := False;
+end;
+
+{$ENDREGION}
+
+{$REGION ' TEvsAbstractConnectionProxy '}
+
+function TEvsAbstractConnectionProxy.InternalGetConnected :Boolean;extdecl;
+begin
+  Result := FCnn.Connected;
+end;
+
+procedure TEvsAbstractConnectionProxy.InternalSetConnected(aValue :Boolean);extdecl;
+begin
+  FCnn.Connected := aValue;
+end;
+
+function TEvsAbstractConnectionProxy.GetCharSet :WideString;extdecl;
+begin
+  Result := InternalGetCharSet;
+end;
+
+procedure TEvsAbstractConnectionProxy.SetCharSet(aValue :WideString);extdecl;
+begin
+  InternalSetCharSet(aValue);
+end;
+
+function TEvsAbstractConnectionProxy.GetConnected :Boolean;extdecl;
+begin
+  Result := FCnn.Connected;
+end;
+
+function TEvsAbstractConnectionProxy.GetPassword :widestring;extdecl;
+begin
+  Result := InternalGetPassword;
+end;
+
+function TEvsAbstractConnectionProxy.GetRole :widestring;extdecl;
+begin
+  Result := InternalGetRole;
+end;
+
+function TEvsAbstractConnectionProxy.GetUserName :widestring;extdecl;
+begin
+  Result := InternalGetUserName;
+end;
+
+function TEvsAbstractConnectionProxy.Query(aSQL :wideString) :IEvsDataset;extdecl;
+begin
+  Result := InternalQuery(aSQL);
+end;
+
+function TEvsAbstractConnectionProxy.Execute(aSQL :WideString) :ByteBool;extdecl;
+begin
+  Result := InternalExecute(aSQL);
+end;
+
+function TEvsAbstractConnectionProxy.CopyTo(const aDest :IEvsCopyable):Integer; extdecl;
+var
+  vTmp :TPersistent;
+begin
+  if Supports(aDest, TPersistent, vTmp) then begin
+    AssignTo(vTmp);
+  end else Result := -1;//raise ETBException.Create('Unsuported Destination');
+end;
+
+function TEvsAbstractConnectionProxy.CopyFrom(const aSource :IEvsCopyable):Integer; extdecl;
+var
+  vTmp :TPersistent;
+begin
+  Result := 0; //everything is ok
+  if Supports(aSource, TPersistent, vTmp) then
+    Assign(vTmp)
+  else Result := aSource.CopyTo(Self as IEvsCopyable);
+end;
+
+function TEvsAbstractConnectionProxy.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+begin
+  Result := (aCompare = Self as IEvsCopyable);
+end;
+
+procedure TEvsAbstractConnectionProxy.SetConnected(aValue :Boolean);extdecl;
+begin
+  InternalSetConnected(aValue);
+end;
+
+procedure TEvsAbstractConnectionProxy.SetPassword(aValue :widestring);extdecl;
+begin
+  InternalSetPassword(aValue);
+end;
+
+procedure TEvsAbstractConnectionProxy.SetRole(aValue :widestring);extdecl;
+begin
+  InternalSetRole(aValue);
+end;
+
+procedure TEvsAbstractConnectionProxy.SetUserName(aValue :widestring);extdecl;
+begin
+  InternalSetUserName(aValue);
+end;
+
+constructor TEvsAbstractConnectionProxy.Create(aConnection :TCustomConnection);
+begin
+  if aConnection = nil then
+    raise ETBException.CreateFmt('You must pass a connection based object in %S.',[ClassName]);
+  inherited Create;
+  FCnn := aConnection;
+end;
+
+{$ENDREGION}
+
+{$ENDREGION}
+
 {$REGION ' TEvsObserverList '}
 constructor TEvsObserverList.Create;
 begin
@@ -2722,6 +3142,18 @@ begin
     IncludeUpdateFlags([dbsChanged, dbsMetadata]);
   end;
 end;
+procedure TEvsViewInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsViewInfo absolute Source;
+begin
+  if source is TEvsViewInfo then begin
+    FDescription := vSrc.FDescription;
+    FName        := vSrc.FName;
+    FSql         := vSrc.FSql;
+    FFieldList.Clear;
+    FFieldList.CopyFrom(vSrc.FFieldList);
+  end else inherited Assign(Source);
+end;
 
 Constructor TEvsViewInfo.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
 begin
@@ -2880,6 +3312,21 @@ begin
     IncludeUpdateFlags([dbsChanged, dbsData]);
   end;
 end;
+procedure TEvsDomainInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsDomainInfo absolute Source;
+begin
+  if Source is TEvsDomainInfo then begin
+    FDataType  := vSrc.FDataType;
+    FDefault   := vSrc.FDefault;
+    FCheck     := vSrc.FCheck;
+    FCharset   := vSrc.FCharset;
+    FCollation := vSrc.FCollation;
+    FName      := vSrc.FName;
+    FSql       := vSrc.FSql;
+    FSize      := vSrc.FSize;
+  end else inherited Assign(Source);
+end;
 
 {$ENDREGION}
 
@@ -2950,6 +3397,20 @@ begin
   FName := aValue;
   IncludeUpdateFlags([dbsChanged,dbsData]);
 end;
+procedure TEvsTriggerInfo.Assign(Source:TPersistent);
+var
+  vSrc :TEvsTriggerInfo absolute Source;
+begin
+  if Source is TEvsTriggerInfo then begin
+    FEvent     := vSrc.FEvent;
+    FEventType := vSrc.FEventType;
+    FSQL       := vSrc.FSQL;
+    FDescr     := vSrc.FDescr;
+    FName      := vSrc.FName;
+    FActive    := vSrc.FActive;
+  end else inherited Assign(Source);
+end;
+
 {$ENDREGION}
 
 {$REGION ' TEvsDBInfoFactory '}
@@ -2985,7 +3446,7 @@ end;
 
 class function TEvsDBInfoFactory.NewSequence(const aParent:IEvsParented=nil) :IEvsSequenceInfo;
 begin
-  Result := TEvsGeneratorInfo.Create(Nil, True);
+  Result := TEvsSequenceInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
@@ -3013,365 +3474,10 @@ begin
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-{$ENDREGION}
-
-{$REGION ' TEvsFieldProxy '}
-
-Procedure TEvsFieldProxy.SetAsBoolean(aValue :LongBool); extdecl;
+class function TEvsDBInfoFactory.NewView(Const aParent :IEvsparented) :IEvsViewInfo;
 begin
-  FField.AsBoolean := aValue;
-end;
-
-Function TEvsFieldProxy.GetAsBoolean :LongBool; extdecl;
-begin
-  Result := FField.AsBoolean;
-end;
-
-Function TEvsFieldProxy.GetFieldName :WideString; extdecl;
-begin
-  Result := FField.FieldName;
-end;
-
-Function TEvsFieldProxy.GetReadOnly :Boolean; extdecl;
-begin
-  Result := FField.ReadOnly;
-end;
-
-Function TEvsFieldProxy.GetRequired :Boolean; extdecl;
-begin
-  Result := FField.Required;
-end;
-
-Function TEvsFieldProxy.GetAsVariant :OLEVariant; extdecl;
-begin
-  Result := FField.AsVariant;
-end;
-
-Function TEvsFieldProxy.GetCalculated :Boolean; extdecl;
-begin
-  Result := FField.Calculated;
-end;
-
-Function TEvsFieldProxy.GetCanModify :Boolean; extdecl;
-begin
-  Result := FField.CanModify;
-end;
-
-Function TEvsFieldProxy.GetEditText :widestring; extdecl;
-begin
-  Result := FField.Text;
-end;
-
-Function TEvsFieldProxy.GetFullName :WideString; extdecl;
-begin
-  Result := FField.FieldName;
-end;
-
-Function TEvsFieldProxy.GetIsNull :Boolean; extdecl;
-begin
-  Result := FField.IsNull;
-end;
-
-function TEvsFieldProxy.GetIsNumeric :LongBool;extdecl;
-begin
-  Result := FField.DataType in [ftCurrency, ftInteger, ftWord, ftSmallint, ftFloat, ftBCD, ftFMTBcd, ftLargeint];
-end;
-
-function TEvsFieldProxy.GetSize:Integer;extdecl;
-begin
-  Result := FField.Size;
-end;
-
-function TEvsFieldProxy.GetPrecision:Integer;extdecl;
-begin
-  Result := 0;
-  case FField.DataType of
-    ftCurrency : Result := TCurrencyField(FField).Precision;// Result := 4;
-    ftBCD      : Result := TBCDField(FField).Precision;//.
-    ftFMTBcd   : Result := TFMTBCDField(FField).Precision;//,
-    ftFloat    : Result := TFloatField(FField).Precision; //8;
-  end;
-end;
-
-function TEvsFieldProxy.GetLength :Integer;extdecl;
-begin
-  Result := FField.Size;
-  case FField.DataType of
-    ftSmallint : Result := 3;
-    ftInteger  : Result := 10;
-    ftWord     : Result := 5;
-    ftBoolean  : Result := 4;
-    ftFloat    : Result := 18;
-    ftCurrency : Result := 20;
-    ftBCD      : Result := 30;
-    ftDate     : Result := 10;
-    ftTime     : Result := 10;
-    ftDateTime : Result := 20;
-    ftBytes    : Result := -1;
-    ftVarBytes: Result := -1;
-    ftAutoInc  : Result := 20;
-    ftBlob     : Result := -1;
-    ftMemo     : Result := -1;
-    ftGraphic  : Result := -1;
-    ftFmtMemo  : Result := -1;
-    ftParadoxOle : Result := -1;
-    ftDBaseOle   : Result := -1;
-    ftTypedBinary: Result := -1;
-    ftCursor     : Result := -1;
-    ftFixedChar  : Result := -1;
-    //ftWideString : Result := Size div 2;
-    ftLargeint   : Result := 22;
-    ftADT        : Result := -1;
-    //ftArray      : Result := -1; Size;
-    ftReference  : Result := -1;
-    ftDataSet    : Result := -1;
-    ftOraBlob    : Result := -1;
-    ftOraClob    : Result := -1;
-    ftVariant    : Result := -1;
-    ftInterface  : Result := -1;
-    ftIDispatch  : Result := -1;
-    ftGuid       : Result := 43;
-    ftTimeStamp  : Result := 20;
-    ftFMTBcd     : Result := 20;
-    //ftFixedWideChar: Result := Size;
-    //ftWideMemo     : Result := Size;
-  end;
-end;
-
-Procedure TEvsFieldProxy.SetAsVariant(aValue :OLEVariant); extdecl;
-begin
-  FField.Value := aValue;
-end;
-
-Procedure TEvsFieldProxy.SetCalculated(aValue :Boolean); extdecl;
-begin
-  FField.Calculated := aValue;
-end;
-
-Procedure TEvsFieldProxy.SetEditText(aValue :widestring); extdecl;
-begin
-  FField.AsWideString := aValue;
-end;
-
-Procedure TEvsFieldProxy.SetFieldName(aValue :WideString); extdecl;
-begin
-  FField.FieldName := aValue;
-end;
-
-Procedure TEvsFieldProxy.SetReadOnly(aValue :Boolean); extdecl;
-begin
-  FField.ReadOnly := aValue;
-end;
-
-Constructor TEvsFieldProxy.Create(aField :TField; aDataSet :IEvsDataset);
-begin
-  inherited Create;
-  FField := aField;
-  FDts := aDataSet;
-end;
-
-Destructor TEvsFieldProxy.Destroy;
-begin
-  FDts := Nil;
-  inherited Destroy;
-end;
-
-Function TEvsFieldProxy.AsString :Widestring; extdecl;
-begin
-  Result := FField.AsWideString;
-  if FDts.AutoTrimStrings then Result := Trim(Result);
-end;
-
-Function TEvsFieldProxy.AsInt32 :Int32; extdecl;
-begin
-  Result := FField.AsInteger;
-end;
-
-Function TEvsFieldProxy.AsByte :Byte; extdecl;
-begin
-  Result := FField.AsInteger;
-end;
-
-Function TEvsFieldProxy.AsDouble :Double; extdecl;
-begin
-  Result := FField.AsFloat;
-end;
-
-Function TEvsFieldProxy.AsDateTime :TDateTime; extdecl;
-begin
-  Result := FField.AsDateTime;
-end;
-
-{$ENDREGION}
-
-{$REGION ' TEvsDatasetProxy '}
-
-function TEvsDatasetProxy.GetSQL :Widestring;extdecl;
-begin
-  Result := '';
-end;
-
-procedure TEvsDatasetProxy.SetSQL(aValue :Widestring); stdcall;
-begin
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
-end;
-
-Function TEvsDatasetProxy.GetBOF :ByteBool; extdecl;
-begin
-  Result := FDS.BOF;
-end;
-
-Function TEvsDatasetProxy.GetEOF :ByteBool; extdecl;
-begin
-  Result := FDS.EOF;
-end;
-
-Function TEvsDatasetProxy.GetField(aIndex :Integer) :IEvsField; extdecl;
-begin
-  Result := TEvsFieldProxy.Create(FDS.Fields[aIndex], Self);
-end;
-
-Function TEvsDatasetProxy.GetFieldCount :Int32; extdecl;
-begin
-  Result := FDS.Fields.Count;
-end;
-
-Procedure TEvsDatasetProxy.Next; extdecl;
-begin
-  FDS.Next;
-end;
-
-Procedure TEvsDatasetProxy.Previous; extdecl;
-begin
-  FDS.Prior;
-end;
-
-Procedure TEvsDatasetProxy.First; extdecl;
-begin
-  FDS.First;
-end;
-
-function TEvsDatasetProxy.GetAutoTrim:ByteBool; extdecl;
-begin
-  Result := FAutoTrim;
-end;
-
-Procedure TEvsDatasetProxy.SetAutoTrim(aValue:ByteBool); extdecl;
-begin
-  FAutoTrim := aValue;
-end;
-
-Constructor TEvsDatasetProxy.Create(aDataset :TDataset);
-begin
-  inherited Create;
-  FDS := aDataset;
-  FAutoTrim := False;
-end;
-
-{$ENDREGION}
-
-{$REGION ' TEvsAbstractConnectionProxy '}
-
-function TEvsAbstractConnectionProxy.InternalGetConnected :Boolean;extdecl;
-begin
-  Result := FCnn.Connected;
-end;
-
-procedure TEvsAbstractConnectionProxy.InternalSetConnected(aValue :Boolean);extdecl;
-begin
-  FCnn.Connected := aValue;
-end;
-
-function TEvsAbstractConnectionProxy.GetCharSet :WideString;extdecl;
-begin
-  Result := InternalGetCharSet;
-end;
-
-procedure TEvsAbstractConnectionProxy.SetCharSet(aValue :WideString);extdecl;
-begin
-  InternalSetCharSet(aValue);
-end;
-
-function TEvsAbstractConnectionProxy.GetConnected :Boolean;extdecl;
-begin
-  Result := FCnn.Connected;
-end;
-
-function TEvsAbstractConnectionProxy.GetPassword :widestring;extdecl;
-begin
-  Result := InternalGetPassword;
-end;
-
-function TEvsAbstractConnectionProxy.GetRole :widestring;extdecl;
-begin
-  Result := InternalGetRole;
-end;
-
-function TEvsAbstractConnectionProxy.GetUserName :widestring;extdecl;
-begin
-  Result := InternalGetUserName;
-end;
-
-function TEvsAbstractConnectionProxy.Query(aSQL :wideString) :IEvsDataset;extdecl;
-begin
-  Result := InternalQuery(aSQL);
-end;
-
-function TEvsAbstractConnectionProxy.Execute(aSQL :WideString) :ByteBool;extdecl;
-begin
-  Result := InternalExecute(aSQL);
-end;
-
-function TEvsAbstractConnectionProxy.CopyTo(const aDest :IEvsCopyable):Integer; extdecl;
-var
-  vTmp :TPersistent;
-begin
-  if Supports(aDest, TPersistent, vTmp) then begin
-    AssignTo(vTmp);
-  end else Result := -1;//raise ETBException.Create('Unsuported Destination');
-end;
-
-function TEvsAbstractConnectionProxy.CopyFrom(const aSource :IEvsCopyable):Integer; extdecl;
-var
-  vTmp :TPersistent;
-begin
-  Result := 0; //everything is ok
-  if Supports(aSource, TPersistent, vTmp) then
-    Assign(vTmp)
-  else Result := aSource.CopyTo(Self as IEvsCopyable);
-end;
-
-function TEvsAbstractConnectionProxy.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
-begin
-  Result := (aCompare = Self as IEvsCopyable);
-end;
-
-procedure TEvsAbstractConnectionProxy.SetConnected(aValue :Boolean);extdecl;
-begin
-  InternalSetConnected(aValue);
-end;
-
-procedure TEvsAbstractConnectionProxy.SetPassword(aValue :widestring);extdecl;
-begin
-  InternalSetPassword(aValue);
-end;
-
-procedure TEvsAbstractConnectionProxy.SetRole(aValue :widestring);extdecl;
-begin
-  InternalSetRole(aValue);
-end;
-
-procedure TEvsAbstractConnectionProxy.SetUserName(aValue :widestring);extdecl;
-begin
-  InternalSetUserName(aValue);
-end;
-
-constructor TEvsAbstractConnectionProxy.Create(aConnection :TCustomConnection);
-begin
-  if aConnection = nil then
-    raise ETBException.CreateFmt('You must pass a connection based object in %S.',[ClassName]);
-  inherited Create;
-  FCnn := aConnection;
+  Result := TEvsViewInfo.Create(nil, True);
+  if Assigned(aParent) then Result.Parent := aParent;
 end;
 
 {$ENDREGION}
@@ -3435,6 +3541,18 @@ begin
   FList := TInterfaceList.Create;
 end;
 
+procedure TEvsStoredInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsStoredInfo absolute Source;
+begin
+  if Source is TEvsStoredInfo then begin
+    FDescription := vSrc.FDescription;
+    FSQL         := vSrc.FSQL;
+    FName        := vSrc.FName;
+    //FList        :TInterfaceList;
+  end else inherited Assign(Source);
+end;
+
 Destructor TEvsStoredInfo.Destroy;
 begin
   FList := Nil;
@@ -3455,8 +3573,17 @@ end;
 {$ENDREGION}
 
 {$REGION ' TEvsGeneratorInfo '}
+procedure TEvsSequenceInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsSequenceInfo absolute Source;
+begin
+  if Source is TEvsSequenceInfo then begin
+    FName := vSrc.FName;
+    FStep := vSrc.FStep;
+  end else inherited Assign(Source);
+end;
 
-function TEvsGeneratorInfo.GetCurrentValue :Int64;extdecl;
+function TEvsSequenceInfo.GetCurrentValue :Int64;extdecl;
 //var
 //  vDB:TEvsDatabaseInfo;
 begin
@@ -3464,17 +3591,17 @@ begin
   //vDB := GetDB;
 end;
 
-function TEvsGeneratorInfo.GetGeneratorName :widestring;extdecl;
+function TEvsSequenceInfo.GetName :widestring;extdecl;
 begin
   Result := FName;
 end;
 
-procedure TEvsGeneratorInfo.SetCurrentValue(aValue :Int64);extdecl;
+procedure TEvsSequenceInfo.SetCurrentValue(aValue :Int64);extdecl;
 begin
   raise NotImplementedException;
 end;
 
-procedure TEvsGeneratorInfo.SetGeneratorName(aValue :widestring);extdecl;
+procedure TEvsSequenceInfo.SetName(aValue :widestring);extdecl;
 begin
   FName := aValue;
   IncludeUpdateFlags([dbsChanged,dbsMetadata]);
@@ -3483,6 +3610,19 @@ end;
 {$ENDREGION}
 
 {$REGION ' TEvsExceptionInfo '}
+
+procedure TEvsExceptionInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsExceptionInfo absolute Source;
+begin
+  if Source is TEvsExceptionInfo then begin
+    FDescription := vSrc.FDescription;
+    FMessage     := vSrc.FMessage;
+    FName        := vSrc.FName;
+    FNumber      := vSrc.FNumber;
+    FSystem      := vSrc.FSystem;
+  end else inherited Assign(Source);
+end;
 
 function TEvsExceptionInfo.GetDescription :widestring;extdecl;
 begin
@@ -3601,6 +3741,18 @@ procedure TEvsUserInfo.SetUserName(aValue :widestring);extdecl;
 begin
   FUserName := aValue;
   IncludeUpdateFlags([dbsChanged, dbsData{, dbsMetadata}]); // user names are not allowed to be changed this requires a new user to be created and the old droped.
+end;
+procedure TEvsUserInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsUserInfo absolute Source;
+begin
+  if Source is TEvsUserInfo then begin
+    FFirstName  := vSrc.FFirstName;
+    FLastName   := vSrc.FLastName;
+    FMiddleName := vSrc.FMiddleName;
+    FPassword   := vSrc.FPassword;
+    FUserName   := vSrc.FUserName;
+  end else inherited Assign(Source);
 end;
 
 {$ENDREGION}
@@ -4445,7 +4597,7 @@ end;
 
 function TEvsGeneratorList.New :IEvsGeneratorInfo;extdecl;
 begin
-  Result := TEvsGeneratorInfo.Create(FOwner, True);
+  Result := TEvsSequenceInfo.Create(FOwner, True);
   Add(Result);
 end;
 
@@ -4849,37 +5001,37 @@ end;
 
 {$REGION ' TEvsTableList '}
 
-function TEvsTableList.Get(aIdx :Integer) :IEvsTableInfo;extdecl;
+Function TEvsTableList.Get(aIdx :Integer) :IEvsTableInfo; extdecl;
 begin
   Result := FList.Get(aIdx) as IEvsTableInfo;
 end;
 
-function TEvsTableList.GetCapacity :Integer;extdecl;
+Function TEvsTableList.GetCapacity :Integer; extdecl;
 begin
   Result := FList.Capacity;
 end;
 
-function TEvsTableList.GetCount :Integer;extdecl;
+Function TEvsTableList.GetCount :Integer; extdecl;
 begin
   Result := FList.Count;
 end;
 
-procedure TEvsTableList.Put(aIdx :Integer; aValue :IEvsTableInfo);extdecl;
+Procedure TEvsTableList.Put(aIdx :Integer; aValue :IEvsTableInfo); extdecl;
 begin
   FList.Put(aIdx,aValue);
 end;
 
-procedure TEvsTableList.SetCapacity(aValue :Integer);extdecl;
+Procedure TEvsTableList.SetCapacity(aValue :Integer); extdecl;
 begin
   FList.SetCapacity(aValue);
 end;
 
-procedure TEvsTableList.SetCount(aValue :Integer);extdecl;
+Procedure TEvsTableList.SetCount(aValue :Integer); extdecl;
 begin
   FList.SetCount(aValue);
 end;
 
-constructor TEvsTableList.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
+Constructor TEvsTableList.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
 begin
   inherited Create(aOwner, aRefCounted);
   FList := TInterfaceList.Create;
@@ -4892,65 +5044,78 @@ begin
   inherited Destroy;
 end;
 
-procedure TEvsTableList.Clear;extdecl;
+procedure TEvsTableList.Assign(Source :TPersistent);
+var
+  vSrc  :TEvsTableList absolute Source;
+  vCntr :Integer;
+begin
+  if Source is TEvsTableList then begin
+    Clear;
+    for vCntr := 0 to vSrc.Count -1 do begin
+      New.CopyFrom(vSrc[vCntr]);
+    end;
+  end else inherited Assign(Source);
+end;
+
+Procedure TEvsTableList.Clear; extdecl;
 begin
   FList.Clear;
 end;
 
-procedure TEvsTableList.Delete(aIndex :Integer);extdecl;
+Procedure TEvsTableList.Delete(aIndex :Integer); extdecl;
 begin
   FList.Delete(aIndex);
 end;
 
-procedure TEvsTableList.Exchange(aIndex1, aIndex2 :Integer);extdecl;
+Procedure TEvsTableList.Exchange(aIndex1, aIndex2 :Integer); extdecl;
 begin
   FList.Exchange(aIndex1,aIndex2);
 end;
 
-function TEvsTableList.New :IEvsTableInfo;extdecl;
+Function TEvsTableList.New :IEvsTableInfo; extdecl;
 begin
   Result := TEvsTableInfo.Create(FOwner, True);
   Add(Result);
 end;
 
-function TEvsTableList.First :IEvsTableInfo;extdecl;
+Function TEvsTableList.First :IEvsTableInfo; extdecl;
 begin
   Result := FList.First as IEvsTableInfo;
 end;
 
-function TEvsTableList.IndexOf(aItem :IEvsTableInfo) :Integer;extdecl;
+Function TEvsTableList.IndexOf(aItem :IEvsTableInfo) :Integer; extdecl;
 begin
   Result := FList.IndexOf(aItem);
 end;
 
-function TEvsTableList.Add(aItem :IEvsTableInfo) :Integer;extdecl;
+Function TEvsTableList.Add(aItem :IEvsTableInfo) :Integer; extdecl;
 begin
   if FList.IndexOf(aItem) = -1 then
     Result := FList.Add(aItem);
 end;
 
-procedure TEvsTableList.Insert(aIdx :Integer; aItem :IEvsTableInfo);extdecl;
+Procedure TEvsTableList.Insert(aIdx :Integer; aItem :IEvsTableInfo); extdecl;
 begin
   if FList.IndexOf(aItem) = -1 then
     FList.Insert(aIdx,aItem);
 end;
 
-function TEvsTableList.Last :IEvsTableInfo;extdecl;
+Function TEvsTableList.Last :IEvsTableInfo; extdecl;
 begin
   Result := FList.Last as IEvsTableInfo;
 end;
 
-function TEvsTableList.Remove(aItem :IEvsTableInfo) :Integer;extdecl;
+Function TEvsTableList.Remove(aItem :IEvsTableInfo) :Integer; extdecl;
 begin
   Result := FList.Remove(aItem);
 end;
 
-procedure TEvsTableList.Lock;extdecl;
+Procedure TEvsTableList.Lock; extdecl;
 begin
   FList.Lock;
 end;
 
-procedure TEvsTableList.Unlock;extdecl;
+Procedure TEvsTableList.Unlock; extdecl;
 begin
   FList.Unlock;
 end;
@@ -5130,6 +5295,20 @@ end;
 Procedure TEvsCredentials.SetSavePwd(aValue :LongBool); extdecl;
 begin
   FSavePwd := aValue;
+end;
+
+procedure TEvsCredentials.Assign(Source :TPersistent);
+var
+  vSrc : TEvsCredentials absolute Source;
+begin
+  if Source is TEvsCredentials then begin
+    FPassword    := vSrc.FPassword;
+    FRole        := vSrc.FRole;
+    FUserName    := vSrc.FUserName;
+    FCharset     := vSrc.FCharset;
+    FSavePwd     := vSrc.FSavePwd;
+    FLastChanged := vSrc.FLastChanged;
+  end else inherited Assign(Source);
 end;
 
 {$ENDREGION}
@@ -5352,7 +5531,7 @@ end;
 
 Function TEvsDatabaseInfo.GetTable(aIndex :Integer) :IEvsTableInfo; extdecl;
 begin
-  Result := IEvsTableInfo(FTables[aIndex]);
+  Result := FTables[aIndex];
 end;
 
 Function TEvsDatabaseInfo.GetTableCount :Integer; extdecl;
@@ -5514,7 +5693,7 @@ begin
   BeginUpdate;
   try
     Result := TEvsDBInfoFactory.NewStoredProc;
-    Result.ProcedureName := aName;
+    Result.Name := aName;
     FStoredProcs.Add(Result);
     Result.Parent := Self;
     IncludeUpdateFlags([dbsChanged, dbsData]);
@@ -6395,6 +6574,20 @@ begin
   //if FOwner is tevsTableInfo then Result:= tevstableinfo(fowner).TableName;
 end;
 
+procedure TEvsIndexInfo.Assign(Source :TPersistent);
+var
+  vSrc : TEvsIndexInfo absolute Source;
+begin
+  if Source is TEvsIndexInfo then begin
+    FUnique      := vSrc.FUnique     ;
+    FPrimary     := vSrc.FPrimary    ;
+    FOrder       := vSrc.FOrder      ;
+    FIndexName   := vSrc.FIndexName  ;
+    FDescription := vSrc.FDescription;
+    raise SilentException('Needs more work.');
+  end else inherited Assign(Source);
+end;
+
 procedure TEvsIndexInfo.SwapFields(const Index1, Index2 :Integer);extdecl;
 begin
   FList.Exchange(Index1,Index2);
@@ -6474,14 +6667,24 @@ begin
   FOrder:=aValue;
 end;
 
+procedure TEvsIndexFieldInfo.Assign(aSource:TPersistent);
+var
+  vSrc : TEvsIndexFieldInfo absolute aSource;
+begin
+  if aSource is TEvsIndexFieldInfo then begin
+    FField := vSrc.FField;
+    FOrder := vSrc.FOrder;
+  end else inherited Assign(aSource);
+end;
+
 Function TEvsIndexFieldInfo.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
 var
   vTmp :IEvsIndexFieldInfo;
 begin
   Result := inherited EqualsTo(aCompare);
   if Supports(aCompare, IEvsIndexFieldInfo, vTmp) and (not Result) then begin
-    Result := Result or (FOrder = vTmp.order)
-                     or (FField.EqualsTo(vTmp.Field));
+    Result := Result or ((FOrder = vTmp.order)
+                     and (FField.EqualsTo(vTmp.Field)));
   end;
 end;
 
@@ -6876,25 +7079,47 @@ begin
   end;
 end;
 
+procedure TEvsFieldInfo.Assign(Source:TPersistent);
+var
+  vSrc  :TEvsFieldInfo absolute Source;
+begin
+  if Source is TEvsFieldInfo then begin
+    FFieldName    := vSrc.FFieldName;
+    FDescription  := vSrc.FDescription;
+    FAllowNulls   := vSrc.FAllowNulls;
+    FDataTypeName := vSrc.FDataTypeName;
+    FDefaultValue := vSrc.FDefaultValue;
+    FAutoNumber   := vSrc.FAutoNumber;
+    FFieldSize    := vSrc.FFieldSize;
+    FFieldScale   := vSrc.FFieldScale;
+    FCollation    := vSrc.FCollation;
+    FCharset      := vSrc.FCharset;
+    FCheck        := vSrc.FCheck;
+    FCalculated   := vSrc.FCalculated;
+    FDataGroup    := vSrc.FDataGroup;
+  end else inherited Assign(Source);
+end;
+
 Function TEvsFieldInfo.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
 var
   vTmp  :IEvsFieldInfo;
 begin
   Result := inherited EqualsTo(aCompare);
   if Supports(aCompare, IEvsFieldInfo, vTmp) and (not Result) then begin
-    Result := Result or (WideCompareText(FFieldName,    vTmp.FieldName)    = 0)
-                     or (WideCompareText(FDescription,  vTmp.Description)  = 0)
-                     or (WideCompareText(FCollation,    vTmp.Collation)    = 0)
-                     or (WideCompareText(FCharset,      vTmp.Charset)      = 0)
-                     or (WideCompareText(FCheck,        vTmp.Check)        = 0)
-                     or (WideCompareText(FCalculated,   vTmp.Calculated)   = 0)
-                     or (WideCompareText(FDataTypeName, vTmp.DataTypeName) = 0)
-                     or (FAllowNulls   = vTmp.AllowNulls  )
-                     or (FDefaultValue = vTmp.DefaultValue)
-                     or (FAutoNumber   = vTmp.AutoNumber  )
-                     or (FFieldSize    = vTmp.FieldSize   )
-                     or (FFieldScale   = vTmp.FieldScale  )
-                     or (FDataGroup    = vTmp.DataGroup   );
+    Result := Result or(  (WideCompareText(FFieldName,    vTmp.FieldName)    = 0)
+                      and (WideCompareText(FDescription,  vTmp.Description)  = 0)
+                      and (WideCompareText(FCollation,    vTmp.Collation)    = 0)
+                      and (WideCompareText(FCharset,      vTmp.Charset)      = 0)
+                      and (WideCompareText(FCheck,        vTmp.Check)        = 0)
+                      and (WideCompareText(FCalculated,   vTmp.Calculated)   = 0)
+                      and (WideCompareText(FDataTypeName, vTmp.DataTypeName) = 0)
+                      and (FAllowNulls   = vTmp.AllowNulls  )
+                      and (FDefaultValue = vTmp.DefaultValue)
+                      and (FAutoNumber   = vTmp.AutoNumber  )
+                      and (FFieldSize    = vTmp.FieldSize   )
+                      and (FFieldScale   = vTmp.FieldScale  )
+                      and (FDataGroup    = vTmp.DataGroup   )
+                       );
   end;
 end;
 {$ENDREGION}
@@ -6904,5 +7129,6 @@ initialization
 
 finalization
   KnownDBTypes.Free;
+
 end.
 

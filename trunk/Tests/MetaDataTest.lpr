@@ -3,7 +3,7 @@ program MetaDataTest;
 {$mode objfpc}{$H+}
 
 uses
-  Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields;
+  Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields, uFBViewTestCase;
 
 {$R *.res}
 

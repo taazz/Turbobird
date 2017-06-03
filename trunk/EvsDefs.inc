@@ -7,6 +7,11 @@
   {$define extdecl := cdecl}
 {$ENDIF}
 
+//{$IFDEF FPC}
+//  {$Define const:=constref}
+//{$ELSE}
+//{$ENDIF}
+
 {$DEFINE EVS_New}
 {$DEFINE EVS_INTF}
-
+{$DEFINE MEMORY_TRACE}

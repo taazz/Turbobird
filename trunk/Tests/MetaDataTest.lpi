@@ -28,21 +28,24 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="mdolaz"/>
+        <PackageName Value="FastMM4"/>
       </Item1>
       <Item2>
-        <PackageName Value="fptest_lcl"/>
+        <PackageName Value="mdolaz"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="fptest_lcl"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="LCL"/>
       </Item4>
+      <Item5>
+        <PackageName Value="FCL"/>
+      </Item5>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="10">
       <Unit0>
         <Filename Value="MetaDataTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -77,6 +80,20 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uFBViewTestCase"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="uevsmemleaktesting.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsMemLeakTesting"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\uevsintfobjects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsIntfObjects"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="uevsfbqryleaktest.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

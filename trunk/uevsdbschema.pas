@@ -24,7 +24,7 @@ unit uEvsDBSchema;
 interface
 
 uses
-  Classes, SysUtils, variants, db, contnrs, Graphics, uEvsGenIntf, uEvsWideString;
+  Classes, SysUtils, variants, db, contnrs, Graphics, uEvsGenIntf, uEvsWideString, uEvsIntfObjects;
 
 const  //negative numbers are for internal use only positive are for 3rd party support, either assinged by range or single ID.
   stUnknown    =  0;
@@ -74,7 +74,7 @@ type
                                   IEvsCopyable)
   private
     FOwner        : TEvsDBInfo;
-    FOwned        : TObjectList;
+    //FOwned        : TObjectList;
     FRefCount     : Integer;
     FRefCounted   : Boolean;
     FUpdateCount  : Integer;
@@ -644,7 +644,7 @@ type
   end;
 
   { IEvsRoleInfo }
-  IEvsRoleInfo = interface(IEvsParented)
+  IEvsRoleInfo = interface(IEvsParented) {$MESSAGE WARN 'Incomplete'}
     ['{5EAE5A27-1CA6-4B49-87BE-770069FB09E4}']
     Function GetName :WideString;extdecl;
     Function GetUser(aIndex :Integer) :IEvsUserInfo;extdecl;
@@ -656,6 +656,7 @@ type
     Property User[aIndex:Integer]:IEvsUserInfo read GetUser write SetUser;
     Property UserCount:Integer read GetUserCount;
   end;
+
   IEvsRoleList = interface {$MESSAGE WARN 'Needs Implementation'}
     ['{24ACEAB6-772D-4F21-8C1D-E8B2EEBAE539}']
     Function Get(aIdx : Integer) : IEvsRoleInfo;extdecl;
@@ -1050,7 +1051,7 @@ type
   end;
 
   { TEvsFieldProxy }
-  TEvsFieldProxy = Class(TInterfacedPersistent,IEvsField)
+  TEvsFieldProxy = Class(TEvsInterfacedPersistent,IEvsField)
   private
     FField     :TField;
     FDts       :IEvsDataset;
@@ -1108,13 +1109,14 @@ type
   end;
 
   { TEvsDatasetProxy }
-  TEvsDatasetProxy = class(TInterfacedPersistent, IEvsDataset)
+  TEvsDatasetProxy = class(TEvsInterfacedPersistent, IEvsDataset)
   private
     function GetSQL :Widestring; extdecl;
     procedure SetSQL(aValue :Widestring);extdecl;{$MESSAGE WARN 'Needs Implementation'}
   protected
     FDS       :TDataSet;
     FAutoTrim :Boolean;
+    FOwnsDataset:Boolean;
     function GetInTrans :ByteBool;virtual;extdecl;
     Function GetBOF :ByteBool;                     extdecl;
     Function GetEOF :ByteBool;                     extdecl;
@@ -1123,7 +1125,8 @@ type
     function GetAutoTrim :ByteBool;                extdecl;
     procedure SetAutoTrim(aValue :ByteBool);       extdecl;
   public
-    Constructor Create(aDataset:TDataset);
+    Constructor Create(aDataset:TDataset; OwnsDataset:Boolean = False);
+    destructor Destroy; override;
     Procedure Next;extdecl;
     Procedure Previous;extdecl;
     Procedure First;extdecl;
@@ -1142,10 +1145,11 @@ type
   end;
 
   { TEvsAbstractConnectionProxy }
-  TEvsAbstractConnectionProxy = class(TInterfacedPersistent, IEvsConnection)
+  TEvsAbstractConnectionProxy = class(TEvsInterfacedPersistent, IEvsConnection)
   private
   protected
     FCnn : TCustomConnection;
+    FCnnOwner:Boolean;
     Function GetMetaData :IEvsMetaData;virtual;abstract;extdecl;
     Function InternalGetCharSet:widestring;virtual;abstract;extdecl;
     Procedure InternalSetCharSet(aValue :WideString);virtual;abstract;extdecl;
@@ -1172,8 +1176,8 @@ type
     Procedure SetRole(aValue :widestring);extdecl;
     Procedure SetUserName(aValue :widestring);extdecl;
   public
-    Constructor Create(aConnection:TCustomConnection);
-
+    Constructor Create(const aConnection:TCustomConnection; const aOwnsConnection:Boolean = True);
+    destructor Destroy; override;
     Function Query(aSQL:wideString):IEvsDataset;extdecl;
     Function Execute(aSQL:WideString):ByteBool;extdecl;
     function CopyTo(const aDest :IEvsCopyable):Integer; extdecl;
@@ -1189,17 +1193,30 @@ type
 
   { TEvsDBInfoFactory }
   TEvsDBInfoFactory = class
-    class function NewDatabaseList:IEvsDatabaseList;
-    class function NewDatabase  (const aParent:IEvsParented=nil) :IEvsDatabaseInfo;
-    class function NewTable     (const aParent:IEvsParented=nil) :IEvsTableInfo;
-    class Function NewField     (const aParent:IEvsParented=nil) :IEvsFieldInfo;
-    class function NewTrigger   (const aParent:IEvsParented=nil) :IEvsTriggerInfo;
-    class function NewSequence  (const aParent:IEvsParented=nil) :IEvsSequenceInfo;
-    class function NewIndex     (const aParent:IEvsParented=nil) :IEvsIndexInfo;
-    class function NewException (const aParent:IEvsParented=nil) :IEvsExceptionInfo;
-    class function NewStoredProc(const aParent:IEvsParented=nil) :IEvsStoredInfo;
-    class function NewDomain    (const aParent:IEvsParented=nil) :IEvsDomainInfo;
-    class function NewView      (Const aParent:IEvsparented=nil) :IEvsViewInfo;
+    class Function NewDatabaseList (const aParent:IEvsParented=nil) :IEvsDatabaseList;
+    class Function NewDatabase     (const aParent:IEvsParented=nil) :IEvsDatabaseInfo;
+    class Function NewTable        (const aParent:IEvsParented=nil) :IEvsTableInfo;
+    class Function NewTableList    (const aParent:IEvsParented=nil) :IEvsTableList;
+    class Function NewField        (const aParent:IEvsParented=nil) :IEvsFieldInfo;
+    class Function NewFieldList    (const aParent:IEvsParented=nil) :IEvsFieldList;
+    class Function NewTrigger      (const aParent:IEvsParented=nil) :IEvsTriggerInfo;
+    class Function NewTriggerList  (const aParent:IEvsParented=nil) :IEvsTriggerList;
+    class Function NewSequence     (const aParent:IEvsParented=nil) :IEvsSequenceInfo;
+    class Function NewSequenceList (const aParent:IEvsParented=nil) :IEvsSequenceList;
+    class Function NewIndex        (const aParent:IEvsParented=nil) :IEvsIndexInfo;
+    class Function NewIndexList    (const aParent:IEvsParented=nil) :IEvsIndexList;
+    class Function NewException    (const aParent:IEvsParented=nil) :IEvsExceptionInfo;
+    class Function NewExceptionList(const aParent:IEvsParented=nil) :IEvsExceptionList;
+    class Function NewStoredProc   (const aParent:IEvsParented=nil) :IEvsStoredInfo;
+    class Function NewStoredList   (const aParent:IEvsParented=nil) :IEvsStoredList;
+    class Function NewDomain       (const aParent:IEvsParented=nil) :IEvsDomainInfo;
+    class Function NewDomainList   (const aParent:IEvsParented=nil) :IEvsDomainList;
+    class Function NewView         (const aParent:IEvsParented=nil) :IEvsViewInfo;
+    class Function NewViewList     (const aParent:IEvsParented=nil) :IEvsViewList;
+    class Function NewUser         (const aParent:IEvsParented=nil) :IEvsUserInfo;
+    class Function NewUserList     (const aParent:IEvsParented=nil) :IEvsUserList;
+    class Function NewRole         (const aParent:IEvsParented=nil) :IEvsRoleInfo;
+    class function NewRoleList     (Const aParent:IEvsParented=nil) :IEvsRoleList;
   end;
 
 Procedure RegisterDBType(const aID:Integer; aTitle:string; aConnectProc:TConnectProc; aConnectMethod:TConnectMethod = nil; aIcon:TIcon = nil);
@@ -1235,33 +1252,33 @@ type
 
 
   { TEvsObserverList }
-  TEvsObserverList = class(TInterfacedPersistent, IEvsObserverList)
+  TEvsObserverList = class(TEvsInterfacedPersistent, IEvsObserverList)
   private
     FList: TThreadList;
   protected
-    function Get(Index: Integer): IEvsObserver;extdecl;
-    function GetCapacity: Integer;extdecl;
-    function GetCount: Integer;extdecl;
-    procedure Put(Index: Integer; const Item: IEvsObserver);extdecl;
-    procedure SetCapacity(NewCapacity: Integer);extdecl;
-    procedure SetCount(NewCount: Integer);extdecl;
+    function Get(Index: Integer): IEvsObserver;                 extdecl;
+    function GetCapacity: Integer;                              extdecl;
+    function GetCount: Integer;                                 extdecl;
+    procedure Put(Index: Integer; const Item: IEvsObserver);    extdecl;
+    procedure SetCapacity(NewCapacity: Integer);                extdecl;
+    procedure SetCount(NewCount: Integer);                      extdecl;
   public
-    constructor Create;
+    Constructor Create;
     destructor Destroy; override;
-    procedure Clear;extdecl;
-    function ObjectRef :TObject;extdecl;
-    procedure Delete(Index: Integer);extdecl;
-    procedure Exchange(Index1, Index2: Integer);extdecl;
-    function Expand: TEvsObserverList;extdecl;
-    function First: IEvsObserver;extdecl;
-    //function GetEnumerator: TEvsObserverListEnumerator;extdecl;
-    function IndexOf(const Item: IEvsObserver): Integer;extdecl;
-    function Add(const Item: IEvsObserver): Integer;extdecl;
-    procedure Insert(Index: Integer; const Item: IEvsObserver);extdecl;
-    function Last: IEvsObserver;extdecl;
-    function Remove(const Item: IEvsObserver): Integer;extdecl;
-    procedure Lock;extdecl;
-    procedure Unlock;extdecl;
+    procedure Clear;                                            extdecl;
+    function ObjectRef :TObject;                                extdecl;
+    procedure Delete(Index: Integer);                           extdecl;
+    procedure Exchange(Index1, Index2: Integer);                extdecl;
+    function Expand: TEvsObserverList;                          extdecl;
+    function First: IEvsObserver;                               extdecl;
+    //function GetEnumerator: TEvsObserverListEnumerator;         extdecl;
+    function IndexOf(const Item: IEvsObserver): Integer;        extdecl;
+    function Add(const Item: IEvsObserver): Integer;            extdecl;
+    procedure Insert(Index: Integer; const Item: IEvsObserver); extdecl;
+    function Last: IEvsObserver;                                extdecl;
+    function Remove(const Item: IEvsObserver): Integer;         extdecl;
+    procedure Lock;                                             extdecl;
+    procedure Unlock;                                           extdecl;
 
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount write SetCount;
@@ -1360,7 +1377,7 @@ type
   TEvsIndexInfo = class(TEvsDBInfo, IEvsIndexInfo)
   private
     //FTable      : TEVSDBTableInfo;
-    FList       : TInterfaceList;  // value : a list of IEvsIndexFieldInfo.
+    FList       : IInterfaceList;  // value : a list of IEvsIndexFieldInfo.
     FUnique     : Boolean;         // value
     FPrimary    : Boolean;         // value
     FOrder      : TEvsSortOrder;   // value
@@ -1410,6 +1427,7 @@ type
     //function IndexOf(const FieldID:TGUID):Integer;overload;
   public
     constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
+    Destructor Destroy; override;
     function TableName :string;extdecl;
     //function GetEnumerator: TEVSDBIndexInfoEnumerator;
     //function IterateFields: TEVSDBIndexFieldEnumerator;
@@ -1908,6 +1926,24 @@ type
     property Description:WideString read GetDescription write SetDescription;
   end;
 
+  { TEvsRoleInfo }
+
+  TEvsRoleInfo = class(TEvsDBInfo, IEvsRoleInfo){$MESSAGE WARN 'Incomplete'}
+  private
+    FName  : WideString;
+    FUsers : IEvsUserList;
+  protected
+    Function GetName :WideString;                             extdecl;
+    Function GetUser(aIndex :Integer) :IEvsUserInfo;          extdecl;
+    Function GetUserCount :Integer;                           extdecl;
+    Procedure SetName(aValue :WideString);                    extdecl;
+    Procedure SetUser(aIndex :Integer; aValue :IEvsUserInfo); extdecl;
+  public
+    Property Name:WideString read GetName write SetName;
+    Property User[aIndex:Integer]:IEvsUserInfo read GetUser write SetUser;
+    Property UserCount:Integer read GetUserCount;
+  end;
+
   //------------------------------------------------------
   //-- L  I  S  T  s  --
   //------------------------------------------------------
@@ -2040,8 +2076,8 @@ type
     Property Count    : Integer read GetCount    write SetCount;
     Property Items[aIdx : Integer] : IEvsStoredInfo read Get write Put;default;
   end;
-  { TEvsGeneratorList }
-  TEvsGeneratorList = class(TEvsDBInfo, IEvsGeneratorList)
+  { TEvsSequenceList }
+  TEvsSequenceList = class(TEvsDBInfo, IEvsSequenceList)
   private
     FList : IInterfaceList;
   protected
@@ -2501,6 +2537,37 @@ begin
   Result := TEvsDatabaseList.Create(Nil, True);
 end;
 
+{ TEvsRoleInfo }
+
+Function TEvsRoleInfo.GetName :WideString; stdcall;
+begin
+  Result := FName;
+end;
+
+Function TEvsRoleInfo.GetUser(aIndex :Integer) :IEvsUserInfo; stdcall;
+begin
+  Result := FUsers[aIndex];
+end;
+
+Function TEvsRoleInfo.GetUserCount :Integer; stdcall;
+begin
+  Result := FUsers.Count;
+end;
+
+Procedure TEvsRoleInfo.SetName(aValue :WideString); stdcall;
+begin
+  if aValue<>FName then begin
+    FName := aValue;
+    IncludeUpdateFlags([dbsChanged, dbsData]);
+  end;
+end;
+
+Procedure TEvsRoleInfo.SetUser(aIndex :Integer; aValue :IEvsUserInfo); stdcall;
+begin
+  FUsers[aIndex] := aValue;
+  IncludeUpdateFlags([dbsChanged, dbsData]);
+end;
+
 {$ENDREGION}
 
 {$Region ' DATA CLASSES '}
@@ -2655,7 +2722,7 @@ end;
 
 Constructor TEvsFieldProxy.Create(aField :TField; aDataSet :IEvsDataset);
 begin
-  inherited Create;
+  inherited Create(True);
   FField := aField;
   FDts := aDataSet;
 end;
@@ -2696,7 +2763,7 @@ end;
 
 {$REGION ' TEvsDatasetProxy '}
 
-function TEvsDatasetProxy.GetInTrans :ByteBool;
+function TEvsDatasetProxy.GetInTrans :ByteBool; stdcall;
 begin
   Result := False;
   if (FDS is TDBDataset) then begin
@@ -2771,63 +2838,70 @@ begin
   FAutoTrim := aValue;
 end;
 
-Constructor TEvsDatasetProxy.Create(aDataset :TDataset);
+Constructor TEvsDatasetProxy.Create(aDataset :TDataset; OwnsDataset :Boolean);
 begin
   inherited Create;
   FDS := aDataset;
   FAutoTrim := False;
+  FOwnsDataset := OwnsDataset;
+end;
+
+destructor TEvsDatasetProxy.Destroy;
+begin
+  inherited Destroy;
+  if FOwnsDataset then FDS.Free;
 end;
 
 {$ENDREGION}
 
 {$REGION ' TEvsAbstractConnectionProxy '}
 
-function TEvsAbstractConnectionProxy.InternalGetConnected :Boolean;extdecl;
+Function TEvsAbstractConnectionProxy.InternalGetConnected :Boolean; extdecl;
 begin
   Result := FCnn.Connected;
 end;
 
-procedure TEvsAbstractConnectionProxy.InternalSetConnected(aValue :Boolean);extdecl;
+Procedure TEvsAbstractConnectionProxy.InternalSetConnected(aValue :Boolean); extdecl;
 begin
   FCnn.Connected := aValue;
 end;
 
-function TEvsAbstractConnectionProxy.GetCharSet :WideString;extdecl;
+Function TEvsAbstractConnectionProxy.GetCharSet :WideString; extdecl;
 begin
   Result := InternalGetCharSet;
 end;
 
-procedure TEvsAbstractConnectionProxy.SetCharSet(aValue :WideString);extdecl;
+Procedure TEvsAbstractConnectionProxy.SetCharSet(aValue :WideString); extdecl;
 begin
   InternalSetCharSet(aValue);
 end;
 
-function TEvsAbstractConnectionProxy.GetConnected :Boolean;extdecl;
+Function TEvsAbstractConnectionProxy.GetConnected :Boolean; extdecl;
 begin
   Result := FCnn.Connected;
 end;
 
-function TEvsAbstractConnectionProxy.GetPassword :widestring;extdecl;
+Function TEvsAbstractConnectionProxy.GetPassword :widestring; extdecl;
 begin
   Result := InternalGetPassword;
 end;
 
-function TEvsAbstractConnectionProxy.GetRole :widestring;extdecl;
+Function TEvsAbstractConnectionProxy.GetRole :widestring; extdecl;
 begin
   Result := InternalGetRole;
 end;
 
-function TEvsAbstractConnectionProxy.GetUserName :widestring;extdecl;
+Function TEvsAbstractConnectionProxy.GetUserName :widestring; extdecl;
 begin
   Result := InternalGetUserName;
 end;
 
-function TEvsAbstractConnectionProxy.Query(aSQL :wideString) :IEvsDataset;extdecl;
+Function TEvsAbstractConnectionProxy.Query(aSQL :wideString) :IEvsDataset; extdecl;
 begin
   Result := InternalQuery(aSQL);
 end;
 
-function TEvsAbstractConnectionProxy.Execute(aSQL :WideString) :ByteBool;extdecl;
+Function TEvsAbstractConnectionProxy.Execute(aSQL :WideString) :ByteBool; extdecl;
 begin
   Result := InternalExecute(aSQL);
 end;
@@ -2856,32 +2930,39 @@ begin
   Result := (aCompare = Self as IEvsCopyable);
 end;
 
-procedure TEvsAbstractConnectionProxy.SetConnected(aValue :Boolean);extdecl;
+Procedure TEvsAbstractConnectionProxy.SetConnected(aValue :Boolean); extdecl;
 begin
   InternalSetConnected(aValue);
 end;
 
-procedure TEvsAbstractConnectionProxy.SetPassword(aValue :widestring);extdecl;
+Procedure TEvsAbstractConnectionProxy.SetPassword(aValue :widestring); extdecl;
 begin
   InternalSetPassword(aValue);
 end;
 
-procedure TEvsAbstractConnectionProxy.SetRole(aValue :widestring);extdecl;
+Procedure TEvsAbstractConnectionProxy.SetRole(aValue :widestring); extdecl;
 begin
   InternalSetRole(aValue);
 end;
 
-procedure TEvsAbstractConnectionProxy.SetUserName(aValue :widestring);extdecl;
+Procedure TEvsAbstractConnectionProxy.SetUserName(aValue :widestring); extdecl;
 begin
   InternalSetUserName(aValue);
 end;
 
-constructor TEvsAbstractConnectionProxy.Create(aConnection :TCustomConnection);
+Constructor TEvsAbstractConnectionProxy.Create(const aConnection :TCustomConnection; const aOwnsConnection :Boolean = True);
 begin
   if aConnection = nil then
     raise ETBException.CreateFmt('You must pass a connection based object in %S.',[ClassName]);
-  inherited Create;
+  inherited Create(True);
+  FCnnOwner := aOwnsConnection;
   FCnn := aConnection;
+end;
+
+destructor TEvsAbstractConnectionProxy.Destroy;
+begin
+  if FCnnOwner then FCnn.Free;
+  inherited Destroy;
 end;
 
 {$ENDREGION}
@@ -2889,9 +2970,9 @@ end;
 {$ENDREGION}
 
 {$REGION ' TEvsObserverList '}
-constructor TEvsObserverList.Create;
+Constructor TEvsObserverList.Create;
 begin
-  inherited Create;
+  inherited Create(True);
   FList := TThreadList.Create;
 end;
 
@@ -2910,7 +2991,7 @@ begin
   Tmp := FList.LockList ;
   try
     for I := 0 to Count - 1 do
-      IEvsObserver(Tmp.List^[I]) := nil;
+      IInterface(Tmp.List^[I]) := nil;
     Tmp.Clear;
   finally
     FList.UnlockList;
@@ -3415,21 +3496,27 @@ end;
 
 {$REGION ' TEvsDBInfoFactory '}
 
-class function TEvsDBInfoFactory.NewDatabaseList :IEvsDatabaseList;
+class Function TEvsDBInfoFactory.NewDatabaseList(const aParent :IEvsParented) :IEvsDatabaseList;
 begin
   Result := TEvsDatabaseList.Create(nil, True);
 end;
 
-class function TEvsDBInfoFactory.NewDatabase(const aParent:IEvsParented=nil) : IEvsDatabaseInfo;
+class Function TEvsDBInfoFactory.NewDatabase(const aParent :IEvsParented) :IEvsDatabaseInfo;
 begin
   Result := TEvsDatabaseInfo.Create(nil,True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewTable(const aParent:IEvsParented=nil) : IEvsTableInfo;
+class Function TEvsDBInfoFactory.NewTable(const aParent :IEvsParented) :IEvsTableInfo;
 begin
   Result := TEvsTableInfo.Create(nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewTableList(const aParent :IEvsParented) :IEvsTableList;
+begin
+  Result := TEvsTableList.Create(Nil,True);
+  if Assigned(aParent) then (Result as TEvsDBInfo).Parent := aParent;
 end;
 
 class Function TEvsDBInfoFactory.NewField(const aParent:IEvsParented=nil) :IEvsFieldInfo;
@@ -3438,46 +3525,118 @@ begin
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewTrigger(const aParent:IEvsParented=nil) :IEvsTriggerInfo;
+class Function TEvsDBInfoFactory.NewFieldList(const aParent :IEvsParented) :IEvsFieldList;
+begin
+  Result := TEvsFieldList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsFieldList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewTrigger(const aParent :IEvsParented) :IEvsTriggerInfo;
 begin
   Result := TEvsTriggerInfo.Create(Nil,True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewSequence(const aParent:IEvsParented=nil) :IEvsSequenceInfo;
+class Function TEvsDBInfoFactory.NewTriggerList(const aParent :IEvsParented) :IEvsTriggerList;
+begin
+  Result := TEvsTriggerList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsTriggerList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewSequence(const aParent :IEvsParented) :IEvsSequenceInfo;
 begin
   Result := TEvsSequenceInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewIndex(const aParent:IEvsParented=nil) :IEvsIndexInfo;
+class Function TEvsDBInfoFactory.NewSequenceList(const aParent :IEvsParented) :IEvsSequenceList;
+begin
+  Result := TEvsSequenceList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsSequenceList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewIndex(const aParent :IEvsParented) :IEvsIndexInfo;
 begin
   Result := TEvsIndexInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewException(const aParent:IEvsParented=nil) :IEvsExceptionInfo;
+class Function TEvsDBInfoFactory.NewIndexList(const aParent :IEvsParented) :IEvsIndexList;
+begin
+  Result := TEvsIndexList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsIndexList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewException(const aParent :IEvsParented) :IEvsExceptionInfo;
 begin
   Result := TEvsExceptionInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewStoredProc(const aParent:IEvsParented=nil) :IEvsStoredInfo;
+class Function TEvsDBInfoFactory.NewExceptionList(const aParent :IEvsParented) :IEvsExceptionList;
+begin
+  Result := TEvsExceptionList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsExceptionList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewStoredProc(const aParent :IEvsParented) :IEvsStoredInfo;
 begin
   Result := TEvsStoredInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewDomain(const aParent:IEvsParented=nil) :IEvsDomainInfo;
+class Function TEvsDBInfoFactory.NewStoredList(const aParent :IEvsParented) :IEvsStoredList;
+begin
+  Result := TEvsStoredList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsStoredList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewDomain(const aParent :IEvsParented) :IEvsDomainInfo;
 begin
   Result := TEvsDomainInfo.Create(Nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
 end;
 
-class function TEvsDBInfoFactory.NewView(Const aParent :IEvsparented) :IEvsViewInfo;
+class Function TEvsDBInfoFactory.NewDomainList(const aParent :IEvsParented) :IEvsDomainList;
+begin
+  Result := TEvsDomainList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsDomainList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewView(const aParent :IEvsParented) :IEvsViewInfo;
 begin
   Result := TEvsViewInfo.Create(nil, True);
   if Assigned(aParent) then Result.Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewViewList(const aParent :IEvsParented) :IEvsViewList;
+begin
+  Result := TEvsViewList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsViewList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewUser(const aParent :IEvsParented) :IEvsUserInfo;
+begin
+  Result := TEvsUserInfo.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsUserInfo).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewUserList(const aParent :IEvsParented) :IEvsUserList;
+begin
+  Result := TEvsUserList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsUserList).Parent := aParent;
+end;
+
+class Function TEvsDBInfoFactory.NewRole(const aParent :IEvsParented) :IEvsRoleInfo;
+begin
+  Result := TEvsRoleInfo.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsRoleInfo).Parent := aParent;
+end;
+
+class function TEvsDBInfoFactory.NewRoleList(Const aParent :IEvsParented) :IEvsRoleList;
+begin
+  Result := TEvsRoleList.Create(nil, True);
+  if Assigned(aParent) then (Result as TEvsRoleList).Parent := aParent;
 end;
 
 {$ENDREGION}
@@ -4537,108 +4696,108 @@ end;
 
 {$REGION ' TEvsGeneratorList '}
 
-function TEvsGeneratorList.Get(aIdx :Integer) :IEvsGeneratorInfo;extdecl;
+function TEvsSequenceList.Get(aIdx :Integer) :IEvsGeneratorInfo;extdecl;
 begin
   Result := FList.Get(aIdx) as IEvsGeneratorInfo;
 end;
 
-function TEvsGeneratorList.GetCapacity :Integer;extdecl;
+function TEvsSequenceList.GetCapacity :Integer;extdecl;
 begin
   Result := FList.GetCapacity;
 end;
 
-function TEvsGeneratorList.GetCount :Integer;extdecl;
+function TEvsSequenceList.GetCount :Integer;extdecl;
 begin
   Result := FList.GetCount;
 end;
 
-procedure TEvsGeneratorList.Put(aIdx :Integer; aValue :IEvsGeneratorInfo);extdecl;
+procedure TEvsSequenceList.Put(aIdx :Integer; aValue :IEvsGeneratorInfo);extdecl;
 begin
   FList.Put(aIdx,aValue) ;
 end;
 
-procedure TEvsGeneratorList.SetCapacity(aValue :Integer);extdecl;
+procedure TEvsSequenceList.SetCapacity(aValue :Integer);extdecl;
 begin
   FList.SetCapacity(aValue);
 end;
 
-procedure TEvsGeneratorList.SetCount(aValue :Integer);extdecl;
+procedure TEvsSequenceList.SetCount(aValue :Integer);extdecl;
 begin
   FList.SetCount(aValue);
 end;
 
-constructor TEvsGeneratorList.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
+constructor TEvsSequenceList.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
 begin
   inherited Create(aOwner, aRefCounted);
   FList := TInterfaceList.Create;
 end;
 
-Destructor TEvsGeneratorList.Destroy;
+Destructor TEvsSequenceList.Destroy;
 begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
 end;
 
-procedure TEvsGeneratorList.Clear;extdecl;
+procedure TEvsSequenceList.Clear;extdecl;
 begin
   FList.Clear;
 end;
 
-procedure TEvsGeneratorList.Delete(aIdx :Integer);extdecl;
+procedure TEvsSequenceList.Delete(aIdx :Integer);extdecl;
 begin
   FList.Delete(aIdx);
 end;
 
-procedure TEvsGeneratorList.Exchange(aIdx1, aIdx2 :Integer);extdecl;
+procedure TEvsSequenceList.Exchange(aIdx1, aIdx2 :Integer);extdecl;
 begin
   FList.Exchange(aIdx1, aIdx2);
 end;
 
-function TEvsGeneratorList.New :IEvsGeneratorInfo;extdecl;
+function TEvsSequenceList.New :IEvsGeneratorInfo;extdecl;
 begin
   Result := TEvsSequenceInfo.Create(FOwner, True);
   Add(Result);
 end;
 
-function TEvsGeneratorList.First :IEvsGeneratorInfo;extdecl;
+function TEvsSequenceList.First :IEvsGeneratorInfo;extdecl;
 begin
   Result := FList.First as IEvsGeneratorInfo;
 end;
 
-function TEvsGeneratorList.IndexOf(aValue :IEvsGeneratorInfo) :Integer;extdecl;
+function TEvsSequenceList.IndexOf(aValue :IEvsGeneratorInfo) :Integer;extdecl;
 begin
   Result:=FList.IndexOf(aValue);
 end;
 
-function TEvsGeneratorList.Add(aValue :IEvsGeneratorInfo) :Integer;extdecl;
+function TEvsSequenceList.Add(aValue :IEvsGeneratorInfo) :Integer;extdecl;
 begin
   if FList.IndexOf(aValue) = -1 then
     Result := FList.Add(aValue);
 end;
 
-procedure TEvsGeneratorList.Insert(aIdx :Integer; aValue :IEvsGeneratorInfo);extdecl;
+procedure TEvsSequenceList.Insert(aIdx :Integer; aValue :IEvsGeneratorInfo);extdecl;
 begin
   if FList.IndexOf(aValue) = -1 then
     FList.Insert(aIdx,aValue);
 end;
 
-function TEvsGeneratorList.Last :IEvsGeneratorInfo;extdecl;
+function TEvsSequenceList.Last :IEvsGeneratorInfo;extdecl;
 begin
   Result := FList.Last as IEvsGeneratorInfo;
 end;
 
-function TEvsGeneratorList.Remove(aValue :IEvsGeneratorInfo) :Integer;extdecl;
+function TEvsSequenceList.Remove(aValue :IEvsGeneratorInfo) :Integer;extdecl;
 begin
   Result := FList.Remove(aValue);
 end;
 
-procedure TEvsGeneratorList.Lock;extdecl;
+procedure TEvsSequenceList.Lock;extdecl;
 begin
   FList.Lock;
 end;
 
-procedure TEvsGeneratorList.Unlock;extdecl;
+procedure TEvsSequenceList.Unlock;extdecl;
 begin
   FList.Unlock;
 end;
@@ -5058,8 +5217,13 @@ begin
 end;
 
 Procedure TEvsTableList.Clear; extdecl;
+var
+  vCntr :Integer;
 begin
   FList.Clear;
+  for vCntr := 0 to FList.Count -1 do begin
+    FList[vCntr] := nil;
+  end;
 end;
 
 Procedure TEvsTableList.Delete(aIndex :Integer); extdecl;
@@ -5184,8 +5348,9 @@ end;
 
 Function TEvsRoleList.New :IEvsRoleInfo;extdecl;
 begin
-  Result := nil;
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  Result := TEvsRoleInfo.Create(FOwner, True);
+  Add(Result);
+  //raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 function TEvsRoleList.First :IEvsRoleInfo;extdecl;
@@ -5386,7 +5551,7 @@ end;
 
 Function TEvsDatabaseInfo.GetUserCount :Integer; extdecl;
 begin
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  Result := FUsers.Count;
 end;
 
 Function TEvsDatabaseInfo.GetTitle :WideString; extdecl;
@@ -5550,7 +5715,7 @@ begin
   FTriggers    := TEvsTriggerList.Create  (Self, True);
   FUdfs        := TEvsUDFList.Create      (Self, True);
   FStoredProcs := TEvsStoredList.Create   (Self, True);
-  FSequences   := TEvsGeneratorList.Create(Self, True);
+  FSequences   := TEvsSequenceList.Create(Self, True);
   FIndices     := TEvsIndexList.Create    (Self, True);         //database indices? there is nothing like that.
   FDomains     := TEvsDomainList.Create   (Self, True);  //{$MESSAGE WARN 'Needs Testing'}
   FUsers       := TEvsUserList.Create     (Self, True);  //{$MESSAGE WARN 'Needs Testing'} //10
@@ -6291,8 +6456,9 @@ end;
 
 Destructor TEvsTableInfo.Destroy;
 begin
-  FFieldList := Nil;
-  FIndexList := Nil;
+  FFieldList   := Nil;
+  FIndexList   := Nil;
+  FTriggerList := Nil;
   inherited Destroy;
 end;
 
@@ -6568,6 +6734,13 @@ begin
   FList := TInterfaceList.Create;
 end;
 
+Destructor TEvsIndexInfo.Destroy;
+begin
+  FList.Clear;
+  FList := Nil;
+  inherited Destroy;
+end;
+
 function TEvsIndexInfo.TableName :string;extdecl;
 begin
   Result := '';     {$MESSAGE WARN 'Needs Implementation'}
@@ -6704,23 +6877,23 @@ end;
 
 procedure TEvsDBInfo.AddOwned(aObj :TEvsDBInfo);
 var
-  vIdx:Integer;
+  vIdx:Integer=-1;
 begin
-  if Assigned(FOwned) then vIdx := FOwned.IndexOf(aObj) else begin
-    FOwned := TObjectList.Create(False);
-    vIdx := -1;
-  end;
+  //if Assigned(FOwned) then vIdx := FOwned.IndexOf(aObj) else begin
+  //  FOwned := TObjectList.Create(False);
+  //  vIdx := -1;
+  //end;
   if vIdx > -1 then raise ETBException.Create('Dublicates are not allowed.');
-  FOwned.Add(aObj);
-  aObj.FOwner := Self;
+  //FOwned.Add(aObj);
+  //aObj.FOwner := Self;
 end;
 
 procedure TEvsDBInfo.ExtractOwned(aObj :TEvsDBInfo);
-var
-  vIdx:Integer;
+//var
+//  vIdx:Integer;
 begin
-  vIdx := FOwned.IndexOf(aObj);
-  if vIdx > -1 then FOwned.Extract(aObj);
+  //vIdx := FOwned.IndexOf(aObj);
+  //if vIdx > -1 then FOwned.Extract(aObj);
 end;
 
 procedure TEvsDBInfo.BeginUpdate;
@@ -6840,8 +7013,8 @@ end;
 
 Procedure TEvsDBInfo.Update(aSubject :IEvsObjectRef; Action :TEVSGenAction); extdecl;
 begin
-  if (Action = gaDestroy) and ((aSubject.ObjectRef is TEvsDBInfo) and (TEvsDBInfo(aSubject.ObjectRef).FOwner = Self)) then
-    FOwned.Remove(aSubject.ObjectRef);
+  //if (Action = gaDestroy) and ((aSubject.ObjectRef is TEvsDBInfo) and (TEvsDBInfo(aSubject.ObjectRef).FOwner = Self)) then
+  //  FOwned.Remove(aSubject.ObjectRef);
 end;
 
 Procedure TEvsDBInfo.ClearState; extdecl;
@@ -7124,11 +7297,24 @@ begin
 end;
 {$ENDREGION}
 
+procedure ClearKnownDBTypes;
+var
+  vCntr :Integer;
+  vTmp  :PDBKindReg;
+begin
+  for vCntr := KnownDBTypes.Count -1 downto 0 do begin
+    vTmp := PDBKindReg(KnownDBTypes[vCntr]);
+    KnownDBTypes[vCntr] := nil;
+    Dispose(vTmp);
+  end;
+  KnownDBTypes.Free;
+end;
+
 initialization
   KnownDBTypes := TList.Create;
 
 finalization
-  KnownDBTypes.Free;
+  ClearKnownDBTypes;
 
 end.
 

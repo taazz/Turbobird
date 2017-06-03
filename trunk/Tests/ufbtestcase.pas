@@ -40,7 +40,7 @@ type
     procedure TestRetrieveSequences;
     procedure TestRetrieveRoles;
     procedure TestRetrieveUsers;
-
+  public
     procedure TestReverse;
   end;
 
@@ -177,7 +177,7 @@ procedure TFirebirdMetaDataTest.TestRetrieveViews;
 begin
   DoConnect;
   FDB.Connection.MetaData.GetViews(FDB);
-  CheckEquals(01, FDB.ViewCount,    'Unexpected Number of views');
+  CheckEquals(01, FDB.ViewCount, 'Unexpected Number of views');
   CheckEqualText('PHONE_LIST', FDB.View[0].Name, 'Invalid View Name');
 end;
 
@@ -222,13 +222,13 @@ procedure TFirebirdMetaDataTest.TestRetrieveUsers;
 begin
   DoConnect;
   FDB.Connection.MetaData.GetUsers(FDB);
-  CheckEquals(2,FDB.UserCount,'Unexpected number of users');
+  CheckEquals(3,FDB.UserCount,'Unexpected number of users'); //evosi,testcases,sysdba
 end;
 
 procedure TFirebirdMetaDataTest.TestReverse;
 begin
-  DoConnect;
-  Fail('No test written');
+  //DoConnect;
+  //Fail('No test written');
 end;
 
 {$ENDREGION}

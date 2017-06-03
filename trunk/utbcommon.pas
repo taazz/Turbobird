@@ -1515,5 +1515,6 @@ initialization
   ConnectionPool.SoftMax := True; //create as many controls as requested, only keep alive fmaxCount controls.
 finalization
   QueryPool.Free;//no access is possible at this point.
+  ConnectionPool.Free;
 end.
 

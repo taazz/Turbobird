@@ -27,6 +27,7 @@ type
   protected
     function GetInTrans :ByteBool;override;extdecl;
   public
+    destructor Destroy; override;
     Procedure Commit; override; extdecl;
     procedure RollBack; override; extdecl;
     procedure BeforeDestruction; override;
@@ -35,11 +36,12 @@ type
   { TEvsMDOConnection }
   TEvsMDOConnection = class(TEvsAbstractConnectionProxy, IEvsMetaData)
   private
-    //FActiveConnection : TMDODataBase;
-    Class var FQryPool : TMDOQueryPool; //static;
-    Class var FCnnPool : TMDODatabasePool;//static;
+    FActiveConnection : TMDODataBase;
+    {$IFDEF POOL_QRY}
+    //Class var FQryPool : TMDOQueryPool; //static;
+    //Class var FCnnPool : TMDODatabasePool;//static;
+    {$ENDIF}
     Class Function NewQuery:TMDOQuery;
-
   protected
     Function GetConnection :IEvsConnection; extdecl;
     Function GetMetaData   :IEvsMetaData; override;extdecl;
@@ -193,12 +195,26 @@ begin
   end;
 end;
 
+function NewCnn:TMDODataBase;
+begin
+  {$IFDEF POOL_QRY}
+   Result := TEvsMDOConnection.FCnnPool.Aquire;
+  {$ELSE}
+  Result := TMDODataBase.Create(Nil);
+  //Result.Assign(TEvsMDOConnection.FActiveConnection);
+  {$ENDIF}
+end;
+
 function Connect(aHost, aDatabase, aUser, aPwd, aRole, aCharset :Widestring) :IEvsConnection;
 var
   vObj :TMDODataBase;
 begin
   Result := Nil;
+  {$IFDEF POOL_QRY}
   vObj := TEvsMDOConnection.FCnnPool.Aquire;
+  {$ELSE}
+  vObj := TMDODataBase.Create(Nil);
+  {$ENDIF}
   vObj.UserName     := aUser;
   vObj.DatabaseName := aHost + ':' + aDatabase;
   vObj.CharSet      := aCharset;
@@ -218,6 +234,12 @@ begin
   Result := TMDOQuery(FDS).Transaction.InTransaction;
 end;
 
+destructor TEvsMDODatasetProxy.Destroy;
+begin
+  inherited Destroy;
+  if not FOwnsDataset then ;
+end;
+
 Procedure TEvsMDODatasetProxy.Commit; extdecl;
 begin
   TMDOQuery(FDS).Transaction.Commit;
@@ -232,8 +254,10 @@ procedure TEvsMDODatasetProxy.BeforeDestruction;
 begin
   inherited BeforeDestruction;
   if TMDOQuery(FDS).Transaction.Active then TMDOQuery(FDS).Transaction.Rollback;
-  TEvsMDOConnection.FQryPool.Return(FDS);
-  Abort;
+  if FOwnsDataset then FDS.Free
+  {$IFDEF POOL_QRY}
+  else TEvsMDOConnection.FQryPool.Return(FDS);
+  {$ENDIF}
 end;
 
 {$ENDREGION}
@@ -242,7 +266,7 @@ end;
 
 function TMDODatabasePool.Aquire :TMDODataBase;
 begin
-  Result := TMDODataBase(inherited Aquire);
+  Result := TMDODataBase(Get);
 end;
 
 constructor TMDODatabasePool.Create(const aMaxCount :Integer; const aNeededOnly :Boolean);
@@ -256,7 +280,7 @@ end;
 
 function TMDOQueryPool.Aquire :TMDOQuery;
 begin
-  Result := TMDOQuery(inherited Aquire);
+  Result := TMDOQuery(Get);
 end;
 
 constructor TMDOQueryPool.Create(const aMaxCount :Integer; const aNeededOnly :Boolean);
@@ -269,7 +293,11 @@ end;
 
 class function TEvsMDOConnection.NewQuery :TMDOQuery;
 begin
+  {$IFDEF POOL_QRY}
   Result := FQryPool.Aquire;
+  {$ELSE}
+  Result := TMDOQuery.Create(Nil);
+  {$ENDIF}
   if not Assigned(Result.Transaction) then Result.Transaction := TMDOTransaction.Create(Result);
 end;
 
@@ -448,14 +476,15 @@ var
   vQry:TMDOQuery;
 begin
   Result := False;
-  vQry := FQryPool.Aquire;
+  vQry := TMDOQuery.Create(Nil);
   try
     vQry.Database := TMDODataBase(FCnn);
     vQry.SQL.Text := aSQL;
     vQry.ExecSQL;
     Result := True;
   finally
-    FQryPool.Return(vQry);
+    //FQryPool.Return(vQry);
+    vQry.Free;
   end;
 end;
 
@@ -483,12 +512,16 @@ function TEvsMDOConnection.InternalQuery(aSQL :wideString) :IEvsDataset;extdecl;
 var
   vObj:TMDOQuery;
 begin
+  //{$IFDEF POOL_QRY}
   vObj := NewQuery;
+  //{$ELSE}
+  //vObj := TMDOQuery.Create(Nil);
+  //{$ENDIF}
   vObj.Database := TMDODataBase(FCnn);
   vObj.Transaction.DefaultDatabase := vObj.Database;
   vObj.SQL.Text := aSQL;
   vObj.Open;
-  Result := TEvsMDODatasetProxy.Create(vObj);
+  Result := TEvsMDODatasetProxy.Create(vObj, True);
 end;
 
 procedure TEvsMDOConnection.InternalSetCharSet(aValue :WideString);extdecl;
@@ -514,8 +547,11 @@ end;
 procedure TEvsMDOConnection.BeforeDestruction;
 begin
   inherited BeforeDestruction;
-  FCnnPool.Return(FCnn);
+  {$IFDEF POOL_QRY}
+   FCnnPool.Return(FCnn);
+  {$ENDIF}
 end;
+
 
 procedure TEvsMDOConnection.GetTables(const aDB :IEvsTableList);overload;extdecl;
 const
@@ -823,6 +859,7 @@ begin
     GetViewInfo(vVw);
     vDts.Next;
   end;
+  vDts := Nil;
 end;
 
 procedure TEvsMDOConnection.GetUDFs(const aObject :IEvsDatabaseInfo);    extdecl;{$MESSAGE WARN 'Needs Implementation'}
@@ -890,15 +927,19 @@ end;
 
 procedure TEvsMDOConnection.GetUsers(const aDB :IEvsDatabaseInfo);       extdecl;
 const
-  cSql = 'SELECT DISTINCT RDB$USER '+
-         'FROM RDB$USER_PRIVILEGES';
+  cSql = 'SELECT DISTINCT RDB$USER ' +
+         'FROM RDB$USER_PRIVILEGES ' +
+         'WHERE RDB$PRIVILEGE = ''M''';
+
 var
   vDts :IEvsDataset;
   vUsr :IEvsUserInfo;
 begin
   vDts := Query(cSql);
   vDts.First;
-  while not vDts.EOF do begin
+  vUsr := aDB.NewUser;
+  vUsr.UserName := 'SYSDBA';//special case always present.
+  while not vDts.EOF do begin {$MESSAGE WARN 'unreliable method to get the users use the service.'}
     vUsr := aDB.NewUser;
     vUsr.UserName := Trim(vDts.Field[0].AsString);
     vDts.Next;
@@ -1074,12 +1115,12 @@ end;
 
 function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
 begin
-
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 function TEvsMDOConnection.GetTableDDL(Const aObject :IEvsTableInfo) :widestring; extdecl;
 begin
-
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 Function TEvsMDOConnection.GetCharsets :PVarArray; extdecl;
@@ -1095,11 +1136,17 @@ end;
 {$ENDREGION}
 
 initialization
+  {$IFDEF POOL_QRY}
   TEvsMDOConnection.FQryPool := TMDOQueryPool.Create(10,True);
   TEvsMDOConnection.FCnnPool := TMDODatabasePool.Create(10,True);
+  {$ENDIF}
   RegisterDBType(stFirebird, 'Firebird', @Connect, nil, nil);
 
 finalization
+  {$IFDEF POOL_QRY}
   FreeAndNil(TEvsMDOConnection.FQryPool);
+  FreeAndNil(TEvsMDOConnection.FCnnPool);
+  {$ENDIF}
+
 end.
 

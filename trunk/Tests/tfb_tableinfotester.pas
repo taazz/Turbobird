@@ -5,7 +5,7 @@ unit TFB_TableInfoTester;
 interface
 
 uses
-  Classes, SysUtils, TestFramework, uFBTestcase, uEvsDBSchema;
+  Classes, SysUtils, TestFramework, uFBTestcase, uEvsDBSchema, uTBTypes;
 
 type
 
@@ -24,13 +24,13 @@ type
     procedure TableTriggersRetrieval;
     procedure ForeignKeyRetrieval;
     procedure PrimaryKeyRetrieval;
-    procedure ChekcRetrieval;
+    procedure CheckRetrieval;
     procedure ListCopy;
   end;
 
 implementation
 
-uses Dialogs;
+uses Dialogs, uTBCommon;
 
 function TableByName(const aDB:IEvsDatabaseInfo; const aTableName:string):IEvsTableInfo;
 var
@@ -71,7 +71,6 @@ procedure TFBTableInfo.Copy;
 var
   vTbl     :IEvsTableInfo = nil;
   vDBTable :IEvsTableInfo = nil;
-
 begin
   SetupCopy(vDBTable, vTbl);
   CheckEquals(vDBTable.TableName,   vTbl.TableName,   'Tablename copy failed');
@@ -104,9 +103,9 @@ begin
   CheckEquals(01, FDB.Table[9].TriggerCount, 'Unexpected Count of triggers for table ' + FDB.Table[9].TableName);
   vTbl := TableByName(FDB,'department');
   if vTbl = nil then Fail('Table department was not retrieved.');
-  CheckEquals(7,vTbl.FieldCount,'Invalid field count for Table ' + vTbl.TableName);
+  CheckEquals(7,vTbl.FieldCount,  'Invalid field count for Table '    + vTbl.TableName);
   CheckEquals(0,vTbl.TriggerCount,'Invalid trigger count  for Table ' + vTbl.TableName);
-  CheckEquals(1,vTbl.IndexCount,'Invalid index count for Table ' + vTbl.TableName);
+  CheckEquals(1,vTbl.IndexCount,  'Invalid index count for Table '    + vTbl.TableName);
 end;
 
 procedure TFBTableInfo.TableTriggersRetrieval;
@@ -184,7 +183,7 @@ begin
   Fail('No test written');
 end;
 
-procedure TFBTableInfo.ChekcRetrieval;
+procedure TFBTableInfo.CheckRetrieval;
 begin
   fail('No test written');
 end;

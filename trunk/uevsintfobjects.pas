@@ -10,6 +10,12 @@ uses
 
 type
 
+// Back ported those two to solve a number of memory leaks with the TInterfaceperistent.
+// It was different from my own implementation and it behaved as a contained
+// interface instead of a stand alone one.
+// In the future I'll have to rewrite the TEvsDBInfo base class to use the interfaced object
+// in here instead of re implementing the iunknown interface. (post V 1 release).
+
   { TEvsInterfacedObject }
 
   TEvsInterfacedObject = class(TObject,IUnknown)
@@ -69,7 +75,7 @@ function TEvsInterfacedPersistent._Release :LongInt;extdecl;
 begin
   if FRefCounted then begin
     Result :=interlockeddecrement(FRefCount);
-    if Result <= 0 then Destroy;
+    if Result <= 0 then Free;
   end;
 end;
 

@@ -4,22 +4,21 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="47">
+    <Units Count="22">
       <Unit0>
         <Filename Value="MetaDataTest.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
-        <CursorPos X="38" Y="8"/>
-        <UsageCount Value="87"/>
+        <EditorIndex Value="5"/>
+        <CursorPos X="50" Y="28"/>
+        <UsageCount Value="212"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="ufbtestcase.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uFBTestcase"/>
-        <TopLine Value="69"/>
-        <CursorPos Y="97"/>
-        <UsageCount Value="87"/>
+        <CursorPos X="20" Y="34"/>
+        <UsageCount Value="212"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -28,28 +27,32 @@
         <UnitName Value="uEvsDBSchema"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="2402"/>
-        <CursorPos X="33" Y="2434"/>
-        <UsageCount Value="87"/>
+        <TopLine Value="1815"/>
+        <CursorPos Y="2105"/>
+        <FoldState Value=" T7iNK30121312 piaoZIN4]9fjTL8[94ejEH[I9{V3 pj3m3Ha4]9JkMLX212]B7nEN8[@5l9qBMQ[V4PkJMT[94LkNI[w54k0GT[942jdM]9TJi-51_@031 pmCva1{L1]VamD1{0]AkGmF1{82 pjOlX1=[T4clP1{h[A5mb1{u[A4dn81{i14 p0z]A-[x4EnW1{j]Aialb1#qV]T*c1}/])nVtH1}= TCiugM6 T3li6241x1;"/>
+        <UsageCount Value="212"/>
+        <Bookmarks Count="2">
+          <Item0 Y="1425" ID="1"/>
+          <Item1 X="57" Y="5267"/>
+        </Bookmarks>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="ufptesthelper.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ufptestHelper"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="24" Y="12"/>
-        <UsageCount Value="87"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="212"/>
       </Unit3>
       <Unit4>
         <Filename Value="tfb_tableinfotester.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="TFB_TableInfoTester"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="134"/>
-        <CursorPos X="11" Y="145"/>
-        <UsageCount Value="87"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="47"/>
+        <CursorPos X="12" Y="90"/>
+        <UsageCount Value="212"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -58,16 +61,16 @@
         <UnitName Value="uEvsFields"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="37" Y="64"/>
-        <UsageCount Value="87"/>
+        <UsageCount Value="212"/>
       </Unit5>
       <Unit6>
         <Filename Value="ufbviewtestcase.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uFBViewTestCase"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="6"/>
-        <CursorPos Y="51"/>
-        <UsageCount Value="87"/>
+        <TopLine Value="5"/>
+        <CursorPos X="15" Y="40"/>
+        <UsageCount Value="212"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
@@ -75,66 +78,69 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsMemLeakTesting"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="10"/>
-        <CursorPos X="41" Y="16"/>
-        <UsageCount Value="32"/>
+        <TopLine Value="293"/>
+        <CursorPos X="24" Y="342"/>
+        <UsageCount Value="160"/>
         <Loaded Value="True"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\..\Components\fpTest\src\TestFramework.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="2770"/>
-        <CursorPos Y="2798"/>
-        <UsageCount Value="12"/>
+        <Filename Value="..\uevsintfobjects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsIntfObjects"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="12"/>
+        <CursorPos X="3" Y="40"/>
+        <FoldState Value=" T3j603*"/>
+        <UsageCount Value="151"/>
+        <Loaded Value="True"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\..\Components\mdo\Source\runtime\MDO.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="39"/>
-        <CursorPos X="47" Y="69"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
+        <Filename Value="uevsfbqryleaktest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="50"/>
+        <CursorPos X="24" Y="97"/>
+        <UsageCount Value="149"/>
+        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
-        <Filename Value="..\..\..\..\Components\fpTest\src\TestFrameworkIfaces.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="16"/>
-        <CursorPos Y="69"/>
-        <UsageCount Value="10"/>
+        <Filename Value="..\..\..\..\Components\fpTest\src\TestFramework.pas"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="2244"/>
+        <CursorPos Y="2271"/>
+        <UsageCount Value="41"/>
+        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
+        <Filename Value="..\..\..\..\Components\fpTest\src\TestFrameworkIfaces.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos X="3" Y="50"/>
+        <UsageCount Value="15"/>
+      </Unit11>
+      <Unit12>
         <Filename Value="..\utbfirebird.pas"/>
         <UnitName Value="uTBFirebird"/>
         <EditorIndex Value="11"/>
-        <TopLine Value="21"/>
-        <CursorPos X="3" Y="37"/>
-        <UsageCount Value="42"/>
-        <Bookmarks Count="1">
-          <Item0 Y="200"/>
-        </Bookmarks>
-        <Loaded Value="True"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="..\EvsDefs.inc"/>
-        <EditorIndex Value="8"/>
-        <CursorPos Y="5"/>
-        <UsageCount Value="35"/>
+        <TopLine Value="1017"/>
+        <CursorPos X="19" Y="1055"/>
+        <UsageCount Value="105"/>
         <Loaded Value="True"/>
       </Unit12>
       <Unit13>
-        <Filename Value="..\uevsgenintf.pas"/>
-        <UnitName Value="uEvsGenIntf"/>
-        <EditorIndex Value="10"/>
-        <CursorPos X="34" Y="16"/>
-        <UsageCount Value="39"/>
+        <Filename Value="..\EvsDefs.inc"/>
+        <EditorIndex Value="12"/>
+        <UsageCount Value="98"/>
         <Loaded Value="True"/>
       </Unit13>
       <Unit14>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="426"/>
-        <CursorPos X="30" Y="459"/>
-        <UsageCount Value="12"/>
+        <Filename Value="..\uevsgenintf.pas"/>
+        <UnitName Value="uEvsGenIntf"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="20"/>
+        <CursorPos X="14" Y="48"/>
+        <UsageCount Value="58"/>
+        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\uevstabledetails.pas"/>
@@ -142,355 +148,198 @@
         <EditorIndex Value="-1"/>
         <CursorPos X="27" Y="98"/>
         <FoldState Value=" T7DIr2 pjAkXIV TJla1~'1T"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="1"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstrh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="57"/>
-        <CursorPos X="10" Y="85"/>
-        <UsageCount Value="4"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstr.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="478"/>
-        <CursorPos X="5" Y="480"/>
-        <UsageCount Value="4"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="..\..\..\..\1.4.4\lcl\dialogs.pp"/>
-        <UnitName Value="Dialogs"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="495"/>
-        <CursorPos X="11" Y="522"/>
-        <UsageCount Value="5"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="..\..\..\..\1.4.4\lcl\include\messagedialogs.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="188"/>
-        <CursorPos X="3" Y="207"/>
-        <UsageCount Value="5"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="..\..\..\..\1.4.4\lcl\include\lclintfh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="94"/>
-        <CursorPos X="11" Y="136"/>
-        <UsageCount Value="5"/>
-      </Unit20>
-      <Unit21>
-        <Filename Value="..\..\..\..\1.4.4\lcl\lcltype.pp"/>
-        <UnitName Value="LCLType"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1783"/>
-        <CursorPos X="3" Y="1811"/>
-        <UsageCount Value="5"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="..\..\..\..\Components\fpTest\src\TestFrameworkProxy.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="872"/>
-        <CursorPos Y="900"/>
-        <UsageCount Value="4"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="..\..\..\..\Components\fpTest\src\LCL\guitestrunner.pas"/>
-        <UnitName Value="GuiTestRunner"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1804"/>
-        <CursorPos Y="1851"/>
-        <UsageCount Value="4"/>
-      </Unit23>
-      <Unit24>
-        <Filename Value="..\..\..\..\1.4.4\lcl\include\menuitem.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="60"/>
-        <CursorPos Y="87"/>
-        <UsageCount Value="4"/>
-      </Unit24>
-      <Unit25>
         <Filename Value="..\utbtypes.pas"/>
         <UnitName Value="uTBTypes"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="129"/>
         <CursorPos X="23" Y="178"/>
-        <UsageCount Value="36"/>
-      </Unit25>
-      <Unit26>
+        <UsageCount Value="23"/>
+      </Unit16>
+      <Unit17>
         <Filename Value="..\utbcommon.pas"/>
         <UnitName Value="uTBCommon"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="372"/>
         <CursorPos X="41" Y="394"/>
-        <UsageCount Value="36"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\base\db.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1835"/>
-        <CursorPos X="15" Y="1863"/>
-        <FoldState Value=" T7?CD~\3 pigqbQC1 T8?D2\1 pjRlF251;"/>
-        <UsageCount Value="11"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\base\database.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="283"/>
-        <CursorPos X="3" Y="286"/>
-        <UsageCount Value="9"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysutilh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="173"/>
-        <CursorPos X="14" Y="215"/>
-        <UsageCount Value="6"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysutils.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="522"/>
-        <CursorPos X="3" Y="546"/>
-        <UsageCount Value="6"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="..\..\..\ER_Designer\Classes\UEVSDBGraph.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="45" Y="21"/>
-        <UsageCount Value="9"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\heaptrc.pp"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="157"/>
-        <CursorPos X="30" Y="171"/>
-        <UsageCount Value="10"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\lists.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="724"/>
-        <CursorPos X="3" Y="727"/>
-        <UsageCount Value="11"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="..\..\..\..\Components\Evosi\Common\Src\uEvsLists.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="25" Y="19"/>
-        <UsageCount Value="10"/>
-      </Unit34>
-      <Unit35>
+        <UsageCount Value="23"/>
+      </Unit17>
+      <Unit18>
         <Filename Value="..\..\..\..\Components\Evosi\Common\Src\uevsinterfacelists.pas"/>
         <UnitName Value="UEVSInterfaceLists"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="32" Y="19"/>
-        <UsageCount Value="14"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\persist.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="117"/>
-        <CursorPos Y="129"/>
-        <UsageCount Value="10"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\objpas.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="971"/>
-        <CursorPos Y="1009"/>
-        <UsageCount Value="10"/>
-      </Unit37>
-      <Unit38>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="263"/>
-        <CursorPos X="20" Y="291"/>
-        <UsageCount Value="10"/>
-      </Unit38>
-      <Unit39>
-        <Filename Value="..\..\..\..\Components\Evosi\FastMM4\Src\FastMM4.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1127"/>
-        <CursorPos X="3" Y="1172"/>
-        <UsageCount Value="10"/>
-      </Unit39>
-      <Unit40>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\systemh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="241"/>
-        <CursorPos X="3" Y="269"/>
-        <UsageCount Value="10"/>
-      </Unit40>
-      <Unit41>
-        <Filename Value="..\..\..\..\Components\mdo\Source\runtime\MDODatabase.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="313"/>
-        <CursorPos X="19" Y="349"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="1"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\..\..\Components\mdo\Source\runtime\MDOServices.pas"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="134"/>
+        <CursorPos X="36" Y="172"/>
+        <UsageCount Value="54"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit41>
-      <Unit42>
-        <Filename Value="..\uevsintfobjects.pas"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="uevsfieldinfotest.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="uEvsIntfObjects"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="92"/>
-        <CursorPos Y="102"/>
-        <FoldState Value=" T3j003D"/>
-        <UsageCount Value="22"/>
+        <UnitName Value="uEvsFieldInfoTest"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="65"/>
+        <CursorPos X="24" Y="104"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
-      </Unit42>
-      <Unit43>
-        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\system.inc"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="..\..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\variants.pp"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="53"/>
-        <CursorPos X="11" Y="81"/>
-        <UsageCount Value="10"/>
-      </Unit43>
-      <Unit44>
-        <Filename Value="uevsfbqryleaktest.pas"/>
-        <UnitName Value="uEvsFbQryLeakTest"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="20"/>
-      </Unit44>
-      <Unit45>
-        <Filename Value="uevsfbqryleaktest.pas"/>
-        <UnitName Value="uEvsFbQryLeakTest"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="20"/>
-      </Unit45>
-      <Unit46>
-        <Filename Value="uevsfbqryleaktest.pas"/>
-        <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="9" Y="47"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit46>
+        <TopLine Value="259"/>
+        <CursorPos X="22" Y="277"/>
+        <FoldState Value=" T7kVNn014S"/>
+        <UsageCount Value="6"/>
+      </Unit21>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="1179" Column="17" TopLine="1152"/>
+        <Caret Line="3384" Column="58" TopLine="3378"/>
       </Position1>
       <Position2>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="2976" TopLine="2927"/>
+        <Caret Line="3393" Column="44" TopLine="3365"/>
       </Position2>
       <Position3>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="2977" TopLine="2928"/>
+        <Caret Line="1970" Column="39" TopLine="1918"/>
       </Position3>
       <Position4>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="6947" TopLine="6919"/>
+        <Caret Line="3387" Column="62" TopLine="3359"/>
       </Position4>
       <Position5>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5710" TopLine="5682"/>
+        <Caret Line="5257" Column="3" TopLine="5250"/>
       </Position5>
       <Position6>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5712" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="191" Column="13" TopLine="152"/>
       </Position6>
       <Position7>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5713" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="190" Column="44" TopLine="158"/>
       </Position7>
       <Position8>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5714" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="196" Column="38" TopLine="153"/>
       </Position8>
       <Position9>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5715" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="66" Column="3" TopLine="64"/>
       </Position9>
       <Position10>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5716" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="88" TopLine="62"/>
       </Position10>
       <Position11>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5717" TopLine="5682"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="87" Column="82" TopLine="44"/>
       </Position11>
       <Position12>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5718" TopLine="5682"/>
+        <Caret Line="6789" Column="3" TopLine="6762"/>
       </Position12>
       <Position13>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5719" TopLine="5682"/>
+        <Caret Line="6795" Column="50" TopLine="6774"/>
       </Position13>
       <Position14>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5720" TopLine="5682"/>
+        <Caret Line="6800" Column="66" TopLine="6764"/>
       </Position14>
       <Position15>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5721" TopLine="5682"/>
+        <Caret Line="5101" Column="63" TopLine="5062"/>
       </Position15>
       <Position16>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5722" TopLine="5682"/>
+        <Caret Line="2116" Column="80" TopLine="2070"/>
       </Position16>
       <Position17>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5723" TopLine="5682"/>
+        <Caret Line="2112" Column="14" TopLine="2070"/>
       </Position17>
       <Position18>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="3507" TopLine="3479"/>
+        <Caret Line="5085" Column="3" TopLine="5079"/>
       </Position18>
       <Position19>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="3508" TopLine="3479"/>
+        <Caret Line="2116" Column="80" TopLine="2070"/>
       </Position19>
       <Position20>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="2441" TopLine="2413"/>
+        <Caret Line="5065" Column="26" TopLine="5037"/>
       </Position20>
       <Position21>
-        <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5646" TopLine="5618"/>
+        <Filename Value="tfb_tableinfotester.pas"/>
+        <Caret Line="88" Column="2" TopLine="44"/>
       </Position21>
       <Position22>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5647" TopLine="5618"/>
+        <Caret Line="4297" Column="26" TopLine="4259"/>
       </Position22>
       <Position23>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5648" TopLine="5618"/>
+        <Caret Line="2332" Column="53" TopLine="2325"/>
       </Position23>
       <Position24>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5649" TopLine="5618"/>
+        <Caret Line="4296" Column="65" TopLine="4268"/>
       </Position24>
       <Position25>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5650" TopLine="5618"/>
+        <Caret Line="4297" Column="11" TopLine="4268"/>
       </Position25>
       <Position26>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5651" TopLine="5618"/>
+        <Caret Line="1277" TopLine="1239"/>
       </Position26>
       <Position27>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5653" TopLine="5618"/>
+        <Caret Line="7028" Column="3" TopLine="6990"/>
       </Position27>
       <Position28>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="5655" TopLine="5618"/>
+        <Caret Line="7031" TopLine="6990"/>
       </Position28>
       <Position29>
         <Filename Value="..\uevsdbschema.pas"/>
-        <Caret Line="2448" TopLine="2414"/>
+        <Caret Line="5403" TopLine="5360"/>
       </Position29>
       <Position30>
-        <Filename Value="ufbtestcase.pas"/>
-        <Caret Line="97" TopLine="69"/>
+        <Filename Value="..\uevsdbschema.pas"/>
+        <Caret Line="7032" TopLine="7004"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="2">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\uevsdbschema.pas"/>
+        <Line Value="7033"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="..\uevsdbschema.pas"/>
+        <Line Value="5270"/>
+      </Item2>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

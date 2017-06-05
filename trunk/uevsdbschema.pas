@@ -18,6 +18,7 @@
 
 unit uEvsDBSchema;
 
+//{$mode delphi}{$H+}
 {$mode delphi}{$H+}
 {$Include EvsDefs.inc}
 
@@ -62,7 +63,6 @@ type
 
   TConnectProc   = Function (aHost,aDatabase,aUser,aPwd,aRole,aCharset:Widestring):IEvsConnection;
   TConnectMethod = Function (aHost,aDatabase,aUser,aPwd,aRole,aCharset:Widestring):IEvsConnection of object;
-
   { TEvsDBInfo }
   IEvsObjectState = interface(IEvsCopyable)
     function GetStates :TEvsDBStates;
@@ -92,12 +92,13 @@ type
     procedure ClearStateFlags;
     property UpdateStates:TEvsDBStates read FUpdateStates;
     function GetParent :IEvsParented; extdecl;
-    procedure SetParent(aValue :IEvsParented);extdecl;
+    procedure SetParent(aValue :IEvsParented);virtual;extdecl;
     property Owner:TEvsDBInfo read FOwner;
   public
     Constructor Create(aOwner:TEvsDBInfo; aRefCounted:Boolean{=True});virtual;
     Destructor Destroy; override;
 
+    procedure Error(const aMsg:String; aParams:array of const);
     //IEvsCopyable Support;
     function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
     function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;
@@ -122,7 +123,6 @@ type
     Property ObjectState:TEvsDBStates read GetStates;
     Property Parent:IEvsParented read GetParent write SetParent;
   end;
-
   { IEvsUDFInfo }
   IEvsUDFInfo = interface(IEvsParented){$MESSAGE WARN 'Needs implementation'}
     ['{729DBB89-2B77-48CA-82F3-888591B8E47A}']
@@ -163,37 +163,37 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsUDFInfo read Get write Put;default;
   end;
-
   { IEvsFieldInfo }
   IEvsFieldInfo = interface(IEvsParented) //OK
     ['{1D1C2E18-593E-44D4-8020-DA88FE3C8E60}']
-    Function GetAllowNull :ByteBool;extdecl;
-    Function GetAutoNumber :ByteBool;extdecl;
-    Function GetCalculated :widestring;extdecl;
-    Function GetCanAutoInc :WordBool;extdecl;
-    Function GetCharset :widestring;extdecl;
-    Function GetCheck :widestring;extdecl;
-    Function GetColation :widestring;extdecl;
-    function GetDataGroup :TEvsDataGroup;extdecl;
-    Function GetDataTypeName :widestring;extdecl;
-    Function GetDefaultValue :OLEVariant;extdecl;
-    procedure SetDataGroup(aValue :TEvsDataGroup);extdecl;
-    Procedure SetDefaultValue(aValue :OLEVariant);extdecl;
-    Function GetFieldDescription :widestring;extdecl;
-    Function GetFieldName :widestring;extdecl;
-    Function GetFieldScale :Integer;extdecl;
-    Procedure SetFieldScale(aValue :Integer);extdecl;
-    Function GetFieldSize :Integer;extdecl;
-    Procedure SetFieldSize(aValue :Integer);extdecl;
-    Procedure SetAllowNull(aValue :ByteBool);extdecl;
-    Procedure SetAutoNumber(aValue :ByteBool);extdecl;
-    Procedure SetCalculated(aValue :widestring);extdecl;
-    Procedure SetCharset(aValue :widestring);extdecl;
-    Procedure SetCheck(aValue :widestring);extdecl;
-    Procedure SetColation(aValue :widestring);extdecl;
-    Procedure SetDataTypeName(aValue :widestring);extdecl;
-    Procedure SetFieldDescription(aValue :widestring);extdecl;
-    Procedure SetFieldName(aValue :widestring);extdecl;
+    Function GetAllowNull :ByteBool;                   extdecl;
+    Function GetAutoNumber :ByteBool;                  extdecl;
+    Function GetCalculated :widestring;                extdecl;
+    Function GetCanAutoInc :WordBool;                  extdecl;
+    Function GetCharset :widestring;                   extdecl;
+    Function GetCheck :widestring;                     extdecl;
+    Function GetColation :widestring;                  extdecl;
+    function GetDataGroup :TEvsDataGroup;              extdecl;
+    Function GetDataTypeName :widestring;              extdecl;
+    Function GetDefaultValue :OLEVariant;              extdecl;
+    function GetIsPrimary :ByteBool;                   extdecl;
+    procedure SetDataGroup(aValue :TEvsDataGroup);     extdecl;
+    Procedure SetDefaultValue(aValue :OLEVariant);     extdecl;
+    Function GetFieldDescription :widestring;          extdecl;
+    Function GetFieldName :widestring;                 extdecl;
+    Function GetFieldScale :Integer;                   extdecl;
+    Procedure SetFieldScale(aValue :Integer);          extdecl;
+    Function GetFieldSize :Integer;                    extdecl;
+    Procedure SetFieldSize(aValue :Integer);           extdecl;
+    Procedure SetAllowNull(aValue :ByteBool);          extdecl;
+    Procedure SetAutoNumber(aValue :ByteBool);         extdecl;
+    Procedure SetCalculated(aValue :widestring);       extdecl;
+    Procedure SetCharset(aValue :widestring);          extdecl;
+    Procedure SetCheck(aValue :widestring);            extdecl;
+    Procedure SetColation(aValue :widestring);         extdecl;
+    Procedure SetDataTypeName(aValue :widestring);     extdecl;
+    Procedure SetFieldDescription(aValue :widestring); extdecl;
+    Procedure SetFieldName(aValue :widestring);        extdecl;
 
     Property AllowNulls   : ByteBool       read GetAllowNull        write SetAllowNull  default True;
     Property AutoNumber   : ByteBool       read GetAutoNumber       write SetAutoNumber default False;
@@ -208,9 +208,9 @@ type
     Property Charset      : widestring     read GetCharset          write SetCharset;
     Property Check        : widestring     read GetCheck            write SetCheck;
     Property DataGroup    : TEvsDataGroup  read GetDataGroup        write SetDataGroup;
+    Property IsPrimary    : ByteBool       read GetIsPrimary;
     //Property DataType     : TEvsDataType   Read GetDataType         Write SetDataType;
   end;
-
   IEvsFieldList = interface(IEvsCopyable) //OK
     ['{57298EBB-63B1-4332-ADBE-BCB3221CFA16}']
     Function Get(aIndex : Integer) : IEvsFieldInfo;extdecl;
@@ -236,7 +236,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIndex : Integer] : IEvsFieldInfo read Get write Put;default;
   end;
-
   { IEvsTriggerInfo }
   IEvsTriggerInfo = interface(IEvsParented) {$MESSAGE WARN 'Needs Implementation'}
     ['{79248B35-ECC2-4746-8C17-5EC93E990081}']
@@ -260,7 +259,6 @@ type
     property TriggerType :TEvsTriggerType   read GetEventType          write SetEventType;
     PRoperty Active      :ByteBool          read GetActive             write SetActive;
   end;
-
   IEvsTriggerList = interface(IEvsCopyable) //OK
     ['{9C2970C3-7AFC-43F8-9D39-9F4C1AEDF3C4}']
     function Get(aIdx : Integer) : IEvsTriggerInfo;extdecl;
@@ -285,38 +283,39 @@ type
     property Count : Integer read GetCount write SetCount;
     property Items[aIdx : Integer] : IEvsTriggerInfo read Get write Put;default;
   end;
-
   { IEvsIndexInfo }
   IEvsIndexInfo = interface(IEvsParented)  //OK
     ['{FEA79D55-B1CF-4A24-8CE6-A9EBEB769C3C}']
-    Function GetField(aIndex :Integer) :IEvsFieldInfo;extdecl;
-    Function GetIndexName : WideString;extdecl;
-    Function GetOrder :TEvsSortOrder;extdecl;
-    Function GetFieldOrder(aIndex :Integer) :TEvsSortOrder;extdecl;
-    Function GetPrimary :ByteBool;extdecl;
-    Function GetTable :IEvsTableInfo;extdecl;
-    Function GetUnique :ByteBool;extdecl;
-    Procedure SetIndexName(const aValue: WideString);extdecl;
-    Procedure SetOrder(const aValue: TEvsSortOrder);extdecl;
-    Procedure SetPrimary(aValue :ByteBool);extdecl;
-    Procedure SetTable(aValue :IEvsTableInfo);extdecl;
-    Procedure SetUnique(aValue :ByteBool);extdecl;
-
-    Procedure SwapFields(const aIndex1,aIndex2:Integer);extdecl;
+    Function GetField(aIndex :Integer) :IEvsFieldInfo;       extdecl;
+    Function GetIndexName :WideString;                       extdecl;
+    Function GetOrder :TEvsSortOrder;                        extdecl;
+    Function GetFieldOrder(aIndex :Integer) :TEvsSortOrder;  extdecl;
+    Function GetPrimary :ByteBool;                           extdecl;
+    Function GetTable :IEvsTableInfo;                        extdecl;
+    Function GetUnique :ByteBool;                            extdecl;
+    Procedure SetIndexName(const aValue: WideString);        extdecl;
+    Procedure SetOrder(const aValue: TEvsSortOrder);         extdecl;
+    Procedure SetPrimary(aValue :ByteBool);                  extdecl;
+    Procedure SetTable(aValue :IEvsTableInfo);               extdecl;
+    Procedure SetUnique(aValue :ByteBool);                   extdecl;
+    Procedure SwapFields(const aIndex1,aIndex2:Integer);     extdecl;
     Procedure AppendField(const aField:IEvsFieldInfo; const aOrder: TEvsSortOrder);extdecl;
-    Procedure DeleteField(const aIndex : Integer);overload;extdecl;
-    Procedure DeleteField(const aField : IEvsFieldInfo);overload;extdecl;
-    Procedure ClearFields;extdecl;
-    Function GetFieldCount:Integer;extdecl;
+    Procedure DeleteField(const aIndex : Integer);overload;       extdecl;
+    Procedure DeleteField(const aField : IEvsFieldInfo);overload; extdecl;
+    Procedure ClearFields;                                        extdecl;
+    Function GetFieldCount:Integer;                               extdecl;
+    Function FieldIndex(const aField:IEvsFieldInfo):Integer; overload; extdecl;
+    Function FieldIndex(const aFieldName:widestring):Integer;overload; extdecl;
 
-    Property IndexName:WideString read GetIndexName write SetIndexName;
-    Property Unique:ByteBool read GetUnique write SetUnique;
-    Property Primary:ByteBool read GetPrimary write SetPrimary;
-    Property Order : TEvsSortOrder read GetOrder write SetOrder default orUnsupported;
-    Property FieldCount:Integer read GetfieldCount;
-    Property Field[aIndex:Integer]:IEvsFieldInfo read GetField;
+    Property IndexName :WideString    read GetIndexName write SetIndexName;
+    Property Unique    :ByteBool      read GetUnique    write SetUnique;
+    Property Primary   :ByteBool      read GetPrimary   write SetPrimary;
+    Property Order     :TEvsSortOrder read GetOrder     write SetOrder default orUnsupported;
+    Property FieldCount:Integer       read GetfieldCount;
+    Property Table     :IEvsTableInfo read GetTable     write SetTable;
+    //indexed properties
+    Property Field[aIndex:Integer]:IEvsFieldInfo      read GetField;
     Property FieldOrder[aIndex:Integer]:TEvsSortOrder read GetFieldOrder;
-    Property Table :IEvsTableInfo read GetTable write SetTable;
   end;
   IEvsIndexList = interface(IEvsCopyable) //OK
     ['{1BD50931-B0E9-404E-B575-D31BA2FA8B37}']
@@ -342,7 +341,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsIndexInfo read Get write Put;default;
   end;
-
   { IEvsTableInfo }
   IEvsTableInfo = interface(IEvsParented) //OK
     ['{35EA6385-3C4F-4EAA-ACB8-CCF92227BAD0}']
@@ -384,16 +382,19 @@ type
     Procedure Remove(const aObject:IEvsFieldInfo);  overload; extdecl;
     Procedure Remove(const aObject:IEvsIndexInfo);  overload; extdecl;
     Procedure Remove(const aObject:IEvsTriggerInfo);overload; extdecl;
-
+    //basic info
     Property TableName   :WideString read GetTableName   write SetTableName;
     Property Description :WideString read GetDescription write SetDescription;
     Property CharSet     :WideString read GetCharset     write SetCharSet;
     Property Collation   :WideString read GetCollation   write SetCollation; // probably will not keep it.
     Property SystemTable :LongBool   read GetSystemTable write SetSystemTable;
-
+    //table collections
     Property FieldCount   :Integer read GetFieldCount;
     Property IndexCount   :Integer read GetIndexCount;
     Property TriggerCount :Integer read GetTriggerCount;
+    //checks
+    //primary key
+    //foreign key
     Property Index[aIndex:Integer]   :IEvsIndexInfo   read GetIndex       write SetIndex;
     Property Field[aIndex:Integer]   :IEvsFieldInfo   read GetField       write SetField;   default;
     Property Trigger[aIndex:Integer] :IEvsTriggerInfo read GetTrigger     write SetTrigger;
@@ -468,7 +469,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIndex : Integer] : IEvsViewInfo read Get write Put;default;
   end;
-
   { IEvsStoredInfo }
   IEvsStoredInfo = interface(IEvsParented) {$MESSAGE WARN 'Needs Implementation'}
     ['{71B2F8CE-35C9-4139-BFF5-9EDE5DD8C1D7}']
@@ -514,7 +514,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIndex : Integer] : IEvsStoredInfo read Get write Put;default;
   end;
-
   { IEvsGeneratorInfo }
   IEvsSequenceInfo = interface(IEvsParented)  //OK
     ['{8C36E1FF-FB18-4FEB-A220-0739D038C5B6}']
@@ -552,7 +551,6 @@ type
   IEvsGeneratorInfo = IEvsSequenceInfo;
   IEvsGeneratorList = IEvsSequenceList;
   { IEvsExceptionInfo }
-
   IEvsExceptionInfo = interface(IEvsParented) //OK
     ['{673B1042-D702-4899-B8E9-3AA779087E72}']
     Function GetDescription :widestring;extdecl;
@@ -596,7 +594,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsExceptionInfo read Get write Put;default;
   end;
-
   { IEvsUserInfo }
   IEvsUserInfo = interface(IEvsParented)  //OK
     ['{EA26A95B-5988-48A2-8849-46A593A6BBCE}']
@@ -642,7 +639,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsUserInfo read Get write Put;default;
   end;
-
   { IEvsRoleInfo }
   IEvsRoleInfo = interface(IEvsParented) {$MESSAGE WARN 'Incomplete'}
     ['{5EAE5A27-1CA6-4B49-87BE-770069FB09E4}']
@@ -656,7 +652,6 @@ type
     Property User[aIndex:Integer]:IEvsUserInfo read GetUser write SetUser;
     Property UserCount:Integer read GetUserCount;
   end;
-
   IEvsRoleList = interface {$MESSAGE WARN 'Needs Implementation'}
     ['{24ACEAB6-772D-4F21-8C1D-E8B2EEBAE539}']
     Function Get(aIdx : Integer) : IEvsRoleInfo;extdecl;
@@ -681,7 +676,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsRoleInfo read Get write Put;default;
   end;
-
   { IEvsDomainInfo }
   IEvsDomainInfo = interface(IEvsParented) {$MESSAGE WARN 'Needs Implementation'}
     ['{EAE11017-3203-4B7F-A0CC-14AD5F64BF4D}']
@@ -735,7 +729,6 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsDomainInfo read Get write Put;default;
   end;
-
   { IEvsDatabaseInfo }
   IEvsDatabaseInfo = interface(IEvsParented) //OK
     ['{29AE2670-E75A-4DBB-B7A8-7C0742A9457C}']
@@ -874,10 +867,8 @@ type
     Property Count : Integer read GetCount write SetCount;
     Property Items[aIdx : Integer] : IEvsDatabaseInfo read Get write Put;default;
   end;
-
   //IEvsDBStatistics = interface(IInterface) //generic info on the database pages used active transactions etc.
   //end;
-
   { IEvsCredentials }
   IEvsCredentials = interface(IEvsCopyable)  //OK
     ['{461C62B7-58AD-42D6-9059-1F82E1C485C7}']
@@ -909,7 +900,6 @@ type
 //-------------------------------------------------------------------------------------------------------------
 
   IEvsDataset = interface;
-
   { IEvsField }
   IEvsField = interface(IInterface)
     ['{33E146B2-91A2-4627-9C3C-720DBD7D623A}']
@@ -957,7 +947,6 @@ type
     Property Length     :Integer     read GetLength;
     //property AutoTrim   :ByteBool    read GetAutoTrim write SetAutoTrim;
   end;
-
   { IEvsMetaData }
   IEvsMetaData = interface(IInterface) {$MESSAGE WARN 'Under construction'}
     ['{6358D2B3-7042-46B3-BC0B-C930A0A5C2D0}']
@@ -979,10 +968,8 @@ type
     Procedure GetRoles(const aDB:IEvsDatabaseInfo);                 extdecl;  //Get Generators for the database passed.
 
     //constraints
-    //PRIMARY KEY;
-    //procedure GetPrimaryKey(const aTable:IEvsTableInfo);
-    //UNIQUE KEY;
-    //procedure GerUniqueKeys(const aTable:IEvsTableInfo);
+    //PRIMARY KEY is an index and a unique at that.
+    //UNIQUE KEY  and index as well.
     //FOREIGN KEY
     //procedure GetForeignKeys(const aTable:IEvsTableInfo);
     //CHECK
@@ -999,22 +986,26 @@ type
     Property Connection:IEvsConnection read GetConnection write SetConnection;
   end;
 
+  IEvsDDLBuilder = interface(IInterface)
+    ['{D56C5C42-C825-404A-B439-D0915E61A791}']
+  end;
   { IEvsConnection }
   IEvsConnection = interface(IEvsCopyable)
     ['{9C2BB1DC-027A-457F-A436-1DA23D154FAB}']
-    Function GetCharSet :WideString;extdecl;
-    Function GetConnected :Boolean;extdecl;
-    Function GetMetaData :IEvsMetaData;extdecl;
-    Function GetPassword :widestring;extdecl;
-    Function GetRole :widestring;extdecl;
-    Function GetUserName :widestring;extdecl;
-    Function Query(aSQL:wideString):IEvsDataset;extdecl;
-    Function Execute(aSQL:WideString):ByteBool;extdecl;
-    Procedure SetCharSet(aValue :WideString);extdecl;
-    Procedure SetConnected(aValue :Boolean);extdecl;
-    Procedure SetPassword(aValue :widestring);extdecl;
-    Procedure SetRole(aValue :widestring);extdecl;
-    Procedure SetUserName(aValue :widestring);extdecl;
+    Function GetCharSet :WideString;    extdecl;
+    Function GetConnected :Boolean;     extdecl;
+    Function GetMetaData :IEvsMetaData; extdecl;
+    Function GetPassword :widestring;   extdecl;
+    Function GetRole :widestring;       extdecl;
+    function GetServerID :Integer;      extdecl;
+    Function GetUserName :widestring;   extdecl;
+    Function Query(aSQL:wideString):IEvsDataset; extdecl;
+    Function Execute(aSQL:WideString):ByteBool;  extdecl;
+    Procedure SetCharSet(aValue :WideString);    extdecl;
+    Procedure SetConnected(aValue :Boolean);     extdecl;
+    Procedure SetPassword(aValue :widestring);   extdecl;
+    Procedure SetRole(aValue :widestring);       extdecl;
+    Procedure SetUserName(aValue :widestring);   extdecl;
 
     Property MetaData:IEvsMetaData read GetMetaData;
     Property UserName:widestring read GetUserName write SetUserName;
@@ -1022,8 +1013,8 @@ type
     Property Role:widestring read GetRole write SetRole;
     Property CharSet:WideString read GetCharSet write SetCharSet;
     Property Connected:Boolean read GetConnected write SetConnected;
+    Property ServerID:Integer read GetServerID;
   end;
-
   { IEvsDataset }
   IEvsDataset = interface(IInterface)
     ['{41F0B671-25C5-4AAF-89FE-BDDB5DD3A826}']
@@ -1049,12 +1040,12 @@ type
     Property AutoTrimStrings :ByteBool read GetAutoTrim write SetAutoTrim;
     Property InTransaction   :Bytebool read GetInTrans;
   end;
-
   { TEvsFieldProxy }
   TEvsFieldProxy = Class(TEvsInterfacedPersistent,IEvsField)
   private
     FField     :TField;
     FDts       :IEvsDataset;
+    FOwner     :Boolean;
 
     Function GetAsBoolean :LongBool;extdecl;
     Procedure SetAsBoolean(aValue :LongBool);extdecl;
@@ -1072,18 +1063,18 @@ type
     Function GetEditText :widestring;extdecl;
     Function GetFullName :WideString;extdecl;
     //function GetIsIndexField :Boolean;extdecl;
-    Function GetIsNull :Boolean;extdecl;
-    Procedure SetAsVariant(aValue :OLEVariant);extdecl;
-    Procedure SetCalculated(aValue :Boolean);extdecl;
-    Procedure SetEditText(aValue :widestring);extdecl;
-    Procedure SetFieldName(aValue :WideString);extdecl;
-    Procedure SetReadOnly(aValue :Boolean);extdecl;
-    function GetIsNumeric :LongBool; extdecl;
-    function GetSize:Integer;extdecl;
-    function GetPrecision:Integer;extdecl;
-    function GetLength:Integer;extdecl;
+    Function  GetIsNull :Boolean;extdecl;
+    Procedure SetAsVariant  (aValue :OLEVariant);  extdecl;
+    Procedure SetCalculated (aValue :Boolean);     extdecl;
+    Procedure SetEditText   (aValue :widestring);  extdecl;
+    Procedure SetFieldName  (aValue :WideString);  extdecl;
+    Procedure SetReadOnly   (aValue :Boolean);     extdecl;
+    function  GetIsNumeric :LongBool;              extdecl;
+    function  GetSize:Integer;                     extdecl;
+    function  GetPrecision:Integer;                extdecl;
+    function  GetLength:Integer;                   extdecl;
   public
-    Constructor Create(aField:TField; aDataSet:IEvsDataset = nil);
+    Constructor Create(aField:TField; aDataSet:IEvsDataset = nil; aOwns :Boolean = False);
     Destructor Destroy; override;
 
     Function AsString:Widestring;extdecl;
@@ -1107,7 +1098,6 @@ type
     Property Precision   : Integer    read GetPrecision;
     PRoperty Length      : Integer    read GetLength;
   end;
-
   { TEvsDatasetProxy }
   TEvsDatasetProxy = class(TEvsInterfacedPersistent, IEvsDataset)
   private
@@ -1143,7 +1133,6 @@ type
     property AutoTrimStrings :ByteBool read GetAutoTrim write SetAutoTrim;
     property InTransaction   :ByteBool read GetInTrans;
   end;
-
   { TEvsAbstractConnectionProxy }
   TEvsAbstractConnectionProxy = class(TEvsInterfacedPersistent, IEvsConnection)
   private
@@ -1175,22 +1164,25 @@ type
     Procedure SetPassword(aValue :widestring);extdecl;
     Procedure SetRole(aValue :widestring);extdecl;
     Procedure SetUserName(aValue :widestring);extdecl;
+
+    function GetServerID :Integer; virtual;abstract;extdecl;
   public
     Constructor Create(const aConnection:TCustomConnection; const aOwnsConnection:Boolean = True);
     destructor Destroy; override;
+    procedure Assign(Source :TPersistent); override;
     Function Query(aSQL:wideString):IEvsDataset;extdecl;
     Function Execute(aSQL:WideString):ByteBool;extdecl;
     function CopyTo(const aDest :IEvsCopyable):Integer; extdecl;
     function CopyFrom(const aSource :IEvsCopyable):Integer; extdecl;
     function EqualsTo(const aCompare :IEvsCopyable) :Boolean; virtual; extdecl;
-    Property MetaData:IEvsMetaData read GetMetaData;
-    Property UserName  :widestring read GetUserName  write SetUserName;
-    Property Password  :widestring read GetPassword  write SetPassword;
-    Property Role      :widestring read GetRole      write SetRole;
-    Property Connected :Boolean    read GetConnected write SetConnected;
-    Property CharSet   :WideString read GetCharSet   write SetCharSet;
+    Property MetaData :IEvsMetaData read GetMetaData;
+    Property UserName  :widestring  read GetUserName  write SetUserName;
+    Property Password  :widestring  read GetPassword  write SetPassword;
+    Property Role      :widestring  read GetRole      write SetRole;
+    Property Connected :Boolean     read GetConnected write SetConnected;
+    Property CharSet   :WideString  read GetCharSet   write SetCharSet;
+    property ServerID  :Integer     read GetServerID;
   end;
-
   { TEvsDBInfoFactory }
   TEvsDBInfoFactory = class
     class Function NewDatabaseList (const aParent:IEvsParented=nil) :IEvsDatabaseList;
@@ -1242,17 +1234,47 @@ uses uTBCommon, uTBTypes;
 
 resourcestring
   SErrorListIndex = 'List index out of bounds (%d)';
+  rsFieldNotFound = 'Field <%S> not found in %S';
 
 {$REGION ' Internal Types '}
 type
+  //CyrillicString = type Ansistring(1251); //does not compile? requires fpc3?
+
   THackTrans = class(TDBTransaction)
   public
     //procedure EndTransaction; override;
   end;
 
+  //testing generic lists, incompatible with D2007 only for fpc.
+  //{$IFDEF FPC}
+  //IEvsItemList<ItemType> = interface(IInterface)
+  //  ['{9F2649C8-7446-4917-8EB0-DAEBDF4BB251}']
+  //  Function Get(aIdx : Integer) : ItemType;extdecl;
+  //  Function GetCapacity : Integer;extdecl;
+  //  Function GetCount : Integer;extdecl;
+  //  Procedure Put(i : Integer;item : ItemType);extdecl;
+  //  Procedure SetCapacity(NewCapacity : Integer);extdecl;
+  //  Procedure SetCount(NewCount : Integer);extdecl;
+  //  Procedure Clear;extdecl;
+  //  Procedure Delete(index : Integer);extdecl;
+  //  Procedure Exchange(index1,index2 : Integer);extdecl;
+  //  Function New:ItemType;extdecl;
+  //  Function First : ItemType;extdecl;
+  //  Function IndexOf(item : ItemType) : Integer;extdecl;
+  //  Function Add(item : ItemType) : Integer;extdecl;
+  //  Procedure Insert(i : Integer;item : ItemType);extdecl;
+  //  Function Last : ItemType;extdecl;
+  //  Function Remove(item : ItemType): Integer;extdecl;
+  //  Procedure Lock;extdecl;
+  //  Procedure Unlock;extdecl;
+  //  Property Capacity : Integer read GetCapacity write SetCapacity;
+  //  Property Count    : Integer read GetCount    write SetCount;
+  //  Property Items[aIdx : Integer] : ItemType read Get write Put;default;
+  //end;
+  //{$ENDIF}
 
   { TEvsObserverList }
-  TEvsObserverList = class(TEvsInterfacedPersistent, IEvsObserverList)
+  TEvsObserverList   = class(TEvsInterfacedPersistent, IEvsObserverList)
   private
     FList: TThreadList;
   protected
@@ -1284,9 +1306,8 @@ type
     property Count: Integer read GetCount write SetCount;
     property Items[Index: Integer]: IEvsObserver read Get write Put; default;
   end;
-
   { TEvsFieldInfo }
-  TEvsFieldInfo = class(TEvsDBInfo, IEvsFieldInfo)
+  TEvsFieldInfo      = class(TEvsDBInfo, IEvsFieldInfo)
   private
     FFieldName    :widestring;
     FDescription  :widestring;
@@ -1301,54 +1322,56 @@ type
     FCheck        :widestring;
     FCalculated   :widestring;
     FDataGroup    :TEvsDataGroup;
-    Function GetAllowNull  :ByteBool;extdecl;
-    Function GetAutoNumber :ByteBool;extdecl;
-    Function GetCalculated :widestring;extdecl;
-    Function GetCanAutoInc :WordBool;extdecl;
-    Function GetCharset :widestring;extdecl;
-    Function GetCheck :widestring;extdecl;
-    Function GetColation :widestring;extdecl;
-    function GetDataGroup :TEvsDataGroup;extdecl;
-    Function GetDataTypeName :widestring;extdecl;
-    Function GetDefaultValue :OLEVariant;extdecl;
-    Function GetFieldDescription :widestring;extdecl;
-    Function GetFieldName :widestring;extdecl;
-    Function GetFieldScale :Integer;extdecl;
-    Function GetFieldSize :integer;extdecl;
-    Procedure SetAllowNull(aValue :ByteBool);extdecl;
-    Procedure SetAutoNumber(aValue :ByteBool);extdecl;
-    Procedure SetCalculated(aValue :widestring);extdecl;
-    Procedure SetCharset(aValue :widestring);extdecl;
-    Procedure SetCheck(aValue :widestring);extdecl;
-    Procedure SetColation(aValue :widestring);extdecl;
-    procedure SetDataGroup(aValue :TEvsDataGroup);extdecl;
+    Function GetAllowNull  :ByteBool;                 extdecl;
+    Function GetAutoNumber :ByteBool;                 extdecl;
+    Function GetCalculated :widestring;               extdecl;
+    Function GetCanAutoInc :WordBool;                 extdecl;
+    Function GetCharset :widestring;                  extdecl;
+    Function GetCheck :widestring;                    extdecl;
+    Function GetColation :widestring;                 extdecl;
+    function GetDataGroup :TEvsDataGroup;             extdecl;
+    Function GetDataTypeName :widestring;             extdecl;
+    Function GetDefaultValue :OLEVariant;             extdecl;
+    Function GetFieldDescription :widestring;         extdecl;
+    Function GetFieldName :widestring;                extdecl;
+    Function GetFieldScale :Integer;                  extdecl;
+    Function GetFieldSize :integer;                   extdecl;
+    Procedure SetAllowNull(aValue :ByteBool);         extdecl;
+    Procedure SetAutoNumber(aValue :ByteBool);        extdecl;
+    Procedure SetCalculated(aValue :widestring);      extdecl;
+    Procedure SetCharset(aValue :widestring);         extdecl;
+    Procedure SetCheck(aValue :widestring);           extdecl;
+    Procedure SetColation(aValue :widestring);        extdecl;
+    procedure SetDataGroup(aValue :TEvsDataGroup);    extdecl;
     //procedure SetDataType(aValue :widestring);extdecl;
-    Procedure SetDataTypeName(aValue :widestring);extdecl;
-    Procedure SetDefaultValue(aValue :OLEVariant);extdecl;
+    Procedure SetDataTypeName(aValue :widestring);    extdecl;
+    Procedure SetDefaultValue(aValue :OLEVariant);    extdecl;
     Procedure SetFieldDescription(aValue :widestring);extdecl;
-    Procedure SetFieldName(aValue :widestring);extdecl;
-    Procedure SetFieldScale(aValue :Integer);extdecl;
-    Procedure SetFieldSize(aValue :integer);extdecl;
+    Procedure SetFieldName(aValue :widestring);       extdecl;
+    Procedure SetFieldScale(aValue :Integer);         extdecl;
+    Procedure SetFieldSize(aValue :integer);          extdecl;
+    function GetIsPrimary :ByteBool;                  extdecl;
   public
     Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     procedure Assign(Source :TPersistent); override;
   published
-    Property FieldName    : widestring read GetFieldName write SetFieldName;
-    Property Description  : widestring read GetFieldDescription write SetFieldDescription;
-    Property AllowNulls   : ByteBool           read GetAllowNull    write SetAllowNull default True;
-    Property DataTypeName : widestring         read GetDataTypeName write SetDataTypeName;
-    Property DefaultValue : OLEVariant         read GetDefaultValue write SetDefaultValue;
-    Property AutoNumber   : ByteBool           read GetAutoNumber   write SetAutoNumber default False;
-    Property FieldSize    : integer            read GetFieldSize    write SetFieldSize;
-    Property FieldScale   : Integer            read GetFieldScale   write SetFieldScale;
-    Property Collation    : widestring         read GetColation     write SetColation;
-    Property Charset      : widestring         read GetCharset      write SetCharset;
-    Property Check        : widestring         read GetCheck        write SetCheck;
-    Property Calculated   : widestring         read GetCalculated   write SetCalculated;
-    Property DataGroup    : TEvsDataGroup      Read GetDataGroup    write SetDataGroup;
+    Property FieldName    :widestring    read GetFieldName        write SetFieldName;
+    Property Description  :widestring    read GetFieldDescription write SetFieldDescription;
+    Property AllowNulls   :ByteBool      read GetAllowNull        write SetAllowNull default True;
+    Property DataTypeName :widestring    read GetDataTypeName     write SetDataTypeName;
+    Property DefaultValue :OLEVariant    read GetDefaultValue     write SetDefaultValue;
+    Property AutoNumber   :ByteBool      read GetAutoNumber       write SetAutoNumber default False;
+    Property FieldSize    :integer       read GetFieldSize        write SetFieldSize;
+    Property FieldScale   :Integer       read GetFieldScale       write SetFieldScale;
+    Property Collation    :widestring    read GetColation         write SetColation;
+    Property Charset      :widestring    read GetCharset          write SetCharset;
+    Property Check        :widestring    read GetCheck            write SetCheck;
+    Property Calculated   :widestring    read GetCalculated       write SetCalculated;
+    Property DataGroup    :TEvsDataGroup read GetDataGroup        write SetDataGroup;
+    Property IsPrimary    :ByteBool      Read GetIsPrimary;
   end;
   { IEvsIndexFieldInfo }
-  IEvsIndexFieldInfo = Interface(IInterface)
+  IEvsIndexFieldInfo = Interface(IEvsCopyable)
     ['{92E4FCFA-8199-4476-869F-2F3D007AE9DE}']
     function GetField :IEvsFieldInfo;extdecl;
     function GetOrder :TEvsSortOrder;extdecl;
@@ -1356,6 +1379,30 @@ type
     procedure SetOrder(aValue :TEvsSortOrder);extdecl;
     property Field: IEvsFieldInfo read GetField write SetField;
     property Order: TEvsSortOrder read GetOrder write SetOrder;
+  end;
+  IEvsIndexFieldList = interface(IInterface)
+    ['{9F2649C8-7446-4917-8EB0-DAEBDF4BB251}']
+    Function Get(aIdx : Integer) : IEvsIndexFieldInfo;extdecl;
+    Function GetCapacity : Integer;extdecl;
+    Function GetCount : Integer;extdecl;
+    Procedure Put(i : Integer;item : IEvsIndexFieldInfo);extdecl;
+    Procedure SetCapacity(NewCapacity : Integer);extdecl;
+    Procedure SetCount(NewCount : Integer);extdecl;
+    Procedure Clear;extdecl;
+    Procedure Delete(index : Integer);extdecl;
+    Procedure Exchange(index1,index2 : Integer);extdecl;
+    Function New:IEvsIndexFieldInfo;extdecl;
+    Function First : IEvsIndexFieldInfo;extdecl;
+    Function IndexOf(item : IEvsIndexFieldInfo) : Integer;extdecl;
+    Function Add(item : IEvsIndexFieldInfo) : Integer;extdecl;
+    Procedure Insert(i : Integer;item : IEvsIndexFieldInfo);extdecl;
+    Function Last : IEvsIndexFieldInfo;extdecl;
+    Function Remove(item : IEvsIndexFieldInfo): Integer;extdecl;
+    Procedure Lock;extdecl;
+    Procedure Unlock;extdecl;
+    Property Capacity : Integer read GetCapacity write SetCapacity;
+    Property Count    : Integer read GetCount    write SetCount;
+    Property Items[aIdx : Integer] : IEvsIndexFieldInfo read Get write Put;default;
   end;
   { TEvsIndexFieldInfo }
   TEvsIndexFieldInfo = class(TEvsDBInfo, IEvsIndexFieldInfo)
@@ -1366,6 +1413,7 @@ type
     Function GetOrder :TEvsSortOrder;extdecl;
     Procedure SetField(aValue :IEvsFieldInfo);extdecl;
     Procedure SetOrder(aValue :TEvsSortOrder);extdecl;
+    procedure SetParent(aValue :IEvsParented); override;extdecl;
   public
     Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     procedure Assign(aSource :TPersistent); override;
@@ -1374,32 +1422,31 @@ type
     Property Order :TEvsSortOrder read GetOrder write SetOrder;
   end;
   { TEvsIndexInfo }
-  TEvsIndexInfo = class(TEvsDBInfo, IEvsIndexInfo)
+  TEvsIndexInfo   = class(TEvsDBInfo, IEvsIndexInfo)
   private
-    //FTable      : TEVSDBTableInfo;
-    FList       : IInterfaceList;  // value : a list of IEvsIndexFieldInfo.
-    FUnique     : Boolean;         // value
-    FPrimary    : Boolean;         // value
-    FOrder      : TEvsSortOrder;   // value
-    FIndexName  : Widestring;      // value
-    FDescription: WideString;      // value
-    function GetDescription :widestring;extdecl;
-    function GetField(aIndex: Integer): IEvsFieldInfo;extdecl;
-    function GetFieldCount: Integer;extdecl;
-    function GetFieldOrder(aIndex: Integer): TEvsSortOrder;extdecl;
-    function GetIndexName : WideString;extdecl;
-    function GetOrder :TEvsSortOrder;extdecl;
-    function GetPrimary :ByteBool;extdecl;
-    function GetTable :IEvsTableInfo;extdecl;
-    function GetUnique :ByteBool;extdecl;
-    procedure SetDescription(aValue :widestring);extdecl;
-    procedure SetField(Index: Integer; const Value: IEvsFieldInfo);extdecl;
-    procedure SetFieldOrder(Index: Integer; const Value: TEvsSortOrder);extdecl;
-    procedure SetIndexName(const aValue: WideString);extdecl;
-    procedure SetOrder(const aValue: TEvsSortOrder);extdecl;
-    procedure SetPrimary(aValue: ByteBool);extdecl;
-    procedure SetTable(aValue :IEvsTableInfo);extdecl;
-    procedure SetUnique(aValue: ByteBool);extdecl;
+    FList        :IEvsIndexFieldList;  // value : a list of IEvsIndexFieldInfo.
+    FUnique      :Boolean;         // value
+    FPrimary     :Boolean;         // value
+    FOrder       :TEvsSortOrder;   // value
+    FIndexName   :Widestring;      // value
+    FDescription :WideString;      // value
+    function GetDescription :widestring;                                   extdecl;
+    function GetField(aIndex: Integer): IEvsFieldInfo;                     extdecl;
+    function GetFieldCount: Integer;                                       extdecl;
+    function GetFieldOrder(aIndex: Integer): TEvsSortOrder;                extdecl;
+    function GetIndexName : WideString;                                    extdecl;
+    function GetOrder :TEvsSortOrder;                                      extdecl;
+    function GetPrimary :ByteBool;                                         extdecl;
+    function GetTable :IEvsTableInfo;                                      extdecl;
+    function GetUnique :ByteBool;                                          extdecl;
+    procedure SetDescription(aValue :widestring);                          extdecl;
+    procedure SetField(Index: Integer; const Value: IEvsFieldInfo);        extdecl;
+    procedure SetFieldOrder(Index: Integer; const Value: TEvsSortOrder);   extdecl;
+    procedure SetIndexName(const aValue: WideString);                      extdecl;
+    procedure SetOrder(const aValue: TEvsSortOrder);                       extdecl;
+    procedure SetPrimary(aValue: ByteBool);                                extdecl;
+    procedure SetTable(aValue :IEvsTableInfo);                             extdecl;
+    procedure SetUnique(aValue: ByteBool);                                 extdecl;
 
     //function GetTable: TEVSDBTableInfo;
     //procedure SetTable(const Value: TEVSDBTableInfo);
@@ -1443,20 +1490,23 @@ type
     procedure DeleteField(const aField:IEvsFieldInfo);overload;extdecl;
     procedure ClearFields;extdecl;
     //function FieldByName(const FieldName:string):TEVSDBFieldInfo;extdecl;
+    Function FieldIndex(const aField:IEvsFieldInfo):Integer; overload;extdecl;
+    Function FieldIndex(const aFieldName:widestring):Integer;overload;extdecl;
 
-    property IndexName:widestring read GetIndexName write SetIndexName;
-    property Description:widestring read GetDescription write SetDescription;
-    property Unique:ByteBool read GetUnique write SetUnique;
-    property Primary:ByteBool read GetPrimary write SetPrimary;
-    property Order : TEvsSortOrder read GetOrder write SetOrder default orUnsupported;
+    property IndexName   :widestring    read GetIndexName   write SetIndexName;
+    property Description :widestring    read GetDescription write SetDescription;
+    property Unique      :ByteBool      read GetUnique      write SetUnique;
+    property Primary     :ByteBool      read GetPrimary     write SetPrimary;
+    property Order       :TEvsSortOrder read GetOrder       write SetOrder   default orUnsupported;
+
+    property Table :IEvsTableInfo read GetTable write SetTable;
 
     property FieldCount : Integer read GetFieldCount;
-    property Field[Index:Integer] : IEvsFieldInfo read GetField write SetField;
+    property Field     [Index:Integer] : IEvsFieldInfo read GetField write SetField;
     property FieldOrder[Index:Integer]:TEvsSortOrder read GetFieldOrder write SetFieldOrder;
-    property Table :IEvsTableInfo read GetTable write SetTable;
   end;
   { TEvsTableInfo }
-  TEvsTableInfo = class(TEvsDBInfo, IEvsTableInfo)
+  TEvsTableInfo   = class(TEvsDBInfo, IEvsTableInfo)
   private
     FCharset     :WideString;
     FCollation   :WideString;
@@ -1464,6 +1514,8 @@ type
     FFieldList   :IEvsFieldList;
     FIndexList   :IEvsIndexList;
     FTriggerList :IEvsTriggerList;
+    FForeignKeys :IInterfaceList; //foreignkeyslist.
+    FChecks      :IInterfaceList; //checkslist.
     FTableName   :WideString;
     FSysTable    :LongBool;
     Function GetCharset :WideString;extdecl;
@@ -1498,7 +1550,7 @@ type
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
     procedure Assign(aSource :TPersistent); override;
-
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Function AddField(const aFieldName, aDataType :WideString;
                       const aFieldsIze, aFieldScale :Integer;
                       const aCharset, aCollation :WideString;
@@ -1531,7 +1583,7 @@ type
     Property SystemTable              :LongBool        read GetSystemTable write SetSystemTable;
   end;
   { TEvsCredentials }
-  TEvsCredentials = class(TEvsDBInfo, IEvsCredentials){$MESSAGE WARN 'Needs Testing'}
+  TEvsCredentials = class(TEvsDBInfo, IEvsCredentials){$MESSAGE ' Add contained support '}
   private
     FPassword    :WideString;
     FRole        :WideString;
@@ -1563,7 +1615,7 @@ type
   end;
 
   { TEvsDatabaseInfo }
-  TEvsDatabaseInfo = class(TEvsDBInfo, IEvsDatabaseInfo)
+  TEvsDatabaseInfo  = class(TEvsDBInfo, IEvsDatabaseInfo)
   private
     FDefaultCollation :WideString;
     FDefaultCharset   :WideString;
@@ -1745,7 +1797,7 @@ type
     property System      : ByteBool   read FSystem      write SetSystem;
   end;
   { TEvsSequenceInfo }
-  TEvsSequenceInfo = class(TEvsDBInfo, IEvsGeneratorInfo)
+  TEvsSequenceInfo  = class(TEvsDBInfo, IEvsGeneratorInfo)
   private
     FName :WideString;
     FStep :Int64; //is it possible to have fractional steps? // not applicable on firebird.
@@ -1760,13 +1812,13 @@ type
     property CurrentValue  :Int64      read GetCurrentValue  write SetCurrentValue;
   end;
   { TEvsStoredInfo }
-  TEvsStoredInfo = class(TEvsDBInfo, IEvsStoredInfo) {$MESSAGE INFO 'One more method for the next version!'}
+  TEvsStoredInfo    = class(TEvsDBInfo, IEvsStoredInfo) {$MESSAGE 'One more method for the next version!'}
     //there is one more method missing, a way to pass an existing field as a reference
     //point for a new result field aka create a copy from an existing field, after all, those return
     //fields are based on existing table or view columns.
     {$MESSAGE WARN 'Update flags Need fine tunning'}
   private
-    FList        :TInterfaceList;
+    FList        :IEvsFieldList;
     FDescription :Widestring;
     FSQL         :WideString;
     FName        :WideString;
@@ -1796,7 +1848,7 @@ type
     Property SQL:WideString read GetSql write SetSql;
   end;
   { TEvsUserInfo }
-  TEvsUserInfo = class(TEvsDBInfo, IEvsUserInfo)
+  TEvsUserInfo      = class(TEvsDBInfo, IEvsUserInfo)
   private
     FFirstName  :WideString;
     FLastName   :WideString;
@@ -1825,7 +1877,7 @@ type
     Property LastName   :WideString read GetLastName   write SetLastName;
   end;
   { TEvsDomainInfo }
-  TEvsDomainInfo = class(TEvsDBInfo, IEvsDomainInfo)
+  TEvsDomainInfo    = class(TEvsDBInfo, IEvsDomainInfo)
   private
     FDataType   :WideString;
     FDefault    :OLEVariant;
@@ -1865,7 +1917,7 @@ type
   end;
 
   { TEvsTriggerInfo }
-  TEvsTriggerInfo = class(TEvsDBInfo, IEvsTriggerInfo){$MESSAGE WARN 'Needs EqualsTo implementation'}
+  TEvsTriggerInfo   = class(TEvsDBInfo, IEvsTriggerInfo){$MESSAGE WARN 'Needs EqualsTo implementation'}
   private                                             {$MESSAGE WARN 'Copyable implementation'}
     FEvent     :TEvsTriggerEvents;  //value types
     FEventType :TEvsTriggerType;
@@ -1897,7 +1949,7 @@ type
   end;
 
   { TEvsViewInfo }
-  TEvsViewInfo = class(TEvsDBInfo, IEvsViewInfo)
+  TEvsViewInfo      = class(TEvsDBInfo, IEvsViewInfo)
   private
     FDescription :WideString;
     FName        :WideString;
@@ -1917,7 +1969,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     procedure Assign(Source :TPersistent); override;
-
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Function FieldCount:integer;extdecl;
     Property SQL:WideString read GetSQL write SetSQL;
     Property Name:WideString read GetName write SetName;
@@ -1927,7 +1979,6 @@ type
   end;
 
   { TEvsRoleInfo }
-
   TEvsRoleInfo = class(TEvsDBInfo, IEvsRoleInfo){$MESSAGE WARN 'Incomplete'}
   private
     FName  : WideString;
@@ -1947,8 +1998,43 @@ type
   //------------------------------------------------------
   //-- L  I  S  T  s  --
   //------------------------------------------------------
-  { TEvsTableList }
-  TEvsTableList = class(TEvsDBInfo, IEvsTableList)
+   { TEvsIndexFieldList }
+  TEvsIndexFieldList = class(TEvsDBInfo, IEvsIndexFieldList){$MESSAGE WARN 'Add Contained support'}
+  private
+    //FList:TInterfaceList;
+    FList:IInterfaceList;
+    //procedure Put(aIDx : Integer; aValue :IUnknown);extdecl;
+  protected
+    Function Get(aIdx : Integer) : IEvsIndexFieldInfo;extdecl;
+    Function GetCapacity : Integer;extdecl;
+    Function GetCount : Integer;extdecl;
+    Procedure Put(aIdx : Integer;aValue : IEvsIndexFieldInfo);extdecl;
+    Procedure SetCapacity(aValue : Integer);extdecl;
+    Procedure SetCount(aValue : Integer);extdecl;
+  public
+    Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
+    Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
+    procedure Assign(Source :TPersistent); override;
+    Procedure Clear;extdecl;
+    Procedure Delete(aIndex : Integer);extdecl;
+    Procedure Exchange(aIndex1,aIndex2 : Integer);extdecl;
+    Function New :IEvsIndexFieldInfo;extdecl;
+    Function First : IEvsIndexFieldInfo;extdecl;
+    Function IndexOf(aItem : IEvsIndexFieldInfo) : Integer;extdecl;
+    Function Add(aItem : IEvsIndexFieldInfo) : Integer;extdecl;
+    Procedure Insert(aIdx : Integer;aItem : IEvsIndexFieldInfo);extdecl;
+    Function Last : IEvsIndexFieldInfo;extdecl;
+    Function Remove(aItem : IEvsIndexFieldInfo): Integer;extdecl;
+    Procedure Lock;extdecl;
+    Procedure Unlock;extdecl;
+
+    Property Capacity : Integer read GetCapacity write SetCapacity;
+    Property Count : Integer read GetCount write SetCount;
+    Property Items[index : Integer] : IEvsIndexFieldInfo read Get write Put;default;
+  end;
+   { TEvsTableList }
+  TEvsTableList = class(TEvsDBInfo, IEvsTableList){$MESSAGE WARN 'Add Contained support'}
   private
     //FList:TInterfaceList;
     FList:IInterfaceList;
@@ -1963,6 +2049,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     procedure Assign(Source :TPersistent); override;
     Procedure Clear;extdecl;
     Procedure Delete(aIndex : Integer);extdecl;
@@ -1982,7 +2069,7 @@ type
     Property Items[index : Integer] : IEvsTableInfo read Get write Put;default;
   end;
   { TEvsFieldList }
-  TEvsFieldList = class(TEvsDBInfo, IEvsFieldList)
+  TEvsFieldList = class(TEvsDBInfo, IEvsFieldList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -1996,6 +2083,7 @@ type
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
     procedure Assign(aSource :TPersistent); override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2014,7 +2102,7 @@ type
     Property Items[aIdx : Integer] : IEvsFieldInfo read Get write Put;default;
   end;
   { TEvsIndexList }
-  TEvsIndexList = class(TEvsDBInfo, IEvsIndexList)
+  TEvsIndexList = class(TEvsDBInfo, IEvsIndexList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2027,6 +2115,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override;extdecl;
     procedure Assign(aSource :TPersistent); override;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
@@ -2046,7 +2135,7 @@ type
     Property Items[aIdx : Integer] : IEvsIndexInfo read Get write Put;default;
   end;
   { TEvsStoredList }
-  TEvsStoredList = class(TEvsDBInfo, IEvsStoredList)
+  TEvsStoredList = class(TEvsDBInfo, IEvsStoredList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2059,6 +2148,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2077,7 +2167,7 @@ type
     Property Items[aIdx : Integer] : IEvsStoredInfo read Get write Put;default;
   end;
   { TEvsSequenceList }
-  TEvsSequenceList = class(TEvsDBInfo, IEvsSequenceList)
+  TEvsSequenceList = class(TEvsDBInfo, IEvsSequenceList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2090,6 +2180,7 @@ type
   public
     constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     procedure Clear;extdecl;
     procedure Delete(aIdx : Integer);extdecl;
     procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2107,7 +2198,7 @@ type
     property Items[aIdx : Integer] : IEvsGeneratorInfo read Get write Put;default;
   end;
   { TEvsUDFList }
-  TEvsUDFList = class(TEvsDBInfo, IEvsUDFList)
+  TEvsUDFList = class(TEvsDBInfo, IEvsUDFList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2120,6 +2211,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2137,7 +2229,7 @@ type
     Property Items[aIdx : Integer] : IEvsUDFInfo read Get write Put;default;
   end;
   { TEvsUserList }
-  TEvsUserList = class(TEvsDBInfo, IEvsUserList)
+  TEvsUserList = class(TEvsDBInfo, IEvsUserList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2150,6 +2242,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2167,7 +2260,7 @@ type
     Property Items[aIdx : Integer] : IEvsUserInfo read Get write Put;default;
   end;
   { TEvsDatabaseList }
-  TEvsDatabaseList = class(TEvsDBInfo, IEvsDatabaseList)
+  TEvsDatabaseList = class(TEvsDBInfo, IEvsDatabaseList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2180,6 +2273,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2197,7 +2291,7 @@ type
     Property Items[aIdx : Integer] : IEvsDatabaseInfo read Get write Put;default;
   end;
    { TEvsTriggerList }
-  TEvsTriggerList = class(TEvsDBInfo, IEvsTriggerList)
+  TEvsTriggerList = class(TEvsDBInfo, IEvsTriggerList)  {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2211,6 +2305,7 @@ type
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
     procedure Assign(aSource :TPersistent); override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2228,7 +2323,7 @@ type
     Property Items[aIdx : Integer] : IEvsTriggerInfo read Get write Put;default;
   end;
   { TEvsExceptionList }
-  TEvsExceptionList = class(TEvsDBInfo, IEvsExceptionList)
+  TEvsExceptionList = class(TEvsDBInfo, IEvsExceptionList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2241,6 +2336,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2258,7 +2354,7 @@ type
     Property Items[aIdx : Integer] : IEvsExceptionInfo read Get write Put;default;
   end;
   { TEvsDomainList }
-  TEvsDomainList = class(TEvsDBInfo, IEvsDomainList)
+  TEvsDomainList = class(TEvsDBInfo, IEvsDomainList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2271,6 +2367,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2288,7 +2385,7 @@ type
     Property Items[aIdx : Integer] : IEvsDomainInfo read Get write Put;default;
   end;
   { TEvsViewList }
-  TEvsViewList = class(TEvsDBInfo, IEvsViewList)
+  TEvsViewList = class(TEvsDBInfo, IEvsViewList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList : IInterfaceList;
   protected
@@ -2301,6 +2398,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear;extdecl;
     Procedure Delete(aIdx : Integer);extdecl;
     Procedure Exchange(aIdx1,aIdx2 : Integer);extdecl;
@@ -2318,7 +2416,7 @@ type
     Property Items[aIdx : Integer] : IEvsViewInfo read Get write Put;default;
   end;
   { TEvsRoleList }
-  TEvsRoleList = class(TEvsDBInfo, IEvsRoleList)
+  TEvsRoleList = class(TEvsDBInfo, IEvsRoleList) {$MESSAGE WARN 'Add Contained support'}
   private
     FList :IInterfaceList;
   protected
@@ -2331,6 +2429,7 @@ type
   public
     Constructor Create(aOwner :TEvsDBInfo; aRefCounted :Boolean); override;
     Destructor Destroy; override;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
     Procedure Clear; extdecl;
     Procedure Delete(aIdx :Integer);extdecl;
     Procedure Exchange(aIdx1, aIdx2 :Integer);extdecl;
@@ -2654,42 +2753,40 @@ function TEvsFieldProxy.GetLength :Integer;extdecl;
 begin
   Result := FField.Size;
   case FField.DataType of
-    ftSmallint : Result := 3;
-    ftInteger  : Result := 10;
-    ftWord     : Result := 5;
-    ftBoolean  : Result := 4;
-    ftFloat    : Result := 18;
-    ftCurrency : Result := 20;
-    ftBCD      : Result := 30;
-    ftDate     : Result := 10;
-    ftTime     : Result := 10;
-    ftDateTime : Result := 20;
-    ftBytes    : Result := -1;
-    ftVarBytes: Result := -1;
-    ftAutoInc  : Result := 20;
-    ftBlob     : Result := -1;
-    ftMemo     : Result := -1;
-    ftGraphic  : Result := -1;
-    ftFmtMemo  : Result := -1;
-    ftParadoxOle : Result := -1;
-    ftDBaseOle   : Result := -1;
-    ftTypedBinary: Result := -1;
-    ftCursor     : Result := -1;
-    ftFixedChar  : Result := -1;
-    //ftWideString : Result := Size div 2;
-    ftLargeint   : Result := 22;
-    ftADT        : Result := -1;
-    //ftArray      : Result := -1; Size;
-    ftReference  : Result := -1;
-    ftDataSet    : Result := -1;
-    ftOraBlob    : Result := -1;
-    ftOraClob    : Result := -1;
-    ftVariant    : Result := -1;
-    ftInterface  : Result := -1;
-    ftIDispatch  : Result := -1;
-    ftGuid       : Result := 43;
-    ftTimeStamp  : Result := 20;
-    ftFMTBcd     : Result := 20;
+    ftSmallint    :Result := 3;
+    ftInteger     :Result := 10;
+    ftWord        :Result := 5;
+    ftBoolean     :Result := 4;
+    ftFloat       :Result := 18;
+    ftCurrency    :Result := 20;
+    ftBCD         :Result := 30;
+    ftDate        :Result := 10;
+    ftTime        :Result := 10;
+    ftDateTime    :Result := 20;
+    ftBytes       :Result := -1;
+    ftVarBytes    :Result := -1;
+    ftAutoInc     :Result := 20;
+    ftBlob        :Result := -1;
+    ftMemo        :Result := -1;
+    ftGraphic     :Result := -1;
+    ftFmtMemo     :Result := -1;
+    ftParadoxOle  :Result := -1;
+    ftDBaseOle    :Result := -1;
+    ftTypedBinary :Result := -1;
+    ftCursor      :Result := -1;
+    ftFixedChar   :Result := -1;
+    ftLargeint    :Result := 22;
+    ftADT         :Result := -1;
+    ftReference   :Result := -1;
+    ftDataSet     :Result := -1;
+    ftOraBlob     :Result := -1;
+    ftOraClob     :Result := -1;
+    ftVariant     :Result := -1;
+    ftInterface   :Result := -1;
+    ftIDispatch   :Result := -1;
+    ftGuid        :Result := 43;
+    ftTimeStamp   :Result := 20;
+    ftFMTBcd      :Result := 20;
     //ftFixedWideChar: Result := Size;
     //ftWideMemo     : Result := Size;
   end;
@@ -2720,17 +2817,19 @@ begin
   FField.ReadOnly := aValue;
 end;
 
-Constructor TEvsFieldProxy.Create(aField :TField; aDataSet :IEvsDataset);
+Constructor TEvsFieldProxy.Create(aField :TField; aDataSet :IEvsDataset; aOwns :Boolean);
 begin
   inherited Create(True);
   FField := aField;
-  FDts := aDataSet;
+  FDts   := aDataSet;
+  FOwner := aOwns;
 end;
 
 Destructor TEvsFieldProxy.Destroy;
 begin
   FDts := Nil;
   inherited Destroy;
+  if FOwner and Assigned(FField) then FField.Free;
 end;
 
 Function TEvsFieldProxy.AsString :Widestring; extdecl;
@@ -2840,7 +2939,7 @@ end;
 
 Constructor TEvsDatasetProxy.Create(aDataset :TDataset; OwnsDataset :Boolean);
 begin
-  inherited Create;
+  inherited Create(True);
   FDS := aDataset;
   FAutoTrim := False;
   FOwnsDataset := OwnsDataset;
@@ -2849,7 +2948,8 @@ end;
 destructor TEvsDatasetProxy.Destroy;
 begin
   inherited Destroy;
-  if FOwnsDataset then FDS.Free;
+  if FOwnsDataset and Assigned(FDS) then
+    FDS.Free;
 end;
 
 {$ENDREGION}
@@ -2912,7 +3012,7 @@ var
 begin
   if Supports(aDest, TPersistent, vTmp) then begin
     AssignTo(vTmp);
-  end else Result := -1;//raise ETBException.Create('Unsuported Destination');
+  end else Result := -1;
 end;
 
 function TEvsAbstractConnectionProxy.CopyFrom(const aSource :IEvsCopyable):Integer; extdecl;
@@ -2952,8 +3052,6 @@ end;
 
 Constructor TEvsAbstractConnectionProxy.Create(const aConnection :TCustomConnection; const aOwnsConnection :Boolean = True);
 begin
-  if aConnection = nil then
-    raise ETBException.CreateFmt('You must pass a connection based object in %S.',[ClassName]);
   inherited Create(True);
   FCnnOwner := aOwnsConnection;
   FCnn := aConnection;
@@ -2963,6 +3061,17 @@ destructor TEvsAbstractConnectionProxy.Destroy;
 begin
   if FCnnOwner then FCnn.Free;
   inherited Destroy;
+end;
+
+procedure TEvsAbstractConnectionProxy.Assign(Source :TPersistent);
+var
+  vSrc :TEvsAbstractConnectionProxy absolute Source;
+begin
+  if Source is TEvsAbstractConnectionProxy then begin
+    FCnnOwner := vSrc.FCnnOwner;
+    FCnn      := TCustomConnection(vSrc.FCnn.ClassType.Create); //make a copy. //this is way, way quorky. Test it.
+    FCnn.Assign(vSrc.FCnn);
+  end else inherited Assign(Source);
 end;
 
 {$ENDREGION}
@@ -3285,6 +3394,21 @@ Function TEvsViewInfo.FieldCount :integer; extdecl;
 begin
   Result := FFieldList.Count;
 end;
+
+Function TEvsViewInfo.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vTmp : IEvsViewInfo;
+begin
+  Result := inherited EqualsTo(aCompare); if Result then Exit; //is compared against it self.
+  if Supports(aCompare, IEvsViewInfo, vTmp) then begin
+    Result := WideCompareText(FName, vTmp.Name) = 0;
+    Result := Result and (FieldCount = vTmp.FieldCount)
+                     and (WideCompareText(FSQL,         vTmp.SQL)         = 0)
+                     and (WideCompareText(FDescription, vTmp.Description) = 0)
+                     and FieldList.EqualsTo(vTmp.FieldList);
+  end;
+end;
+
 {$ENDREGION}
 
 {$REGION ' TEvsDomainInfo '}
@@ -3697,7 +3821,7 @@ end;
 Constructor TEvsStoredInfo.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
 begin
   inherited Create(aOwner, aRefCounted);
-  FList := TInterfaceList.Create;
+  FList := TEvsFieldList.Create(Self, True);
 end;
 
 procedure TEvsStoredInfo.Assign(Source :TPersistent);
@@ -3714,6 +3838,7 @@ end;
 
 Destructor TEvsStoredInfo.Destroy;
 begin
+  FList.Clear;
   FList := Nil;
   inherited Destroy;
 end;
@@ -3961,6 +4086,23 @@ begin
   inherited Destroy;
 end;
 
+Function TEvsViewList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsViewList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsViewList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
 procedure TEvsViewList.Clear;extdecl;
 begin
   FList.Clear;
@@ -4070,6 +4212,23 @@ begin
   inherited Destroy;
 end;
 
+Function TEvsDomainList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsDomainList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsDomainList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
 procedure TEvsDomainList.Clear;extdecl;
 begin
   FList.Clear;
@@ -4177,6 +4336,23 @@ begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
+end;
+
+function TEvsExceptionList.EqualsTo(const aCompare:IEvsCopyable):Boolean;extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsExceptionList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsExceptionList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsExceptionList.Clear;extdecl;
@@ -4300,6 +4476,23 @@ begin
   end else inherited Assign(aSource);
 end;
 
+Function TEvsTriggerList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsTriggerList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsTriggerList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
 Procedure TEvsTriggerList.Clear; extdecl;
 begin
   FList.Clear;
@@ -4408,6 +4601,23 @@ begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
+end;
+
+Function TEvsDatabaseList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsDatabaseList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare, IEvsDatabaseList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsDatabaseList.Clear;extdecl;
@@ -4520,6 +4730,23 @@ begin
   inherited Destroy;
 end;
 
+Function TEvsUserList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsUserList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare, IEvsUserList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
 procedure TEvsUserList.Clear;extdecl;
 begin
   FList.Clear;
@@ -4628,6 +4855,22 @@ begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
+end;
+Function TEvsUDFList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsUDFList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsUDFList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsUDFList.Clear;extdecl;
@@ -4739,6 +4982,23 @@ begin
   inherited Destroy;
 end;
 
+Function TEvsSequenceList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsSequenceList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsSequenceList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
 procedure TEvsSequenceList.Clear;extdecl;
 begin
   FList.Clear;
@@ -4847,6 +5107,23 @@ begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
+end;
+
+Function TEvsStoredList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsStoredList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsStoredList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsStoredList.Clear;extdecl;
@@ -4976,6 +5253,22 @@ begin
   end else inherited Assign(aSource);
 end;
 
+Function TEvsIndexList.EqualsTo(const aCompare :IEvsCopyable) :Boolean;  extdecl;
+var
+  vCntr :Integer;
+  vTmp  :TEvsIndexList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare, TEvsIndexList, vTmp) then begin;
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to FList.Count -1 do
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);
+    end;
+  end;
+end;
+
 procedure TEvsIndexList.Delete(aIdx :Integer);extdecl;
 begin
   FList.Delete(aIdx);
@@ -5094,6 +5387,23 @@ begin
   end else inherited Assign(aSource);
 end;
 
+Function TEvsFieldList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vTmp : IEvsFieldList;
+  vCntr :Integer;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if Result then Exit;
+  if Supports(aCompare, IEvsFieldList, vTmp) then begin
+    Result := Count = vTmp.Count;
+    if not Result then Exit;
+    for vCntr := 0 to Count -1 do begin
+      Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);
+      if not Result then Exit;
+    end;
+  end;
+end;
+
 procedure TEvsFieldList.Clear;extdecl;
 begin
   FList.Clear;
@@ -5122,13 +5432,12 @@ end;
 
 function TEvsFieldList.IndexOf(aValue :IEvsFieldInfo) :Integer;extdecl;
 begin
-  Result:=FList.IndexOf(aValue);
+  Result := FList.IndexOf(aValue);
 end;
 
 function TEvsFieldList.Add(aValue :IEvsFieldInfo) :Integer;extdecl;
 begin
-  if FList.IndexOf(aValue) = -1 then
-    Result := FList.Add(aValue);
+  if FList.IndexOf(aValue) = -1 then Result := FList.Add(aValue);
 end;
 
 procedure TEvsFieldList.Insert(aIdx :Integer; aValue :IEvsFieldInfo);extdecl;
@@ -5152,6 +5461,151 @@ begin
 end;
 
 procedure TEvsFieldList.Unlock;extdecl;
+begin
+  FList.Unlock;
+end;
+
+{$ENDREGION}
+
+{$REGION ' TEvsIndexFieldList '}
+
+Function TEvsIndexFieldList.Get(aIdx :Integer) :IEvsIndexFieldInfo; extdecl;
+begin
+  Result := FList.Get(aIdx) as IEvsIndexFieldInfo;
+end;
+
+Function TEvsIndexFieldList.GetCapacity :Integer; extdecl;
+begin
+  Result := FList.Capacity;
+end;
+
+Function TEvsIndexFieldList.GetCount :Integer; extdecl;
+begin
+  Result := FList.Count;
+end;
+
+Procedure TEvsIndexFieldList.Put(aIdx :Integer; aValue :IEvsIndexFieldInfo); extdecl;
+begin
+  FList.Put(aIdx,aValue);
+end;
+
+Procedure TEvsIndexFieldList.SetCapacity(aValue :Integer); extdecl;
+begin
+  FList.SetCapacity(aValue);
+end;
+
+Procedure TEvsIndexFieldList.SetCount(aValue :Integer); extdecl;
+begin
+  FList.SetCount(aValue);
+end;
+
+Constructor TEvsIndexFieldList.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
+begin
+  inherited Create(aOwner, aRefCounted);
+  FList := TInterfaceList.Create;
+end;
+
+Destructor TEvsIndexFieldList.Destroy;
+begin
+  FList.Clear;
+  FList := nil;//.Free;
+  inherited Destroy;
+end;
+
+Function TEvsIndexFieldList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :TEvsIndexFieldList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,TEvsIndexFieldList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
+end;
+
+procedure TEvsIndexFieldList.Assign(Source :TPersistent);
+var
+  vSrc  :TEvsIndexFieldList absolute Source;
+  vCntr :Integer;
+begin
+  if Source is TEvsIndexFieldList then begin
+    Clear;
+    for vCntr := 0 to vSrc.Count -1 do begin
+      New.CopyFrom(vSrc[vCntr]);
+    end;
+  end else inherited Assign(Source);
+end;
+
+Procedure TEvsIndexFieldList.Clear; extdecl;
+var
+  vCntr :Integer;
+begin
+  FList.Clear;
+  for vCntr := 0 to FList.Count -1 do begin
+    FList[vCntr] := nil;
+  end;
+end;
+
+Procedure TEvsIndexFieldList.Delete(aIndex :Integer); extdecl;
+begin
+  FList.Delete(aIndex);
+end;
+
+Procedure TEvsIndexFieldList.Exchange(aIndex1, aIndex2 :Integer); extdecl;
+begin
+  FList.Exchange(aIndex1,aIndex2);
+end;
+
+Function TEvsIndexFieldList.New :IEvsIndexFieldInfo; extdecl;
+begin
+  Result := TEvsIndexFieldInfo.Create(FOwner, True);
+  Add(Result);
+end;
+
+Function TEvsIndexFieldList.First :IEvsIndexFieldInfo; extdecl;
+begin
+  Result := FList.First as IEvsIndexFieldInfo;
+end;
+
+Function TEvsIndexFieldList.IndexOf(aItem :IEvsIndexFieldInfo) :Integer; extdecl;
+begin
+  Result := FList.IndexOf(aItem);
+end;
+
+Function TEvsIndexFieldList.Add(aItem :IEvsIndexFieldInfo) :Integer; extdecl;
+begin
+  if FList.IndexOf(aItem) = -1 then
+    Result := FList.Add(aItem);
+end;
+
+Procedure TEvsIndexFieldList.Insert(aIdx :Integer; aItem :IEvsIndexFieldInfo); extdecl;
+begin
+  if FList.IndexOf(aItem) = -1 then
+    FList.Insert(aIdx,aItem);
+end;
+
+Function TEvsIndexFieldList.Last :IEvsIndexFieldInfo; extdecl;
+begin
+  Result := FList.Last as IEvsIndexFieldInfo;
+end;
+
+Function TEvsIndexFieldList.Remove(aItem :IEvsIndexFieldInfo) :Integer; extdecl;
+begin
+  Result := FList.Remove(aItem);
+end;
+
+Procedure TEvsIndexFieldList.Lock; extdecl;
+begin
+  FList.Lock;
+end;
+
+Procedure TEvsIndexFieldList.Unlock; extdecl;
 begin
   FList.Unlock;
 end;
@@ -5201,6 +5655,23 @@ begin
   FList.Clear;
   FList := nil;//.Free;
   inherited Destroy;
+end;
+
+Function TEvsTableList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :TEvsTableList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,TEvsTableList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsTableList.Assign(Source :TPersistent);
@@ -5329,6 +5800,23 @@ begin
   FList.Clear;
   FList := Nil;
   inherited Destroy;
+end;
+
+Function TEvsRoleList.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vCntr :Integer;
+  vTmp  :IEvsRoleList;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if not Result then begin
+    if Supports(aCompare,IEvsRoleList, vTmp) then begin
+      Result := Count = vTmp.Count;
+      if not Result then Exit;
+      for vCntr := 0 to Count -1 do begin
+        Result := Result and Items[vCntr].EqualsTo(vTmp[vCntr]);;
+      end;
+    end;
+  end;
 end;
 
 procedure TEvsRoleList.Clear;extdecl;
@@ -5724,10 +6212,20 @@ end;
 
 Destructor TEvsDatabaseInfo.Destroy;
 begin
+  FTables.Clear;
+  FIndices.Clear;
+  FTriggers.Clear;
+  FViews.Clear;
+  FStoredProcs.Clear;
+  FSequences.Clear;
+  FExceptions.Clear;
+  FUdfs.Clear;
+  FDomains.Clear;
+  FUsers.Clear;
+  FRoles.Clear;
+
   FCredentials := Nil;
   FCnn         := Nil;
-  FCredentials := Nil;
-
   FTables      := Nil;
   FExceptions  := Nil;
   FViews       := Nil;
@@ -5743,20 +6241,77 @@ begin
 end;
 
 procedure TEvsDatabaseInfo.Assign(Source :TPersistent);
+var
+  vSrc:TEvsDatabaseInfo absolute Source;
+  vCntr :Integer;
 begin
   inherited Assign(Source);
   if Source is TEvsDatabaseInfo then begin
-    FDefaultCollation := TEvsDatabaseInfo(Source).DefaultColation;
-    FDefaultCharset   := TEvsDatabaseInfo(source).DefaultCharset;
-    FDatabase         := TEvsDatabaseInfo(source).Database;
-    FHost             := TEvsDatabaseInfo(source).Host;
-    FPageSize         := TEvsDatabaseInfo(source).PageSize;
-    FServerID         := TEvsDatabaseInfo(source).ServerKind;
-    FTitle            := TEvsDatabaseInfo(source).Title;
-    FCnn              := Connect(Self, FServerID);
-    FCredentials.UserName := TEvsDatabaseInfo(Source).Credentials.UserName;
-    FCredentials.Password := TEvsDatabaseInfo(Source).Credentials.Password;
-    FCredentials.Role     := TEvsDatabaseInfo(Source).Credentials.Role;
+    FDefaultCollation := vSrc.FDefaultCollation;
+    FDefaultCharset   := vSrc.FDefaultCharset;
+    FDatabase         := vSrc.FDatabase;
+    FHost             := vSrc.FHost;
+    FPageSize         := vSrc.FPageSize;
+    FServerID         := vSrc.FServerID;
+    FTitle            := vSrc.FTitle;
+    FCredentials.CopyFrom(vSrc.Credentials);
+    //FCnn              :IEvsConnection;
+    FCnn              := Connect(vSrc, FServerID);//copy the connection do not simple link with it.
+    //FTables           :IEvsTableList;      //1
+    FTables.Clear;
+    for vCntr := 0 to vSrc.FTables.Count -1 do begin
+      FTables.New.CopyFrom(vSrc.FTables[vCntr]);
+    end;
+    //FIndices          :IEvsIndexList;      //not used at this time all indices are owned by tables so far.
+    FIndices.Clear;
+    for vCntr := 0 to vSrc.FIndices.Count -1 do begin
+      FIndices.New.CopyFrom(vSrc.FIndices[vCntr]);
+    end;
+    //FTriggers         :IEvsTriggerList;    //database level triggers only eg on connect on disconnect etc.
+    FTriggers.Clear;
+    for vCntr := 0 to vSrc.FTriggers.Count -1 do begin
+      FTriggers.New.CopyFrom(vSrc.FTriggers[vCntr]);
+    end;
+    //FViews            :IEvsViewList;       //4
+    FViews.Clear;
+    for vCntr := 0 to vSrc.FViews.Count -1 do begin
+      FViews.New.CopyFrom(vSrc.FViews[vCntr]);
+    end;
+    //FStoredProcs      :IEvsStoredList;
+    FStoredProcs.Clear;
+    for vCntr := 0 to vSrc.FStoredProcs.Count -1 do begin
+      FStoredProcs.New.CopyFrom(vSrc.FStoredProcs[vCntr]);
+    end;
+    //FSequences        :IEvsSequenceList;   //6
+    FSequences.Clear;
+    for vCntr := 0 to vSrc.FSequences.Count -1 do begin
+      FSequences.New.CopyFrom(vSrc.FSequences[vCntr]);
+    end;
+   //FExceptions       :IEvsExceptionList;
+    FExceptions.Clear;
+    for vCntr := 0 to vSrc.FExceptions.Count -1 do begin
+      FExceptions.New.CopyFrom(vSrc.FExceptions[vCntr]);
+    end;
+    //FUdfs             :IEvsUDFList;        //8
+    FUdfs.Clear;
+    for vCntr := 0 to vSrc.FUdfs.Count -1 do begin
+      FUdfs.New.CopyFrom(vSrc.FUdfs[vCntr]);
+    end;
+    //FDomains          :IEvsDomainList;
+    FDomains.Clear;
+    for vCntr := 0 to vSrc.FIndices.Count -1 do begin
+      FDomains.New.CopyFrom(vSrc.FDomains[vCntr]);
+    end;
+    //FUsers            :IEvsUserList;       //10
+    FUsers.Clear;
+    for vCntr := 0 to vSrc.FUsers.Count -1 do begin
+      FUsers.New.CopyFrom(vSrc.FUsers[vCntr]);
+    end;
+    //FRoles            :IEvsRoleList;       //11
+    FRoles.Clear;
+    for vCntr := 0 to vSrc.FRoles.Count -1 do begin
+      FRoles.New.CopyFrom(vSrc.FRoles[vCntr]);
+    end;
   end;
 end;
 
@@ -6462,6 +7017,25 @@ begin
   inherited Destroy;
 end;
 
+Function TEvsTableInfo.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+var
+  vTmp : TEvsTableInfo;
+begin
+  Result := inherited EqualsTo(aCompare);
+  if Result then Exit; //self comparison.
+  if Supports(aCompare, TEvsTableInfo, vTmp) then begin
+
+    Result := ((TableName   = vTmp.TableName)   and
+               (Description = vTmp.Description) and
+               (CharSet     = vTmp.CharSet)     and
+               (Collation   = vTmp.Collation)   and
+               (SystemTable = vTmp.SystemTable) );
+    Result := Result and FFieldList.EqualsTo(vTmp.FFieldList)
+                     and FIndexList.EqualsTo(vTmp.FIndexList)
+                     and FTriggerList.EqualsTo(vTmp.FTriggerList)
+  end;
+end;
+
 procedure TEvsTableInfo.Assign(aSource :TPersistent);
 var
   vSrc : TEvsTableInfo absolute aSource;
@@ -6731,7 +7305,7 @@ end;
 constructor TEvsIndexInfo.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);
 begin
   inherited Create(aOwner, aRefCounted);
-  FList := TInterfaceList.Create;
+  FList := TEvsIndexFieldList.Create(Self, True);
 end;
 
 Destructor TEvsIndexInfo.Destroy;
@@ -6742,14 +7316,17 @@ begin
 end;
 
 function TEvsIndexInfo.TableName :string;extdecl;
+var
+  vTbl :IEvsTableInfo;
 begin
-  Result := '';     {$MESSAGE WARN 'Needs Implementation'}
-  //if FOwner is tevsTableInfo then Result:= tevstableinfo(fowner).TableName;
+  Result := '';
+  if Supports(FOwner, IEvsTableInfo, vTbl) then Result := vTbl.TableName;
 end;
 
 procedure TEvsIndexInfo.Assign(Source :TPersistent);
 var
   vSrc : TEvsIndexInfo absolute Source;
+  vCntr :Integer;
 begin
   if Source is TEvsIndexInfo then begin
     FUnique      := vSrc.FUnique     ;
@@ -6757,7 +7334,11 @@ begin
     FOrder       := vSrc.FOrder      ;
     FIndexName   := vSrc.FIndexName  ;
     FDescription := vSrc.FDescription;
-    raise SilentException('Needs more work.');
+    FList.Clear;
+    for vCntr := 0 to vSrc.FList.Count -1 do begin
+      FList.New.CopyFrom(vSrc.FList[vCntr]);
+    end;
+    //raise SilentException('Needs more work.');
   end else inherited Assign(Source);
 end;
 
@@ -6777,6 +7358,16 @@ begin
   finally
     EndUpdate;
   end;
+end;
+
+Function TEvsIndexInfo.FieldIndex(const aField:IEvsFieldInfo):Integer;overload;extdecl;
+begin
+  Result := IndexOf(aField);
+end;
+
+Function TEvsIndexInfo.FieldIndex(const aFieldName:WideString):Integer;overload;extdecl;
+begin
+  Result := IndexOf(aFieldName); //not found
 end;
 
 procedure TEvsIndexInfo.DeleteField(const aIndex :Integer);extdecl;
@@ -6834,6 +7425,14 @@ begin
   Result := FOrder;
 end;
 
+procedure TEvsIndexFieldInfo.SetParent(aValue:IEvsParented);extdecl;
+begin
+  if Parent <> aValue then begin
+    inherited SetParent(aValue);
+    //Do I need to act on moving between tables?
+  end;
+end;
+
 procedure TEvsIndexFieldInfo.SetOrder(aValue :TEvsSortOrder);extdecl;
 begin
   if FOrder=aValue then Exit;
@@ -6843,10 +7442,29 @@ end;
 procedure TEvsIndexFieldInfo.Assign(aSource:TPersistent);
 var
   vSrc : TEvsIndexFieldInfo absolute aSource;
-begin
+  vTbl : IEvsTableInfo;
+  function SameParents:boolean;
+  begin
+    Result := Parent = vSrc.Parent; //same index
+    If Assigned(Parent) and Assigned(vSrc.parent) then Result := Result or (vSrc.Parent.Parent = Parent.Parent);
+  end;
+  function ParentIsTable:Boolean;
+  begin
+    Result := False;
+    If Assigned(Parent) then Result := Supports(Parent.Parent ,IEvsTableInfo,vTbl);
+  end;
+begin //parent is always a tevsindexinfo which have a table as parent. Indices outside of tables are not supported neither blocked.
   if aSource is TEvsIndexFieldInfo then begin
-    FField := vSrc.FField;
-    FOrder := vSrc.FOrder;
+    if SameParents then //if in the same table
+      FField := vSrc.FField //reference copy
+    else //not in the same table, assume a table copy and link to the copied field by name.
+      if ParentIsTable then begin
+        FField := vTbl.FieldByName(vSrc.FField.FieldName);
+        if not Assigned(FField) then //FField := vSrc.FField; //dont loose the reference.
+          Error(rsFieldNotFound, [FField.FieldName, vTbl.TableName]); //At this point in time raising an error is the faster thing to do.
+         //In the future I might add a new status to reflect an incorectly linked index field to allow for late linking.
+      end else FField := vSrc.FField; //not part of a table don't loose the reference.
+    FOrder := vSrc.FOrder; //value copy
   end else inherited Assign(aSource);
 end;
 
@@ -6856,8 +7474,7 @@ var
 begin
   Result := inherited EqualsTo(aCompare);
   if Supports(aCompare, IEvsIndexFieldInfo, vTmp) and (not Result) then begin
-    Result := Result or ((FOrder = vTmp.order)
-                     and (FField.EqualsTo(vTmp.Field)));
+    Result := Result or ((FOrder = vTmp.order) and (FField.EqualsTo(vTmp.Field)));
   end;
 end;
 
@@ -6955,6 +7572,11 @@ begin
   //  FOwned.Free;
   //end;
   inherited Destroy;
+end;
+
+procedure TEvsDBInfo.Error(const aMsg :String; aParams :array of const);
+begin
+  raise ETBException.CreateFmt(aMsg, aParams) at get_caller_addr(get_frame);
 end;
 
 function TEvsDBInfo.CopyFrom(const aSource :IEvsCopyable) :Integer; extdecl;
@@ -7113,7 +7735,7 @@ begin
   Result := FCollation;
 end;
 
-function TEvsFieldInfo.GetDataGroup :TEvsDataGroup;
+function TEvsFieldInfo.GetDataGroup :TEvsDataGroup; extdecl;
 begin
   Result := FDataGroup;
 end;
@@ -7244,6 +7866,23 @@ begin
   end;
 end;
 
+function TEvsFieldInfo.GetIsPrimary :ByteBool;extdecl;
+var
+  vIdx :IEvsIndexInfo;
+  vTbl :IEvsTableInfo;
+  vCntr :Integer;
+begin
+  Result := False;
+  if Supports(Parent, IEvsTableInfo, vTbl) then begin
+    for vCntr := 0 to vTbl.IndexCount -1 do
+      if vTbl.Index[vCntr].Primary then begin
+        vIdx := vTbl.Index[vCntr];
+        Break;//loop end;
+      end;
+    Result := (vIdx.FieldIndex(Self)> -1) or (vIdx.FieldIndex(FFieldName) > -1);
+  end;
+end;
+
 Procedure TEvsFieldInfo.SetFieldSize(aValue :integer); extdecl;
 begin
   if FieldScale <> aValue then begin
@@ -7307,7 +7946,6 @@ begin
     KnownDBTypes[vCntr] := nil;
     Dispose(vTmp);
   end;
-  KnownDBTypes.Free;
 end;
 
 initialization
@@ -7315,6 +7953,6 @@ initialization
 
 finalization
   ClearKnownDBTypes;
-
+  KnownDBTypes.Free;
 end.
 

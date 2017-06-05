@@ -13,18 +13,20 @@ type
 
   TFBTableInfo = class(TEvsFBMetaTester)
   public
-    //procedure Cleanup;
     procedure SetUp; override;
     procedure TearDown; override;
     procedure SetupCopy(var aExisting, aCopy :IEvsTableInfo);
+    procedure LoadDetails(const aTable:IEvsTableInfo);
   published
     procedure Retrieval;
-    procedure Copy;
     procedure DetailsRetrieval;
     procedure TableTriggersRetrieval;
-    procedure ForeignKeyRetrieval;
+    procedure IndexRetrieval;
+
     procedure PrimaryKeyRetrieval;
+    procedure ForeignKeyRetrieval;
     procedure CheckRetrieval;
+    procedure Copy;
     procedure ListCopy;
   end;
 
@@ -59,9 +61,14 @@ begin
   aCopy.CopyFrom(aExisting);
 end;
 
+procedure TFBTableInfo.LoadDetails(const aTable :IEvsTableInfo);
+begin
+  FDB.Connection.MetaData.GetTableInfo(aTable);
+end;
+
 procedure TFBTableInfo.Retrieval;
 begin
-  CheckEquals(10, FDB.TableCount, 'Unexpected number of tables found');
+  CheckEquals(10,         FDB.TableCount, 'Unexpected number of tables found');
   CheckEquals('COUNTRY',  FDB.Table[0].TableName);
   CheckEquals('CUSTOMER', FDB.Table[1].TableName);
   CheckEquals('SALES',    FDB.Table[9].TableName);
@@ -97,15 +104,15 @@ begin
   CheckEquals(12, FDB.Table[1].FieldCount,   'Unexpected Count of fields for table '   + FDB.Table[1].TableName);
   CheckEquals(02, FDB.Table[0].FieldCount,   'Unexpected Count of fields for table '   + FDB.Table[0].TableName);
   CheckEquals(13, FDB.Table[9].FieldCount,   'Unexpected Count of fields for table '   + FDB.Table[9].TableName);
-  CheckEquals(02, FDB.Table[1].IndexCount,   'Unexpected Count of Indices for table '  + FDB.Table[1].TableName);
+  CheckEquals(03, FDB.Table[1].IndexCount,   'Unexpected Count of Indices for table '  + FDB.Table[1].TableName);
   CheckEquals(01, FDB.Table[1].TriggerCount, 'Unexpected Count of triggers for table ' + FDB.Table[1].TableName);
-  CheckEquals(03, FDB.Table[9].IndexCount,   'Unexpected Count of indices for table '  + FDB.Table[9].TableName);
+  CheckEquals(04, FDB.Table[9].IndexCount,   'Unexpected Count of indices for table '  + FDB.Table[9].TableName);
   CheckEquals(01, FDB.Table[9].TriggerCount, 'Unexpected Count of triggers for table ' + FDB.Table[9].TableName);
   vTbl := TableByName(FDB,'department');
   if vTbl = nil then Fail('Table department was not retrieved.');
   CheckEquals(7,vTbl.FieldCount,  'Invalid field count for Table '    + vTbl.TableName);
   CheckEquals(0,vTbl.TriggerCount,'Invalid trigger count  for Table ' + vTbl.TableName);
-  CheckEquals(1,vTbl.IndexCount,  'Invalid index count for Table '    + vTbl.TableName);
+  CheckEquals(2,vTbl.IndexCount,  'Invalid index count for Table '    + vTbl.TableName);
 end;
 
 procedure TFBTableInfo.TableTriggersRetrieval;
@@ -179,17 +186,33 @@ begin
 end;
 
 procedure TFBTableInfo.PrimaryKeyRetrieval;
+var
+  vHasPrimary : Boolean = False;
+  vCntr :Integer;
 begin
-  Fail('No test written');
+  LoadDetails(FDB.Table[0]);
+  for vCntr := 0 to FDB.Table[0].IndexCount -1 do
+    vHasPrimary := vHasPrimary or FDB.Table[0].Index[0].Primary;
+  CheckTrue(vHasPrimary,FDB.Table[0].TableName+': No primary index found');
 end;
 
 procedure TFBTableInfo.CheckRetrieval;
 begin
-  fail('No test written');
+  Fail('No test written');
+end;
+
+procedure TFBTableInfo.IndexRetrieval;
+begin
+  LoadDetails(FDB.Table[0]);
+  CheckEquals(1, FDB.Table[0].IndexCount, FDB.Table[0].TableName +': Incorect index count');
+  LoadDetails(FDB.Table[1]);
+  CheckEquals(3, FDB.Table[1].IndexCount, FDB.Table[1].TableName +': Incorect index count');
+  LoadDetails(FDB.Table[2]);
+  CheckEquals(2, FDB.Table[2].IndexCount, FDB.Table[2].TableName +': Incorect index count');
 end;
 
 initialization
-  RegisterTest(TFBTableInfo.Suite);
+  RegisterTest('Schema Suite', TFBTableInfo.Suite);
 
 end.
 

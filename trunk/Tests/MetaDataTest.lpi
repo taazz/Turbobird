@@ -45,7 +45,7 @@
         <PackageName Value="FCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="MetaDataTest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -94,6 +94,11 @@
         <Filename Value="uevsfbqryleaktest.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="uevsfieldinfotest.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsFieldInfoTest"/>
+      </Unit10>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -113,7 +118,7 @@
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="6">
+    <Exceptions Count="7">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -132,6 +137,9 @@
       <Item6>
         <Name Value="EConvertError"/>
       </Item6>
+      <Item7>
+        <Name Value="ETBSilentException"/>
+      </Item7>
     </Exceptions>
   </Debugging>
 </CONFIG>

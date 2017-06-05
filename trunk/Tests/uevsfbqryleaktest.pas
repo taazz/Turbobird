@@ -1,11 +1,12 @@
 unit uevsfbqryleaktest;
 
 {$mode objfpc}{$H+}
+{$I ..\EVSDEFS.inc}
 
 interface
 
 uses
-  Classes, SysUtils, TestFramework, uFBTestcase, uEvsDBSchema;
+  Classes, SysUtils, TestFramework, uFBTestcase, uEvsDBSchema, uTBFirebird;
 
 type
 
@@ -13,13 +14,17 @@ type
 
   TFbQryLeakTest= class(TEvsFBMetaTester)
   published
-    procedure TestConnect;
-    procedure TestQuery;
+    Procedure TestConnect;
+    Procedure TestDatasetProxy;
+    Procedure TestConnectionProxy;
+    Procedure TestFieldProxy;
+    Procedure TestQuery;
+    Procedure TestQueryFields;
   end;
 
 implementation
 
-procedure TFbQryLeakTest.TestConnect;
+Procedure TFbQryLeakTest.TestConnect;
 var
   vCnn : IEvsConnection;
 begin
@@ -28,7 +33,34 @@ begin
   vCnn := Nil;
 end;
 
-procedure TFbQryLeakTest.TestQuery;
+Procedure TFbQryLeakTest.TestDatasetProxy;
+var
+  vTmp : IEvsDataset;// TEvsMDODatasetProxy
+begin
+  vTmp := TEvsMDODatasetProxy.Create(Nil, False);
+  CheckNotNull(vTmp);
+  vTmp := Nil;
+end;
+
+Procedure TFbQryLeakTest.TestConnectionProxy; //TEvsMDOConnection
+var
+  vTmp : IEvsConnection;// TEvsMDODatasetProxy
+begin
+  vTmp := TEvsMDOConnection.Create(Nil, False);
+  CheckNotNull(vTmp);
+  vTmp := Nil;
+end;
+
+Procedure TFbQryLeakTest.TestFieldProxy;
+var
+  vTmp : IEvsField;//TEvsMDODatasetProxy
+begin
+  vTmp := TEvsFieldProxy.Create(Nil, Nil);
+  CheckNotNull(vTmp);
+  vTmp := Nil;
+end;
+
+Procedure TFbQryLeakTest.TestQuery;
 var
   vQry   :IEvsDataset;
   vCntr  :Integer;
@@ -46,7 +78,29 @@ begin
   vQry := nil;
 end;
 
+Procedure TFbQryLeakTest.TestQueryFields;
+var
+  vQry   :IEvsDataset;
+  vCntr  :Integer;
+  vFld   :IEvsField;
+begin
+  DoConnect;
+  vQry := FDB.Connection.Query('Select * from RDB$Database');
+  CheckNotNull(vQry);
+  vQry.First;
+  vCntr := 0;
+  for vCntr := 0 to vQry.FieldCount -1 do begin
+    vFld := vQry.Field[vCntr];
+    CheckNotNull(vFld);
+    CheckNotEquals('', vFld.FieldName, 'Empty field names are not allowed');
+  end;
+  CheckNotEquals(0, vCntr, 'No records returned?');
+  vQry := nil;
+end;
+
 initialization
+  {$IFDEF MEMORY_TRACE}
   RegisterTest('Memory Tests', TFbQryLeakTest.Suite);
+  {$ENDIF}
 end.
 

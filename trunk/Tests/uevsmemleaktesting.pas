@@ -1,7 +1,7 @@
 unit uEvsMemLeakTesting;
 
 {$mode objfpc}{$H+}
-
+{$I ..\EVSDEFS.inc}
 interface
 
 uses
@@ -39,8 +39,9 @@ type
     Procedure TestTable;
     Procedure TestTableList;
     Procedure TestTableListItems;
-    //procedure TestDatabase;
-    //procedure TestDatabaseList;
+    procedure TestDatabase;
+    procedure TestDatabaseList;
+    procedure TestDatabaseListItems;
   end;
 
 implementation
@@ -307,9 +308,42 @@ begin
   vTmp := nil;
 end;
 
-//var
-//  vTmp : ITestCase;
+procedure TSchemaLeakTester.TestDatabase;
+var
+  vDB:IEvsDatabaseInfo;
+begin
+  vDB := TEvsDBInfoFactory.NewDatabase(nil);
+  CheckNotNull(vDB);
+  vDB := nil;
+end;
+
+procedure TSchemaLeakTester.TestDatabaseList;
+var
+  vDB:IEvsDatabaseList;
+begin
+  vDB := TEvsDBInfoFactory.NewDatabaseList(nil);
+  CheckNotNull(vDB);
+  vDB := nil;
+end;
+
+procedure TSchemaLeakTester.TestDatabaseListItems;
+var
+  vTmp :IEvsDatabaseList;
+begin
+  vTmp := TEvsDBInfoFactory.NewDatabaseList(nil);
+  CheckNotNull(vTmp);
+  vTmp.New;
+  vTmp.New;
+  vTmp.New;
+  CheckEquals(3,vTmp.Count);
+  vTmp.Clear;
+  CheckEquals(0,vTmp.Count);
+  vTmp := nil;
+end;
+
 initialization
+  {$IFDEF MEMORY_TRACE}
   RegisterTest('Memory Tests', TSchemaLeakTester.Suite);
+  {$ENDIF}
 end.
 

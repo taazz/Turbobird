@@ -5,18 +5,26 @@ program MetaDataTest;
 
 uses
   {$IFDEF MEMORY_TRACE}
-  //FastMM4,
-  heaptrc, sysutils,
+  {$IFDEF FASTMM}
+  FastMM4,
+  {$ELSE}
+  heaptrc,
   {$ENDIF}
-  Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields, uFBViewTestCase, uEvsMemLeakTesting,
-  uEvsIntfObjects, uevsfbqryleaktest;
+  sysutils,
+  {$ENDIF}
+  Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields,
+  uEvsFieldInfoTest, uFBViewTestCase, uEvsMemLeakTesting, uEvsIntfObjects, uevsfbqryleaktest;
 
 {$R *.res}
-
+{$IFDEF MEMORY_TRACE}
+var
+  vTrc :String;
+{$ENDIF}
 begin
   {$IFDEF MEMORY_TRACE}
-    if FileExists('MemTests.trc') then DeleteFile('MemTests.trc');
-    SetHeapTraceOutput('MemTests.trc');
+    vTrc := ChangeFileExt(Application.ExeName,'.trc');
+    if FileExists(vTrc) then DeleteFile(vTrc);
+    SetHeapTraceOutput(vTrc);
   {$ENDIF}
   Application.Initialize;
   RunRegisteredTests;

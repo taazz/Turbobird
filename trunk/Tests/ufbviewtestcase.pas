@@ -57,6 +57,6 @@ begin
 end;
 
 initialization
-  RegisterTest(TFBViewTest.Suite);
+  RegisterTest('Schema Suite', TFBViewTest.Suite);
 end.
 

@@ -5,7 +5,7 @@ unit uTBFirebird;
 interface
 
 uses
-  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes, uWideStrings;
+  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, MDOServices, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes, uWideStrings;
 
 type
 
@@ -36,11 +36,12 @@ type
   { TEvsMDOConnection }
   TEvsMDOConnection = class(TEvsAbstractConnectionProxy, IEvsMetaData)
   private
-    FActiveConnection : TMDODataBase;
+    //FActiveConnection : TMDODataBase;
     {$IFDEF POOL_QRY}
     //Class var FQryPool : TMDOQueryPool; //static;
     //Class var FCnnPool : TMDODatabasePool;//static;
     {$ENDIF}
+    Function GetServerID :Integer;extdecl;
     Class Function NewQuery:TMDOQuery;
   protected
     Function GetConnection :IEvsConnection; extdecl;
@@ -100,6 +101,7 @@ type
     Function GetCharsets :PVarArray;extdecl;
     Function Collations(const aCharSet:Widestring) :PVarArray;Extdecl;
     Property Connection:IEvsConnection read GetConnection write SetConnection;
+    Property ServerID:Integer read GetServerID;
   end;
 
 //The Connection string must have all the required information to connect to the server separated semicolon.
@@ -237,26 +239,28 @@ end;
 destructor TEvsMDODatasetProxy.Destroy;
 begin
   inherited Destroy;
-  if not FOwnsDataset then ;
 end;
 
 Procedure TEvsMDODatasetProxy.Commit; extdecl;
 begin
-  TMDOQuery(FDS).Transaction.Commit;
+  if Assigned(FDS) then
+    if Assigned(TMDOQuery(FDS).Transaction) then
+      if TMDOQuery(FDS).Transaction.Active then TMDOQuery(FDS).Transaction.Commit;
 end;
 
 procedure TEvsMDODatasetProxy.RollBack; extdecl;
 begin
-  TMDOQuery(FDS).Transaction.Rollback;
+  if Assigned(FDS) then
+    if Assigned(TMDOQuery(FDS).Transaction) then
+      if TMDOQuery(FDS).Transaction.Active then TMDOQuery(FDS).Transaction.Rollback;
 end;
 
 procedure TEvsMDODatasetProxy.BeforeDestruction;
 begin
   inherited BeforeDestruction;
-  if TMDOQuery(FDS).Transaction.Active then TMDOQuery(FDS).Transaction.Rollback;
-  if FOwnsDataset then FDS.Free
+  RollBack;
   {$IFDEF POOL_QRY}
-  else TEvsMDOConnection.FQryPool.Return(FDS);
+  if not FOwnsDataset then TEvsMDOConnection.FQryPool.Return(FDS);
   {$ENDIF}
 end;
 
@@ -291,7 +295,7 @@ end;
 
 {$REGION ' TEvsMDOConnection '}
 
-class function TEvsMDOConnection.NewQuery :TMDOQuery;
+Class Function TEvsMDOConnection.NewQuery :TMDOQuery;
 begin
   {$IFDEF POOL_QRY}
   Result := FQryPool.Aquire;
@@ -301,17 +305,22 @@ begin
   if not Assigned(Result.Transaction) then Result.Transaction := TMDOTransaction.Create(Result);
 end;
 
-function TEvsMDOConnection.GetConnection :IEvsConnection;extdecl;
+function TEvsMDOConnection.GetServerID :Integer;extdecl;
+begin
+  Result := stFirebird;
+end;
+
+Function TEvsMDOConnection.GetConnection :IEvsConnection; extdecl;
 begin
   Result := Self;
 end;
 
-procedure TEvsMDOConnection.SetConnection(aValue :IEvsConnection);extdecl;
+Procedure TEvsMDOConnection.SetConnection(aValue :IEvsConnection); extdecl;
 begin
   raise ETBException.Create('This implementation does not support different connections');
 end;
 
-procedure TEvsMDOConnection.ParseFieldData(constref aDsFields :IEvsDataset; const aField :IEvsFieldInfo); extdecl;
+Procedure TEvsMDOConnection.ParseFieldData(constref aDsFields :IEvsDataset; const aField :IEvsFieldInfo); extdecl;
 const DoTrim   :Boolean = True;
       DontTrim :Boolean = False;
 var
@@ -454,12 +463,12 @@ begin
 
 end;
 
-function TEvsMDOConnection.GetMetaData :IEvsMetaData;extdecl;
+Function TEvsMDOConnection.GetMetaData :IEvsMetaData; extdecl;
 begin
   Result := Self as IEvsMetaData;
 end;
 
-procedure TEvsMDOConnection.SetParamValue(const aParamName, aParamValue :String);inline;
+Procedure TEvsMDOConnection.SetParamValue(const aParamName, aParamValue :String);
 var
   vIdx:Integer;
 begin
@@ -471,7 +480,7 @@ begin
   end;
 end;
 
-function TEvsMDOConnection.InternalExecute(aSQL :WideString) :ByteBool;extdecl;
+Function TEvsMDOConnection.InternalExecute(aSQL :WideString) :ByteBool; extdecl;
 var
   vQry:TMDOQuery;
 begin
@@ -488,27 +497,27 @@ begin
   end;
 end;
 
-function TEvsMDOConnection.InternalGetCharSet :widestring;extdecl;
+Function TEvsMDOConnection.InternalGetCharSet :widestring; extdecl;
 begin
   Result := TMDODataBase(FCnn).Params.Values[pnCharset];
 end;
 
-function TEvsMDOConnection.InternalGetPassword :widestring;extdecl;
+Function TEvsMDOConnection.InternalGetPassword :widestring; extdecl;
 begin
   Result := TMDODatabase(FCnn).Params.Values[pnPwd]; //FPassword;//Cnn.Connected;
 end;
 
-function TEvsMDOConnection.InternalGetRole :widestring;extdecl;
+Function TEvsMDOConnection.InternalGetRole :widestring; extdecl;
 begin
   Result := TMDODatabase(FCnn).Params.Values[pnRole]//FRole;// FCnn.Connected;
 end;
 
-function TEvsMDOConnection.InternalGetUserName :widestring;extdecl;
+Function TEvsMDOConnection.InternalGetUserName :widestring; extdecl;
 begin
   Result := TMDODatabase(FCnn).Params.Values[pnUser];// username FUserName; //Cnn.Connected;
 end;
 
-function TEvsMDOConnection.InternalQuery(aSQL :wideString) :IEvsDataset;extdecl;
+Function TEvsMDOConnection.InternalQuery(aSQL :wideString) :IEvsDataset; extdecl;
 var
   vObj:TMDOQuery;
 begin
@@ -524,27 +533,27 @@ begin
   Result := TEvsMDODatasetProxy.Create(vObj, True);
 end;
 
-procedure TEvsMDOConnection.InternalSetCharSet(aValue :WideString);extdecl;
+Procedure TEvsMDOConnection.InternalSetCharSet(aValue :WideString); extdecl;
 begin
   SetParamValue(pnCharset,aValue);
 end;
 
-procedure TEvsMDOConnection.InternalSetPassword(aValue :widestring);extdecl;
+Procedure TEvsMDOConnection.InternalSetPassword(aValue :widestring); extdecl;
 begin
   SetParamValue(pnPwd,aValue);
 end;
 
-procedure TEvsMDOConnection.InternalSetRole(aValue :widestring);extdecl;
+Procedure TEvsMDOConnection.InternalSetRole(aValue :widestring); extdecl;
 begin
   SetParamValue(pnRole,aValue);
 end;
 
-procedure TEvsMDOConnection.InternalSetUserName(aValue :widestring);extdecl;
+Procedure TEvsMDOConnection.InternalSetUserName(aValue :widestring); extdecl;
 begin
   SetParamValue(pnUser,aValue);
 end;
 
-procedure TEvsMDOConnection.BeforeDestruction;
+Procedure TEvsMDOConnection.BeforeDestruction;
 begin
   inherited BeforeDestruction;
   {$IFDEF POOL_QRY}
@@ -553,7 +562,7 @@ begin
 end;
 
 
-procedure TEvsMDOConnection.GetTables(const aDB :IEvsTableList);overload;extdecl;
+Procedure TEvsMDOConnection.GetTables(const aDB :IEvsTableList); extdecl;
 const
   cSql = 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
         ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name';
@@ -573,16 +582,16 @@ end;
 
 Procedure TEvsMDOConnection.GetTableInfo(const aTable:IEvsTableInfo); extdecl;
 begin
-  GetFields(aTable);
+  GetFields  (aTable);
+  GetIndices (aTable);
   GetTriggers(aTable);
-  GetIndices(aTable);
   //GetConstraints(aTable);
   //  GetPrimarykey
   //  GetForeignKey
   //  GetChecks
 end;
 
-procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo;const IncludeSystem:ByteBool = False);overload;extdecl;
+Procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo; const IncludeSystem :ByteBool); extdecl;
 const
   cSql = 'select rdb$relation_name, rdb$system_flag from rdb$relations '+
          'WHERE rdb$view_blr is null ' +
@@ -606,7 +615,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetFields(const aObject :IEvsTableInfo);extdecl;
+Procedure TEvsMDOConnection.GetFields(const aObject :IEvsTableInfo); extdecl;
 const
    cNumericType :Array[1..2] of string=('Numeric', 'Decimal');
   function iif(aCheck:Boolean; aTrue, aFalse:integer):integer;inline;
@@ -628,7 +637,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsDatabaseInfo); extdecl;
+Procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsDatabaseInfo); extdecl;
 const
    cSQL = 'SELECT RDB$TRIGGER_NAME     AS TrName, '       + //0
           '       RDB$RELATION_NAME    AS TblName, '      + //1
@@ -676,7 +685,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsTableInfo; const System:ByteBool = False); extdecl;
+Procedure TEvsMDOConnection.GetTriggers(const aObject :IEvsTableInfo; const System :ByteBool); extdecl;
 const
    cSQL = 'SELECT RDB$TRIGGER_NAME   AS trigger_name, ' + //0
                  'RDB$RELATION_NAME  AS table_name, '   + //1
@@ -730,7 +739,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetStored(const aObject :IEvsDatabaseInfo);  overload;extdecl;
+Procedure TEvsMDOConnection.GetStored(const aObject :IEvsDatabaseInfo); extdecl;
 const
   cSql = 'SELECT RDB$PROCEDURE_NAME, '         +  //0
                 'RDB$DESCRIPTION, '           +  //1
@@ -836,7 +845,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetViews(const aObject :IEvsDatabaseInfo);   overload;extdecl;
+Procedure TEvsMDOConnection.GetViews(const aObject :IEvsDatabaseInfo); extdecl;
 const
   cSql = 'SELECT RDB$RELATION_NAME  AS View_Name, '        +//0
                'RDB$VIEW_BLR        AS View_BLR, '         +//1
@@ -862,7 +871,7 @@ begin
   vDts := Nil;
 end;
 
-procedure TEvsMDOConnection.GetUDFs(const aObject :IEvsDatabaseInfo);    extdecl;{$MESSAGE WARN 'Needs Implementation'}
+Procedure TEvsMDOConnection.GetUDFs(const aObject :IEvsDatabaseInfo); extdecl;{$MESSAGE WARN 'Needs Implementation'}
 const
   cSQL     = 'SELECT RDB$FUNCTION_NAME, ' + //0
                     'RDB$MODULE_NAME, '   + //1
@@ -925,7 +934,7 @@ begin
   raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
-procedure TEvsMDOConnection.GetUsers(const aDB :IEvsDatabaseInfo);       extdecl;
+Procedure TEvsMDOConnection.GetUsers(const aDB :IEvsDatabaseInfo); extdecl;
 const
   cSql = 'SELECT DISTINCT RDB$USER ' +
          'FROM RDB$USER_PRIVILEGES ' +
@@ -934,6 +943,7 @@ const
 var
   vDts :IEvsDataset;
   vUsr :IEvsUserInfo;
+  vSrv :TMDOSecurityService;
 begin
   vDts := Query(cSql);
   vDts.First;
@@ -946,7 +956,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetRoles(const aDB :IEvsDatabaseInfo);       extdecl;
+Procedure TEvsMDOConnection.GetRoles(const aDB :IEvsDatabaseInfo); extdecl;
 const
   cSql = 'SELECT RDB$ROLE_NAME, '   + //0
                 'RDB$OWNER_NAME, '  + //1
@@ -966,7 +976,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetExceptions(const aDB :IEvsDatabaseInfo);  extdecl;
+Procedure TEvsMDOConnection.GetExceptions(const aDB :IEvsDatabaseInfo); extdecl;
 const
   cSQL = 'SELECT RDB$EXCEPTION_NAME, ' + //0
                 'RDB$MESSAGE, '        + //1
@@ -988,7 +998,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetSequences(const aDB :IEvsDatabaseInfo);   extdecl;
+Procedure TEvsMDOConnection.GetSequences(const aDB :IEvsDatabaseInfo); extdecl;
 const
   cSql = 'SELECT RDB$GENERATOR_NAME '+
          'FROM RDB$GENERATORS '      +
@@ -1006,7 +1016,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetIndices(const aObject :IEvsDatabaseInfo); overload;extdecl;
+Procedure TEvsMDOConnection.GetIndices(const aObject :IEvsDatabaseInfo); extdecl;
 var
   vCntr : Integer;
 begin
@@ -1015,7 +1025,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetIndices(const aObject :IEvsTableInfo);    overload;extdecl;
+Procedure TEvsMDOConnection.GetIndices(const aObject :IEvsTableInfo); extdecl;
 const
    cIndicesSQL = 'SELECT RDB$INDICES.RDB$RELATION_NAME         AS Table_Name, '    + //0|
                  '       RDB$INDICES.RDB$INDEX_NAME            AS Index_Name, '    + //1|
@@ -1024,12 +1034,14 @@ const
                  '       RDB$INDICES.RDB$UNIQUE_FLAG           AS Index_Unique, '  + //4|
                  '       RDB$INDICES.RDB$INDEX_TYPE            AS Index_Order, '   + //5| 1 = desc , null=asc.
                  '       RDB$INDICES.RDB$DESCRIPTION           AS Description, '   + //6|
-                 '       RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION AS Field_Position ' + //7|
+                 '       RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION AS Field_Position,' + //7|
+                       ' RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE AS Rel_Type '+ //8| PRIMARY KEY, UNIQUE, FOREIGN KEY, CHECK, NULL
                  'FROM   RDB$INDEX_SEGMENTS '+
                  '  LEFT JOIN RDB$INDICES ON RDB$INDICES.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME '+
                  '  LEFT JOIN RDB$RELATION_CONSTRAINTS ON RDB$RELATION_CONSTRAINTS.RDB$INDEX_NAME = RDB$INDEX_SEGMENTS.RDB$INDEX_NAME '+
                  'WHERE UPPER(RDB$INDICES.RDB$RELATION_NAME)=%S ' + //table name
-                 '  AND RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE IS NULL '+
+                 '  AND (RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE IS NULL  or '+
+                 '       RDB$RELATION_CONSTRAINTS.RDB$CONSTRAINT_TYPE = ''PRIMARY KEY'') '+
                  'ORDER BY RDB$INDICES.RDB$RELATION_NAME, '+
 		 '         RDB$INDICES.RDB$INDEX_NAME, '+
                  '         RDB$INDEX_SEGMENTS.RDB$FIELD_POSITION ';
@@ -1050,13 +1062,14 @@ begin
       vIndex.IndexName := Trim(vDts.Field[1].AsString);
       vIndex.Order     := GetOrder;
       vIndex.Unique    := FieldValueDef(vDts.Field[4],False);
+      vIndex.Primary   := WideCompareText('PRIMARY KEY', Trim(vDts.Field[8].AsString)) = 0;
     end;
     vIndex.AppendField(aObject.FieldByName(Trim(vDts.Field[2].AsString)), orUnSupported);
     vDts.Next;
   end;
 end;
 
-procedure TEvsMDOConnection.GetDomains(const aObject :IEvsDatabaseInfo); overload;extdecl;
+Procedure TEvsMDOConnection.GetDomains(const aObject :IEvsDatabaseInfo); extdecl;
 const
   cSQL = 'SELECT RDB$FIELDS.RDB$FIELD_NAME ' +
          'FROM  RDB$FIELDS ' +
@@ -1113,12 +1126,12 @@ begin
   end;
 end;
 
-function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
+Function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
 begin
   raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
-function TEvsMDOConnection.GetTableDDL(Const aObject :IEvsTableInfo) :widestring; extdecl;
+Function TEvsMDOConnection.GetTableDDL(Const aObject :IEvsTableInfo) :widestring; extdecl;
 begin
   raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;

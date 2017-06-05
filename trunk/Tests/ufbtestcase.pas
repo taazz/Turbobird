@@ -1,11 +1,15 @@
 unit uFBTestcase;
 
 {$mode delphi}{$H+}
+//{$MESSAGE ' Add contained support '}
+{$IFDEF RELEASE}
+ {$PASCALMAINNAME EvsMain}
+{$ENDIF}
 
 interface
 
 uses
-  Classes, SysUtils, TestFramework, MDO, uEvsDBSchema, uTBFirebird;
+  Classes, SysUtils, variants, TestFramework, MDO, uEvsDBSchema, uTBFirebird;
 
 type
 
@@ -21,8 +25,11 @@ type
     procedure TearDownOnce; override;
     procedure DoConnect;
   public
-    procedure CheckEquals(Expected,Actual:TEvsDataGroup; aMessage:string);overload;
-    procedure CheckEqualFields(Expected,Actual:IEvsFieldInfo);
+    procedure CheckNullVar   (const aVal :variant; const ErrorMsg :string='');   overload;
+    procedure CheckEmptyVar  (const aVal :variant; const ErrorMsg :string='');  overload;
+    procedure CheckEquals    (Expected,Actual:TEvsDataGroup; aMessage:string); overload;
+    procedure CheckEqualsVar(Expected,Actual:Variant; aMessage:string);   overload;
+    procedure CheckEqualFields(Expected,Actual:IEvsFieldInfo;aMessage:string='');
     procedure CheckEqualText(const Expected, Actual, aMessage:string);//case insensitive check
   end;
 
@@ -55,33 +62,33 @@ var
   vCntr :Integer;
 begin
   Result:=Nil;
-  for vCntr := 0 to aDB.TableCount do
+  for vCntr := 0 to aDB.TableCount -1 do
     if CompareText(aTableName,aDB.Table[vCntr].TableName) = 0 then Exit(aDB.Table[vCntr]);
 end;
 
 function GetTable(const aDB:IEvsDatabaseInfo; aTableName:String):IEvsTableInfo;
 begin
-  Result := TableByName(aDB,aTableName);
+  Result := TableByName(aDB, aTableName);
   if not assigned(Result) then Result := aDB.NewTable(aTableName);
 end;
 
 { TEvsFBMetaTester }
 
-procedure TEvsFBMetaTester.CheckEqualFields(Expected, Actual :IEvsFieldInfo);
+procedure TEvsFBMetaTester.CheckEqualFields(Expected, Actual :IEvsFieldInfo; aMessage :string);
 begin
-  CheckEqualText(Expected.FieldName,   Actual.FieldName,   'Names Differ');
-  CheckEquals   (Expected.FieldScale,  Actual.FieldScale, 0.0001, 'Scale Differ');
-  CheckEquals   (Expected.FieldSize,   Actual.FieldSize,   'Size  Differ');
-  CheckEqualText(Expected.Description, Actual.Description, 'Descriptions Differ');
-  CheckEquals   (Expected.AllowNulls,  Actual.AllowNulls,  'AllowNulls Differ');
-  CheckEquals   (Expected.AutoNumber,  Actual.AutoNumber,  'AutoNumber Differ');
-  CheckEqualText(Expected.Calculated,  Actual.Calculated,  'Calculate Differ');
-  CheckEqualText(Expected.Charset,     Actual.Charset,     'CharSet Differ');
-  CheckEqualText(Expected.Check,       Actual.Check,       'Check Differ');
-  CheckEqualText(Expected.Collation,   Actual.Collation,   'collation Differ');
-  CheckEquals   (Expected.DataGroup,   Actual.DataGroup,   'DataGroup Differ');
-  CheckEqualText(Expected.DataTypeName,Actual.DataTypeName,'DataTypeName Differ');
-  CheckEqualText(Expected.DefaultValue,Actual.DefaultValue,'Default Value Differ');
+  CheckEqualText(Expected.FieldName,   Actual.FieldName,   'Names Differ'         +LineEnding+aMessage);
+  CheckEquals   (Expected.FieldScale,  Actual.FieldScale, 0.0001, 'Scale Differ'  +LineEnding+aMessage);
+  CheckEquals   (Expected.FieldSize,   Actual.FieldSize,   'Size  Differ'         +LineEnding+aMessage);
+  CheckEqualText(Expected.Description, Actual.Description, 'Descriptions Differ'  +LineEnding+aMessage);
+  CheckEquals   (Expected.AllowNulls,  Actual.AllowNulls,  'AllowNulls Differ'    +LineEnding+aMessage);
+  CheckEquals   (Expected.AutoNumber,  Actual.AutoNumber,  'AutoNumber Differ'    +LineEnding+aMessage);
+  CheckEqualText(Expected.Calculated,  Actual.Calculated,  'Calculate Differ'     +LineEnding+aMessage);
+  CheckEqualText(Expected.Charset,     Actual.Charset,     'CharSet Differ'       +LineEnding+aMessage);
+  CheckEqualText(Expected.Check,       Actual.Check,       'Check Differ'         +LineEnding+aMessage);
+  CheckEqualText(Expected.Collation,   Actual.Collation,   'collation Differ'     +LineEnding+aMessage);
+  CheckEquals   (Expected.DataGroup,   Actual.DataGroup,   'DataGroup Differ'     +LineEnding+aMessage);
+  CheckEqualText(Expected.DataTypeName,Actual.DataTypeName,'DataTypeName Differ'  +LineEnding+aMessage);
+  CheckEqualsVar(Expected.DefaultValue,Actual.DefaultValue,'Default Value Differ' +LineEnding+aMessage);
 end;
 
 procedure TEvsFBMetaTester.CheckEqualText(const Expected, Actual, aMessage :string);
@@ -107,11 +114,44 @@ begin
     FDB.Connection := Connect(FDB, stFirebird);
 end;
 
+procedure TEvsFBMetaTester.CheckNullVar(const aVal :variant; const ErrorMsg :string);
+begin
+  OnCheckCalled;
+  if not VarIsNull(aVal) then
+    FailEquals('Null', VarToStr(aVal), ErrorMsg, CallerAddr);
+end;
+
+procedure TEvsFBMetaTester.CheckEmptyVar(const aVal :variant; const ErrorMsg :string);
+begin
+  OnCheckCalled;
+  if not VarIsEmpty(aVal) then
+    FailEquals('Empty', VarToStr(aVal), ErrorMsg, CallerAddr);
+end;
+
 procedure TEvsFBMetaTester.CheckEquals(Expected, Actual :TEvsDataGroup; aMessage :string);
 begin
   OnCheckCalled;
-  if Expected <> Actual then ;
+  if Expected <> Actual then
     FailNotEquals(GetEnumName(TypeInfo(TEvsDataGroup),Integer(Expected)), GetEnumName(TypeInfo(TEvsDataGroup),Integer(Actual)), aMessage, CallerAddr);
+end;
+
+procedure TEvsFBMetaTester.CheckEqualsVar(Expected, Actual :Variant; aMessage :string);
+var
+  vNl : Boolean;
+  vNls: string;
+begin
+  vNl := NullStrictConvert;
+  vNls := NullAsStringValue;
+  try
+    NullStrictConvert:= False;
+    NullAsStringValue:= 'Null';
+    OnCheckCalled;
+    if Expected <> Actual then
+      FailEquals(VarToStr(Expected), VarToStr(Actual), aMessage, CallerAddr);
+  finally
+    NullStrictConvert:= vNl;
+    NullAsStringValue:= vNls;
+  end;
 end;
 
 {$ENDREGION}
@@ -235,5 +275,5 @@ end;
 
 Initialization
   SeTMDODataBaseErrorMessages([ShowSQLCode, ShowMDOMessage, ShowSQLMessage]);
-  RegisterTest(TFirebirdMetaDataTest.Suite);
+  RegisterTest('Schema Suite', TFirebirdMetaDataTest.Suite);
 end.

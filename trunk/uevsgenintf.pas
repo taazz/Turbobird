@@ -41,7 +41,7 @@ type
   end;
 
   { IEvsCopyable }
-  IEvsCopyable = interface(IInterface)
+  IEvsCopyable = interface(IInterface) // this is backwards copyable should inherit from objectref.
     ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
     function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
     function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;

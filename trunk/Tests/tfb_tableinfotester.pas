@@ -22,9 +22,10 @@ type
     procedure DetailsRetrieval;
     procedure TableTriggersRetrieval;
     procedure IndexRetrieval;
-
     procedure PrimaryKeyRetrieval;
+
     procedure ForeignKeyRetrieval;
+
     procedure CheckRetrieval;
     procedure Copy;
     procedure ListCopy;
@@ -181,8 +182,13 @@ begin
 end;
 
 procedure TFBTableInfo.ForeignKeyRetrieval;
+var
+  vCntr :Integer;
 begin
-  Fail('No test written');
+
+  for vCntr := 0 to FDB.TableCount -1 do
+    FDB.Connection.MetaData.GetForeignKeys(FDB.Table[vCntr]);
+  //Fail('No test written');
 end;
 
 procedure TFBTableInfo.PrimaryKeyRetrieval;
@@ -192,8 +198,8 @@ var
 begin
   LoadDetails(FDB.Table[0]);
   for vCntr := 0 to FDB.Table[0].IndexCount -1 do
-    vHasPrimary := vHasPrimary or FDB.Table[0].Index[0].Primary;
-  CheckTrue(vHasPrimary,FDB.Table[0].TableName+': No primary index found');
+    vHasPrimary := vHasPrimary or FDB.Table[0].Index[vCntr].Primary;
+  CheckTrue(vHasPrimary, FDB.Table[0].TableName + ': No primary index found');
 end;
 
 procedure TFBTableInfo.CheckRetrieval;

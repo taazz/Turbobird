@@ -58,7 +58,6 @@ type
     ['{916AA6A8-EFE4-4360-AC14-35D9E15FAD28}']
     Function GetParent :IEvsParented;             extdecl;
     Procedure SetParent(aValue :IEvsParented);    extdecl;
-    Procedure ClearState;                         extdecl;
     Property Parent :IEvsParented read GetParent write SetParent;
   end;
 

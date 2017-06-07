@@ -71,9 +71,9 @@ type
     Procedure GetTableInfo(const aTable:IEvsTableInfo); extdecl;
     Procedure GetTables(const aDB:IEvsDatabaseInfo; const IncludeSystem:ByteBool = False);    overload;extdecl; //append the tables in the database passed.
     Procedure GetFields(const aObject:IEvsTableInfo);   overload;extdecl; //find all the fields of the table and return them in the table's field list.
-    //function GetFields(const aObject:IEvsStoredInfo):IEvsFieldList;extdecl;
-    //function GetFields(const aObject:IEvsDatabaseInfo):IEvsFieldList;extdecl;
-    //procedure GetTriggers(const aObject:IEvsTriggerList); overload;extdecl;
+    //function  GetFields  (const aObject :IEvsStoredInfo)  :IEvsFieldList; extdecl;
+    //function  GetFields  (const aObject :IEvsDatabaseInfo):IEvsFieldList; extdecl;
+    //procedure GetTriggers(const aObject :IEvsTriggerList);      overload; extdecl;
     Procedure GetTriggers (const aObject :IEvsTableInfo; const System:ByteBool = False);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
     Procedure GetTriggers (const aObject :IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
     Procedure GetStored   (const aObject :IEvsDatabaseInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
@@ -84,24 +84,17 @@ type
     Procedure GetUsers    (const aDB     :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Implementation'}
     Procedure GetRoles    (const aDB     :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Implementation'}
     Procedure GetExceptions(const aDB    :IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
-    //procedure GetDomains(const aDB:IEvsDatabaseInfo);             extdecl;{$MESSAGE WARN 'Needs Testing'}
-    //the aTableName can be empty in which case it should either
-    //return all the indices in the database or raise an exception.
-    //procedure GetIndices(const aObject:IEvsIndexList);      overload;extdecl;
-    Procedure GetIndices(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetIndices(const aObject:IEvsTableInfo);      overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
-    Procedure GetDomains(const aObject:IEvsDatabaseInfo);   overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
-
-    //DDL creationg Procedures
+    Procedure GetIndices    (const aObject:IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetIndices    (const aObject:IEvsTableInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
+    Procedure GetDomains    (const aObject:IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetForeignKeys(Const aObject:IEvsTableInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
     Function GetFieldDDL(Const aObject :IEvsFieldInfo):widestring; overload; extdecl;
     Function GetTableDDL(Const aObject :IEvsTableInfo):widestring; overload; extdecl;
-    //the aTableName can be empty in which case it should either
-    //return all the indices in the database or raise an exception.
-    //function GetIndices(const aObject:IInterface):IEvsIndexList;
     Function GetCharsets :PVarArray;extdecl;
-    Function Collations(const aCharSet:Widestring) :PVarArray;Extdecl;
-    Property Connection:IEvsConnection read GetConnection write SetConnection;
-    Property ServerID:Integer read GetServerID;
+    Function Collations(const aCharSet:Widestring) :PVarArray;               extdecl;
+
+    Property Connection :IEvsConnection read GetConnection write SetConnection;
+    Property ServerID   :Integer        read GetServerID;
   end;
 
 //The Connection string must have all the required information to connect to the server separated semicolon.
@@ -582,13 +575,12 @@ end;
 
 Procedure TEvsMDOConnection.GetTableInfo(const aTable:IEvsTableInfo); extdecl;
 begin
-  GetFields  (aTable);
-  GetIndices (aTable);
-  GetTriggers(aTable);
-  //GetConstraints(aTable);
-  //  GetPrimarykey
-  //  GetForeignKey
-  //  GetChecks
+  GetFields      (aTable);
+  GetIndices     (aTable);
+  GetTriggers    (aTable);
+  GetForeignKeys (aTable);
+  //GetChecks
+  {$MESSAGE WARN 'Needs more details.'}
 end;
 
 Procedure TEvsMDOConnection.GetTables(const aDB :IEvsDatabaseInfo; const IncludeSystem :ByteBool); extdecl;
@@ -1122,6 +1114,65 @@ begin
   While Not vDts.EOF do begin
     vDmn := aObject.NewDomain(Trim(vDts.Field[0].AsString),'',0);
     GetDomainDetails(vDmn);
+    vDts.Next;
+  end;
+end;
+
+procedure TEvsMDOConnection.GetForeignKeys(Const aObject:IEvsTableInfo);extdecl;
+const
+  cSQL = 'SELECT PK.RDB$RELATION_NAME AS PrTable_Name' + //0
+    LineEnding +' ,ISP.RDB$FIELD_NAME AS PrField_Name'    + //1
+                ' ,FK.RDB$RELATION_NAME AS secTable_Name' + //2
+                ' ,ISF.RDB$FIELD_NAME AS SecColumn_Name'  + //3
+                ' ,ISP.RDB$FIELD_POSITION AS Key_Seq'     + //4
+                ' ,RC.RDB$UPDATE_RULE AS Update_Rule'     + //5
+                ' ,RC.RDB$DELETE_RULE AS Delete_Rule'     + //6
+                ' ,PK.RDB$CONSTRAINT_NAME AS PK_NAME'     + //7
+                ' ,FK.RDB$CONSTRAINT_NAME AS FK_NAME'     + //8
+  LineEnding +' FROM  RDB$RELATION_CONSTRAINTS PK'      +
+               ' ,RDB$RELATION_CONSTRAINTS FK'  +
+               ' ,RDB$REF_CONSTRAINTS RC'       +
+               ' ,RDB$INDEX_SEGMENTS ISP' +
+               ' ,RDB$INDEX_SEGMENTS ISF' +
+  LineEnding + ' WHERE FK.RDB$RELATION_NAME = %S'   +
+             ' AND FK.RDB$CONSTRAINT_NAME = RC.RDB$CONSTRAINT_NAME' +
+             ' AND PK.RDB$CONSTRAINT_NAME = RC.RDB$CONST_NAME_UQ'   +
+             ' AND ISP.RDB$INDEX_NAME = PK.RDB$INDEX_NAME'          +
+             ' AND ISF.RDB$INDEX_NAME = FK.RDB$INDEX_NAME'          +
+             ' AND ISP.RDB$FIELD_POSITION = ISF.RDB$FIELD_POSITION' +
+  LineEnding+' ORDER BY PK.RDB$RELATION_NAME, FK.RDB$RELATION_NAME, ISP.RDB$FIELD_POSITION ';
+
+var
+  vDts :IEvsDataset = nil;
+  vFK  :IEvsForeignKey = nil;
+  vCmd :string='';
+  function CurrentFK:Widestring;inline;
+  begin
+    Result :='';
+    if Assigned(vFK) then Result := vFK.Name;
+  end;
+  function ParseRule(const aValue:widestring):TEvsConstraintRule;inline;
+  begin
+    Result := crNoAction;//'' in case of unknown value assume restrict.
+    if WideCompareText(aValue,'Cascade') = 0 then Result := crCascade
+    else if WideCompareText(aValue,'Set Null') = 0 then Result := crSetNull
+    else if WideCompareText(aValue,'Set Default') = 0 then Result := crSetDefault
+    //else if WideCompareText(aValue,'Restrict') = 0 then Result := crNoAction
+    ;
+  end;
+begin
+  vCmd := Format(cSQL,[QuotedStr(aObject.TableName)]);
+  vDts := Query(Format(cSQL,[QuotedStr(aObject.TableName)]));
+  vDts.First;
+  while not vDts.EOF do begin
+    if (WideCompareText(CurrentFK, FieldValueDef(vDts.Field[8], '', True)) <> 0) then begin
+      vFK := aObject.NewForeignKey;
+      vFK.Name := FieldValueDef(vDts.Field[8], '', True);
+      vFK.PrimaryTable := FieldValueDef(vDts.Field[0], '', True);
+      vFK.OnUpdate := ParseRule(FieldValueDef(vDts.Field[5],''));
+      vFK.OnDelete := ParseRule(FieldValueDef(vDts.Field[6],''));
+    end;
+    vFK.AddPair(Trim(vDts.Field[1].AsString), Trim(vDts.Field[3].AsString));
     vDts.Next;
   end;
 end;

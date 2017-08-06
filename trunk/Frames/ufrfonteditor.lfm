@@ -98,7 +98,6 @@ object frFontEdit: TfrFontEdit
     Top = 30
     Width = 131
     TabOrder = 4
-    Text = 'edStyle'
   end
   object edSize: TEdit
     Left = 332

@@ -4,11 +4,12 @@
 {$DEFINE EVS_INTF}
 unit utbDBRegistry;
 {$mode objfpc}{$H+}
-
+{$Include EvsDefs.inc}
 interface
 
 uses
-  Classes, SysUtils, uTBTypes, utbcommon, utbConfig, uEvsDBSchema, uTBFirebird, uEvsWideString, MDODatabase, sqldb, syncobjs;
+  Classes, SysUtils, uTBTypes, utbcommon, utbConfig, uTBFirebird, MDODatabase, sqldb, syncobjs,
+  uEvsDBSchema, uEvsWideString, uEvsGenIntf, uEvsIntfObjects;
 type
 
   EDBRegistry = class(ETBException);
@@ -34,67 +35,69 @@ type
   TDBEnumerator = class;
   { TDBRegistry }
   // manage the list of known database registrations in memory.
-  TDBRegistry = class(TInterfacedPersistent)
+  TDBRegistry = class(TInterfacedPersistent, IEvsObservable, IEvsObjectRef)
   private
-    class var FInstance   :TObject;
-    class var FInstCntr   :Integer;
-    FDBData     :TDBInfoArray;
-    FData       :TList;
-    FEndianSwap :Boolean;
-    FCount      :Integer;
-    FCapacity   :Integer;
-    FDBList     :IEvsDatabaseList;
-    FKnownHosts :TEvsWideStringList;
+    class var FInstance :TObject;
+    class var FInstCntr :Integer;
+    //FEndianSwap  :Boolean;
+    FDBList      :IEvsDatabaseList;
+    FKnownHosts  :TEvsWideStringList;
+    FUpdateCount :Integer;
+    FObservers   :TEvsObserverList;
     //List management
     Function GetCount :Integer;
-    Function GetDBConnection(aIndex :integer) :TMDODataBase;
-    function GetDBInfo(Index :Integer) :IEvsDatabaseInfo;
-    Function GetDBRec(aIndex :Integer) :TDBInfo;
-    Function GetDBRegistration(aIndex :Integer) :TDBDetails;
-    Function GetDBTransaction(aIndex :Integer) :TMDOTransaction;
+    function GetDBInfo(aIndex :Integer) :IEvsDatabaseInfo;
     function GetKnowHostCount :Integer;
-    function GetKnownHost(Index :Integer) :Widestring;
-    Function GetSession(aIndex :Integer) :PDBInfo;
+    function GetKnownHost(aIndex :Integer) :Widestring;
     Procedure SetCapacity(aNewCapacity:Integer);
 
     Procedure CheckIndex(aIndex:Integer);inline;
     //persisting routines.
     Procedure SaveDBInfo(const aDBRec:TDBDetails; const aStream :TStream);virtual;experimental;//unimplemented;
+    Procedure SaveDBInfo(const aDB:IEvsDatabaseInfo; const aStream:TStream);virtual;experimental;//unimplemented;
     Procedure LoadDBInfo(var aDBRec :TDBDetails; const aStream :TStream; aID :Word); virtual; experimental;// unimplemented;
-    Procedure SetDBConnection(aIndex :integer; aValue :TMDODataBase);
+    procedure LoadDBInfo(const aDB:IEvsDatabaseInfo; const aStream:TStream);virtual;experimental;
     procedure SetDBInfo(Index :Integer; aValue :IEvsDatabaseInfo);
-    Procedure SetDBRec(const aIndex :Integer; const aValue :TDBInfo);
-    Procedure SetDBRegistration(aIndex :Integer; aValue :TDBDetails);
-    Procedure SetDBTransaction(aIndex :Integer; aValue :TMDOTransaction);
-    Procedure SetSession(aIndex :Integer; aValue :PDBInfo);
   protected
     Procedure CleanupData;
-    //Procedure SaveString(const aString:string; aStream:TStream);virtual;abstract;
-    //Function LoadString(aStream:TStream):string;virtual;abstract;
   public
-    Class function NewInstance :TObject; override;
-    Class procedure Error(const Msg: string; Data: PtrInt);
+    Class procedure Error(const aMsg: string; aData: array of const);
     Class Function IsValidRegistryFile(const aFileName:String):Boolean;
     Constructor Create;
     Destructor Destroy; override;
+
+    procedure BeginUpdate;
+    procedure EndUpdate;
+    procedure CancelUpdate;
+    //IEVSObservable
+    procedure AddObserver(Observer:IEvsObserver);                            extdecl;
+    procedure DeleteObserver(Observer:IEvsObserver);                         extdecl;
+    procedure ClearObservers;                                                extdecl;
+
+    procedure Notify(const Action: TEVSGenAction; const aSubject:IEvsObjectRef; const aData:NativeUInt);extdecl;
+    //IEvsCopyable;
+    function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
+    function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;
+    function EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+    //IEvsOBjectRef
+    Function ObjectRef:TObject; extdecl;
+
     Function IndexOf(const aDatabaseName:string):Integer;
-    Function IndexOf(const aDBInfo:TDBInfo):Integer;EXPERIMENTAL;
+    Function IndexOf(const aDBInfo:IEvsDatabaseInfo):Integer;
     Procedure SaveTo    (const aStream:TStream); virtual;unimplemented;
     Procedure SaveTo    (const aFileName:string);virtual;
     Procedure LoadFrom  (const aStream:TStream); virtual;experimental;
     Procedure LoadFrom  (const aFileName:string);virtual;
-    Procedure Append(aValue:TDBinfo);overload;EXPERIMENTAL;
     Procedure Delete(aIndex:Integer);overload;EXPERIMENTAL;
     Function NewDatabase :IEvsDatabaseInfo;overload;
+    Procedure RemoveDatabase(aDB:IEvsDatabaseInfo);
     function GetEnumerator : TDBEnumerator;
+    procedure GetKnownServer(const aList:TStrings);
+    function GetKnownServers:TStringArray;
+
     Procedure Append(aValue:IEvsDatabaseInfo);overload;
     Property Count                        :Integer          read GetCount;
-    //Property DatabaseInfo [Index:Integer] :TDBInfo          read GetDBRec          write SetDBRec;experimental;
-    //Property DBRecord     [Index:Integer] :TDBDetails       read GetDBRegistration write SetDBRegistration;
     property Database     [Index:Integer] :IEvsDatabaseInfo read GetDBInfo         write SetDBInfo;default;
-    //Property DBConnection [Index:integer] :TMDODataBase     read GetDBConnection   write SetDBConnection;
-    //Property DBTransaction[Index:Integer] :TMDOTransaction  read GetDBTransaction  write SetDBTransaction;
-    //Property Session      [Index:Integer] :PDBInfo          read GetSession        write SetSession;
     property KnownHost    [Index:Integer] :Widestring       read GetKnownHost;
     Property KnownHostCount :Integer read GetKnowHostCount;
   end;
@@ -112,9 +115,9 @@ type
     property Current: IEvsDatabaseInfo read GetCurrent;
   end;
 
-function SaveRegistrations(var aDBArray :TDBInfoArray; const aFilename :string = ''):Boolean;
-function LoadRegistrations(var aDBArray :TDBInfoArray; const aFilename :string = ''):Boolean;
-function Registry:TDBRegistry;
+//function SaveRegistrations(var aDBArray :TDBInfoArray; const aFilename :string = ''):Boolean;
+//function LoadRegistrations(var aDBArray :TDBInfoArray; const aFilename :string = ''):Boolean;
+function DBRegistry:TDBRegistry;
 
 resourcestring
   sListCapacity    = 'Capacity (%d) requirements not met.';//Minimum (%d) maximum (%d);
@@ -140,132 +143,135 @@ const
   cHdrID   :Word  = $0201;//endian check. little endian =$102 big endian =201;
   cSign    :TSign = ($00, $45, $56, $73);
   cCharSet :Byte  = ord('A'); //ascii character set. the existing records use shortstrings.
+
+  cDBInfoID :Word = $0EB0;
+  cDBInfoEnd:Word = $B00E;
 var
-  DBRegistry :TDBRegistry;
+  vDBRegistry :TDBRegistry;
 
 {$REGION ' Legacy '}
-procedure Sort(var aDBArray:Array of TDBInfo);
-var
-  vTempRec  : TDBDetails;
-  vDone     : Boolean;
-  vCntr     : Integer;
-  vIndex    : Integer;
-begin
-  raise NotImplementedException;
-  repeat
-    vDone:= True;
-    for vCntr:= low(aDBArray) to High(aDBArray) - 1 do
-    //with fmMain do
-      if aDBArray[vCntr].RegRec.LastOpened < aDBArray[vCntr + 1].RegRec.LastOpened then begin
-        vDone:= False;
-        vTempRec:= aDBArray[vCntr].OrigRegRec;
-        aDBArray[vCntr].OrigRegRec:= aDBArray[vCntr + 1].OrigRegRec;
-        aDBArray[vCntr].RegRec:= aDBArray[vCntr + 1].RegRec;
-        aDBArray[vCntr + 1].OrigRegRec:= vTempRec;
-        aDBArray[vCntr + 1].RegRec:= vTempRec;
+//procedure Sort(var aDBArray:Array of TDBInfo);
+//var
+//  vTempRec  : TDBDetails;
+//  vDone     : Boolean;
+//  vCntr     : Integer;
+//  vIndex    : Integer;
+//begin
+//  raise NotImplementedException;
+//  repeat
+//    vDone:= True;
+//    for vCntr:= low(aDBArray) to High(aDBArray) - 1 do
+//    //with fmMain do
+//      if aDBArray[vCntr].RegRec.LastOpened < aDBArray[vCntr + 1].RegRec.LastOpened then begin
+//        vDone:= False;
+//        vTempRec:= aDBArray[vCntr].OrigRegRec;
+//        aDBArray[vCntr].OrigRegRec:= aDBArray[vCntr + 1].OrigRegRec;
+//        aDBArray[vCntr].RegRec:= aDBArray[vCntr + 1].RegRec;
+//        aDBArray[vCntr + 1].OrigRegRec:= vTempRec;
+//        aDBArray[vCntr + 1].RegRec:= vTempRec;
+//
+//        vIndex:= aDBArray[vCntr].Index;
+//        aDBArray[vCntr].Index := aDBArray[vCntr + 1].Index;
+//        aDBArray[vCntr + 1].Index:= vIndex;
+//      end;
+//  until vDone;
+//end;
 
-        vIndex:= aDBArray[vCntr].Index;
-        aDBArray[vCntr].Index := aDBArray[vCntr + 1].Index;
-        aDBArray[vCntr + 1].Index:= vIndex;
-      end;
-  until vDone;
-end;
+//function SaveRegistrations(var aDBArray :TDBInfoArray; const aFilename :string) :Boolean;
+//var
+//  vFile    : file of TDBDetails;
+//  vFileName: string;
+//  vCntr    : Integer;
+//  {$IFDEF EVS_INTF}
+//  procedure IntfToDetails(const aDB:IEvsDatabaseInfo; var aRec:TDBDetails);
+//  begin
+//    aRec.Charset      := aDB.DefaultCharset;
+//    aRec.DatabaseName := aDB.Host + ':' + aDB.Database;
+//    aRec.Password     := aDB.Credentials.Password;
+//    aRec.UserName     := aDB.Credentials.UserName;
+//    aRec.Role         := aDB.Credentials.Role;
+//    aRec.Title        := aDB.Title;
+//  end;
+//  {$ENDIF}
+//begin
+//  try
+//    //Sort;               TDBInfo;
+//    vFileName := aFilename;
+//    if vFileName = '' then
+//      vFileName:= utbConfig.GetConfigurationDirectory + 'turbobird.reg';
+//
+//    AssignFile(vFile, vFileName);
+//    FileMode := 2;
+//    Rewrite(vFile);
+//
+//    for vCntr := low(aDBArray) to High(aDBArray) do begin
+//      {$IFDEF EVS_INTF}
+//      IntfToDetails(aDBArray[vCntr].DataBase, aDBArray[vCntr].RegRec);
+//      {$ENDIF}
+//      Write(vFile, aDBArray[vCntr].OrigRegRec);
+//    end;
+//    CloseFile(vFile);
+//    Result:= True;
+//  except
+//    on E: Exception do begin
+//      Result:= False;
+//    end;
+//  end;
+//end;
 
-function SaveRegistrations(var aDBArray :TDBInfoArray; const aFilename :string) :Boolean;
-var
-  vFile    : file of TDBDetails;
-  vFileName: string;
-  vCntr    : Integer;
-  {$IFDEF EVS_INTF}
-  procedure IntfToDetails(const aDB:IEvsDatabaseInfo; var aRec:TDBDetails);
-  begin
-    aRec.Charset      := aDB.DefaultCharset;
-    aRec.DatabaseName := aDB.Host + ':' + aDB.Database;
-    aRec.Password     := aDB.Credentials.Password;
-    aRec.UserName     := aDB.Credentials.UserName;
-    aRec.Role         := aDB.Credentials.Role;
-    aRec.Title        := aDB.Title;
-  end;
-  {$ENDIF}
-begin
-  try
-    //Sort;               TDBInfo;
-    vFileName := aFilename;
-    if vFileName = '' then
-      vFileName:= utbConfig.GetConfigurationDirectory + 'turbobird.reg';
-
-    AssignFile(vFile, vFileName);
-    FileMode := 2;
-    Rewrite(vFile);
-
-    for vCntr := low(aDBArray) to High(aDBArray) do begin
-      {$IFDEF EVS_INTF}
-      IntfToDetails(aDBArray[vCntr].DataBase, aDBArray[vCntr].RegRec);
-      {$ENDIF}
-      Write(vFile, aDBArray[vCntr].OrigRegRec);
-    end;
-    CloseFile(vFile);
-    Result:= True;
-  except
-    on E: Exception do begin
-      Result:= False;
-    end;
-  end;
-end;
-
-function LoadRegistrations(var aDBArray :TDBInfoArray; const aFilename :string) :Boolean;
-var
-  vRec     : TDBDetails;
-  vFile    : file of TDBDetails;
-  vFileName: string;
-  {$IFDEF EVS_INTF}
-   function DetailsToIntf(aRec:TDBDetails):IEvsDatabaseInfo;
-   begin
-     Result := NewDatabase(stFirebird, ExtractHost(aRec.DatabaseName), ExtractDBName(aRec.DatabaseName),
-                           aRec.UserName, aRec.Password, aRec.Role, aRec.Charset);
-     Result.Title := aRec.Title;
-   end;
-  {$ENDIF}
-begin
-  vFileName := aFilename;
-  if vFileName = '' then
-    vFileName:= utbConfig.GetConfigurationDirectory + 'turbobird.reg';
-
-  AssignFile(vFile, vFileName);
-  if FileExists(vFileName) then begin
-    Reset(vFile);
-    try
-      while not system.Eof(vFile) do begin
-        Read(vFile, vRec);
-        if not vRec.Deleted then begin
-          SetLength(aDBArray, Length(aDBArray) + 1);
-          aDBArray[high(aDBArray)].RegRec     := vRec;
-          aDBArray[high(aDBArray)].OrigRegRec := vRec;
-          aDBArray[high(aDBArray)].Index      := FilePos(vFile) - 1;
-        {$IFDEF EVS_INTF}
-          aDBArray[high(aDBArray)].DataBase := DetailsToIntf(vRec);
-        {$ENDIF}
-
-          aDBArray[high(aDBArray)].Conn  := GetConnection(aDBArray[high(aDBArray)]);
-          aDBArray[high(aDBArray)].Trans := TMDOTransaction.Create(nil); //JKOZ pool?. //TSQLTransaction.Create(nil);
-
-          SetTransactionIsolation(aDBArray[high(aDBArray)].Trans.Params);
-          aDBArray[high(aDBArray)].Conn.DefaultTransaction := aDBArray[high(aDBArray)].Trans;
-          aDBArray[high(aDBArray)].Trans.DefaultDatabase   := aDBArray[high(aDBArray)].Conn;
-        end;
-      end;
-    finally
-      CloseFile(vFile);
-    end;
-  end;
-  Result:= True;
-end;
+//function LoadRegistrations(var aDBArray :TDBInfoArray; const aFilename :string) :Boolean;
+//var
+//  vRec     : TDBDetails;
+//  vFile    : file of TDBDetails;
+//  vFileName: string;
+//  {$IFDEF EVS_INTF}
+//   function DetailsToIntf(aRec:TDBDetails):IEvsDatabaseInfo;
+//   begin
+//     Result := NewDatabase(stFirebird, ExtractHost(aRec.DatabaseName), ExtractDBName(aRec.DatabaseName),
+//                           aRec.UserName, aRec.Password, aRec.Role, aRec.Charset);
+//     Result.Title := aRec.Title;
+//   end;
+//  {$ENDIF}
+//begin
+//  vFileName := aFilename;
+//  if vFileName = '' then
+//    vFileName:= utbConfig.GetConfigurationDirectory + 'turbobird.reg';
+//
+//  AssignFile(vFile, vFileName);
+//  if FileExists(vFileName) then begin
+//    Reset(vFile);
+//    try
+//      while not system.Eof(vFile) do begin
+//        Read(vFile, vRec);
+//        if not vRec.Deleted then begin
+//          SetLength(aDBArray, Length(aDBArray) + 1);
+//          aDBArray[high(aDBArray)].RegRec     := vRec;
+//          aDBArray[high(aDBArray)].OrigRegRec := vRec;
+//          aDBArray[high(aDBArray)].Index      := FilePos(vFile) - 1;
+//        {$IFDEF EVS_INTF}
+//          aDBArray[high(aDBArray)].DataBase := DetailsToIntf(vRec);
+//        {$ENDIF}
+//
+//          aDBArray[high(aDBArray)].Conn  := GetConnection(aDBArray[high(aDBArray)]);
+//          aDBArray[high(aDBArray)].Trans := TMDOTransaction.Create(nil); //JKOZ pool?. //TSQLTransaction.Create(nil);
+//
+//          SetTransactionIsolation(aDBArray[high(aDBArray)].Trans.Params);
+//          aDBArray[high(aDBArray)].Conn.DefaultTransaction := aDBArray[high(aDBArray)].Trans;
+//          aDBArray[high(aDBArray)].Trans.DefaultDatabase   := aDBArray[high(aDBArray)].Conn;
+//        end;
+//      end;
+//    finally
+//      CloseFile(vFile);
+//    end;
+//  end;
+//  Result:= True;
+//end;
 {$ENDREGION}
 
-function Registry :TDBRegistry;
+function DBRegistry :TDBRegistry;
 begin
-  if not Assigned(DBRegistry) then DBRegistry := TDBRegistry.Create;
-  Result:= DBRegistry;
+  if not Assigned(vDBRegistry) then vDBRegistry := TDBRegistry.Create;
+  Result:= vDBRegistry;
 end;
 
 { TDBEnumerator }
@@ -326,43 +332,44 @@ begin
   Result := FDBList.Count;
 end;
 
-Function TDBRegistry.GetDBConnection(aIndex :integer) :TMDODataBase;
+//Function TDBRegistry.GetDBConnection(aIndex :integer) :TMDODataBase;
+//begin
+//  CheckIndex(aIndex);
+//  //Result := FDBData[aIndex].Conn;
+//end;
+
+function TDBRegistry.GetDBInfo(aIndex :Integer) :IEvsDatabaseInfo;
 begin
-  CheckIndex(aIndex);
-  Result := FDBData[aIndex].Conn;
+  Result := Nil;
+  Result := FDBList.Items[aIndex];
 end;
 
-function TDBRegistry.GetDBInfo(Index :Integer) :IEvsDatabaseInfo;
-begin
-  Result := FDBList[Index];
-end;
+//Function TDBRegistry.GetDBRec(aIndex :Integer) :TDBInfo;
+//begin
+//  CheckIndex(aIndex);
+//  //Result := FDBData[aIndex];
+//end;
 
-Function TDBRegistry.GetDBRec(aIndex :Integer) :TDBInfo;
-begin
-  CheckIndex(aIndex);
-  Result := FDBData[aIndex];
-end;
+//Function TDBRegistry.GetDBRegistration(aIndex :Integer) :TDBDetails;
+//begin
+//  CheckIndex(aIndex);
+//  //Result := FDBData[aIndex].RegRec;
+//end;
 
-Function TDBRegistry.GetDBRegistration(aIndex :Integer) :TDBDetails;
-begin
-  CheckIndex(aIndex);
-  Result := FDBData[aIndex].RegRec;
-end;
-
-Function TDBRegistry.GetDBTransaction(aIndex :Integer) :TMDOTransaction;
-begin
-  CheckIndex(aIndex);
-  Result := FDBData[aIndex].Trans;
-end;
+//Function TDBRegistry.GetDBTransaction(aIndex :Integer) :TMDOTransaction;
+//begin
+//  CheckIndex(aIndex);
+//  //Result := FDBData[aIndex].Trans;
+//end;
 
 function TDBRegistry.GetKnowHostCount :Integer;
 begin
   Result := FKnownHosts.Count;
 end;
 
-function TDBRegistry.GetKnownHost(Index :Integer) :Widestring;
+function TDBRegistry.GetKnownHost(aIndex :Integer) :Widestring;
 begin
-  Result := FKnownHosts[Index];
+  Result := FKnownHosts[aIndex];
 end;
 
 //function TDBRegistry.GetRecords(aIndex :Integer) :TEvsDBSession;
@@ -373,10 +380,11 @@ end;
 
 Procedure TDBRegistry.SetCapacity(aNewCapacity :Integer);
 begin
-  If (aNewCapacity < Count) or (aNewCapacity > MaxListSize) then Error(sListCapacity,aNewCapacity);
-  SetLength(FDBData, aNewCapacity);
-  FData.Capacity := aNewCapacity;
-  FCapacity := aNewCapacity;
+  //If (aNewCapacity < Count) or (aNewCapacity > MaxListSize) then Error(sListCapacity,aNewCapacity);
+  //SetLength(FDBData, aNewCapacity);
+  //FData.Capacity := aNewCapacity;
+  //FCapacity := aNewCapacity;
+  FDBList.Capacity := aNewCapacity;
 end;
 
 Procedure TDBRegistry.CheckIndex(aIndex :Integer);
@@ -390,6 +398,40 @@ begin
   aStream.Write(aDBRec, SizeOf(TDBDetails));//change it to a dynamic sized record.
 end;
 
+Procedure TDBRegistry.SaveDBInfo(const aDB :IEvsDatabaseInfo; const aStream :TStream);
+  procedure WriteString(const aString:Widestring);
+  var
+    vLen :Int64;
+    function blen:Int64;
+    begin
+      Result := @aString[Length(aString)+1] - @aString[1];
+    end;
+
+  begin
+    vLen := blen;
+    aStream.Write(vLen,SizeOf(vLen));
+    aStream.Write(aString[1],vLen);
+  end;
+var
+  vBl:LongBool;
+  vInt:Integer;
+begin
+  aStream.Write(cDBInfoID,SizeOf(cDBInfoID));
+  WriteString(aDB.Title);
+  WriteString(aDB.Database);
+  WriteString(aDB.Host);
+  vInt := aDB.ServerKind;
+  aStream.Write(vInt,SizeOf(Integer)); //WriteString();
+  WriteString(aDB.DefaultCharset);
+  WriteString(aDB.DefaultCollation);
+  WriteString(aDB.Credentials.UserName);
+  WriteString(aDB.Credentials.Role);
+  vBl := aDB.Credentials.SavePassword;
+  aStream.Write(vBl,SizeOf(vBl));
+  if vBl then WriteString(aDB.Credentials.Password);
+  aStream.Write(cDBInfoEnd,SizeOf(cDBInfoEnd));
+end;
+
 Procedure TDBRegistry.LoadDBInfo(var aDBRec :TDBDetails; const aStream :TStream; aID :Word);
 begin
   aStream.Read(aDBRec, SizeOf(TDBDetails));
@@ -398,31 +440,72 @@ begin
   // VM for testing.
 end;
 
-Procedure TDBRegistry.CleanupData;
+procedure TDBRegistry.LoadDBInfo(const aDB :IEvsDatabaseInfo; const aStream :TStream);
+  function ReadLong:LongInt;
+  begin
+    aStream.Read(Result, SizeOf(LongInt));
+  end;
+  function ReadBool:LongBool;
+  begin
+    aStream.Read(Result, SizeOf(LongBool));
+  end;
+  function ReadInt64:Int64;
+  begin
+    aStream.Read(Result, SizeOf(Int64));
+  end;
+
+  function ReadString:WideString;
+  var
+    vLen :Int64;
+    vData:PWideChar;
+  begin
+    vLen  := ReadInt64;
+    vData := AllocMem(vLen+4);// vData;
+    try
+      aStream.Read(vData^, vLen);
+      Result := PWideChar(vData);
+    finally
+      Freemem(vData, vLen);
+    end;
+  end;
+  function ReadWord:Word;
+  begin
+    aStream.Read(Result,SizeOf(word));
+  end;
+  function ReadInteger:Integer;
+  begin
+    aStream.Read(Result,SizeOf(Integer));
+  end;
+
 var
-  vCntr :Integer;
-  vDB   :PDBInfo;
+  vSign:Word;
 begin
-  for vCntr := 0 to FData.Count -1 do begin
-    vDB := FData[vCntr];
-    FData[vCntr] := Nil;
-    Freemem(vDB);
-  end;
-  FData.Clear;
+  vSign := ReadWord;
+  if vSign <> cDBInfoID then
+    raise ETBException.CreateFMT('Invalid signature on %D. expected %D found %D',[aStream.Position-SizeOf(Word),cDBInfoID,vSign]);
+  aDB.Title                := ReadString;
+  aDB.Database             := ReadString;
+  aDB.Host                 := ReadString;
+  aDB.ServerKind           := ReadInteger;
+  aDB.DefaultCharset       := ReadString;
+  aDB.DefaultCollation     := ReadString;
+  aDB.Credentials.UserName := ReadString;
+  aDB.Credentials.Role     := ReadString;
+  aDB.Credentials.SavePassword := ReadBool;
+  if aDB.Credentials.SavePassword then aDB.Credentials.Password := ReadString;
+  vSign := ReadWord;
+  if vSign <> cDBInfoEnd then
+    raise ETBException.CreateFMT('missing end sign on %D. expected %D found %D',[aStream.Position-SizeOf(Word),cDBInfoEnd,vSign]);
 end;
 
-Class function TDBRegistry.NewInstance :TObject;
+Procedure TDBRegistry.CleanupData;
 begin
-  if not Assigned(FInstance) then begin
-    Result    := inherited NewInstance;
-    FInstance := Result;
-  end;
-  InterLockedIncrement(FInstCntr);
+  FDBList.Clear;
 end;
 
-Class procedure TDBRegistry.Error(const Msg :string; Data :PtrInt);
+Class procedure TDBRegistry.Error(const aMsg :string; aData :array of const );
 begin
-  raise EDBRegistry.CreateFmt(Msg,[Data]) at get_caller_addr(get_frame);
+  raise EDBRegistry.CreateFmt(aMsg,aData) at get_caller_addr(get_frame);
 end;
 
 Class Function TDBRegistry.IsValidRegistryFile(const aFileName :String) :Boolean;
@@ -444,14 +527,73 @@ end;
 Constructor TDBRegistry.Create;
 begin
   inherited Create;;
-  FDBList := NewDatabaseList;//TList.Create;
+  FDBList    := NewDatabaseList;//TList.Create;
+  FObservers := TEvsObserverList.Create(True);
+  FKnownHosts := TEvsWideStringList.Create;
 end;
 
 Destructor TDBRegistry.Destroy;
 begin
   CleanupData;
-  FData.Free;
+  FDBList    := Nil;
+  FObservers := nil;
   inherited Destroy;
+end;
+
+procedure TDBRegistry.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TDBRegistry.EndUpdate;
+begin
+  if InterLockedDecrement(FUpdateCount) = 0 then
+    Notify(gaUpdate, Self as IEvsObjectRef, 0);
+end;
+
+procedure TDBRegistry.CancelUpdate;
+begin
+  InterLockedDecrement(FUpdateCount);
+end;
+
+procedure TDBRegistry.AddObserver(Observer :IEvsObserver); extdecl;
+begin
+  FObservers.Add(Observer);
+end;
+
+procedure TDBRegistry.DeleteObserver(Observer :IEvsObserver); extdecl;
+begin
+  FObservers.Remove(Observer);
+end;
+
+procedure TDBRegistry.ClearObservers; extdecl;
+begin
+  FObservers.Clear;
+end;
+
+procedure TDBRegistry.Notify(const Action :TEVSGenAction; const aSubject :IEvsObjectRef; const aData:NativeUInt); extdecl;
+begin
+  FObservers.Notify(Action, aSubject, aData);
+end;
+
+function TDBRegistry.CopyFrom(const aSource :IEvsCopyable) :Integer; extdecl;
+begin
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+end;
+
+function TDBRegistry.CopyTo(const aDest :IEvsCopyable) :Integer; extdecl;
+begin
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+end;
+
+function TDBRegistry.EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+begin
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+end;
+
+Function TDBRegistry.ObjectRef :TObject; extdecl;
+begin
+  Result := Self;
 end;
 
 Function TDBRegistry.IndexOf(const aDatabaseName :string) :Integer;
@@ -463,51 +605,14 @@ begin
     if WideCompareText(WideString(aDatabaseName), FDBList[vCntr].Database) = 0 then Exit(vCntr);
 end;
 
-Function TDBRegistry.IndexOf(const aDBInfo :TDBInfo) :Integer;
-var
-  vCntr :Integer;
+Function TDBRegistry.IndexOf(const aDBInfo :IEvsDatabaseInfo) :Integer;
 begin
-  Result := -1;
-  //for vCntr := 0 to Count -1 do
-  //  if ((Session[vCntr]^.Conn = aDBInfo.Conn) and (Session[vCntr]^.Trans = aDBInfo.Trans)) then exit(vCntr);
-end;
-
-Function TDBRegistry.GetSession(aIndex :Integer) :PDBInfo;
-begin
-  Result := PDBInfo(FData[aIndex]);
-end;
-
-Procedure TDBRegistry.SetDBRegistration(aIndex :Integer; aValue :TDBDetails);
-begin
-  CheckIndex(aIndex);
-  FDBData[aIndex].RegRec := aValue;
-end;
-
-Procedure TDBRegistry.SetDBConnection(aIndex :integer; aValue :TMDODataBase);
-begin
-  FDBData[aIndex].Conn := aValue;
+  Result := FDBList.IndexOf(aDBInfo);
 end;
 
 procedure TDBRegistry.SetDBInfo(Index :Integer; aValue :IEvsDatabaseInfo);
 begin
-  FDBList[Index]:= aValue;
-end;
-
-Procedure TDBRegistry.SetDBRec(const aIndex :Integer; const aValue :TDBInfo);
-begin
-  //CheckIndex(aIndex);
-  PDBInfo(FData[aIndex])^ := aValue;
-end;
-
-Procedure TDBRegistry.SetDBTransaction(aIndex :Integer; aValue :TMDOTransaction);
-begin
-  CheckIndex(aIndex);
-  FDBData[aIndex].Trans := aValue;
-end;
-
-Procedure TDBRegistry.SetSession(aIndex :Integer; aValue :PDBInfo);
-begin
-  FData[aIndex] := aValue;
+  FDBList[Index] := aValue;
 end;
 
 Procedure TDBRegistry.SaveTo(const aStream :TStream);
@@ -522,10 +627,11 @@ var
 begin
   aStream.Position := 0;
   SaveHeader;
-  vCnt := FData.Count;
+  vCnt := FDBList.Count;
   aStream.Write(vCnt, SizeOf(UInt64));
-  for vCntr := 0 to FData.Count -1 do begin
-    SaveDBInfo(PDBInfo(FData.Items[vCntr])^.RegRec, aStream);
+  for vCntr := 0 to FDBList.Count -1 do begin
+    //SaveDBInfo(PDBInfo(FData.Items[vCntr])^.RegRec, aStream);
+    SaveDBInfo(FDBList[vCntr], aStream);
   end;
 end;
 
@@ -546,37 +652,31 @@ Procedure TDBRegistry.LoadFrom(const aStream :TStream);
     aStream.Read(vSign, SizeOf(TSign));
   end;
 
-  function PositionToIndex(aPos:Int64):Integer;
-  begin
-    Result := (aPos - (sizeof(cHdrID)+SizeOf(TSign)+sizeof(UInt64))) div SizeOf(TDBDetails);
-  end;
+  //function PositionToIndex(aPos:Int64):Integer;
+  //begin
+  //  Result := (aPos - (sizeof(cHdrID)+SizeOf(TSign)+sizeof(UInt64))) div SizeOf(TDBDetails);
+  //end;
 
 var
   vCnt    : UInt64  = 0;
-  vDbInfo : PDBInfo = nil;
-  vIdx    : Int64   = -1;
-  vHost, vPort, vDB:Widestring;
+  vDbInfo : IEvsDatabaseInfo = nil;// PDBInfo = nil;
+  //vIdx    : Int64   = -1;
 begin
-  LoadHeader;
-  if not ValidHeader(vHdrID, vSign) then begin
-    raise ETBException.Create('Unknown File Format');
-  end;
-  aStream.Read(vCnt, SizeOf(UInt64));
-  repeat
-    vDbInfo := NewDBInfo;//(PDBInfo);
-    //vIdx := PositionToIndex(aStream.Position);
-    vIdx := aStream.Position; // do not convert to index, the file format will be changed to support dynamic sized data and encryption of the passwords.
-    LoadDBInfo(vDbInfo^.RegRec, aStream, vHdrID);
-    uEvsWideString.ParseCombDBName(vDbInfo^.RegRec.DatabaseName, vHost, vPort, vDB);
-
-    if not vDbInfo^.RegRec.Deleted then begin
-      vDbInfo^.OrigRegRec := vDbInfo^.RegRec;
-      vDbInfo^.Index := vIdx;
-      FData.Add(vDbInfo);
-      vDbInfo := Nil;
+  BeginUpdate;
+  try
+    LoadHeader;
+    if not ValidHeader(vHdrID, vSign) then begin
+      raise ETBException.Create('Unknown File Format');
     end;
-    Dec(vCnt);
-  until (vCnt <= 0) or  EOF(aStream);
+    aStream.Read(vCnt, SizeOf(UInt64));
+    if (vCnt > 0) then repeat
+      vDbInfo := NewDatabase;
+      LoadDBInfo(vDbInfo, aStream);
+      Dec(vCnt);
+    until (vCnt <= 0) or EOF(aStream);
+  finally
+    EndUpdate;
+  end;
 end;
 
 Procedure TDBRegistry.SaveTo(const aFileName :string);
@@ -594,41 +694,34 @@ end;
 Procedure TDBRegistry.LoadFrom(const aFileName :string);
 var
   vStrm : TFileStream;
+  //FDBData     :TDBInfoArray;
+  //vCntr :Integer;
 begin
+
   vStrm := TFileStream.Create(aFileName,fmOpenReadWrite or fmShareExclusive);
+  BeginUpdate;
   try
-    try
+    //try
       LoadFrom(vStrm);
-    except
-      on e:Exception do begin
-        LoadRegistrations(FDBData, aFileName);
-      end;
-    end;
+    // Simplify things out add an import file menu.
+    //except
+    //  on e:Exception do begin
+    //    LoadRegistrations(FDBData, aFileName);
+    //    for vCntr:= Low(FDBData) to High(FDBData) do
+    //      FDBList.Add(FDBData[vCntr].DataBase);
+    //    SetLength(FDBData, 0);
+    //  end;
+    //end;
   finally
     vStrm.Free;
+    EndUpdate;
   end;
-end;
-
-Procedure TDBRegistry.Append(aValue :TDBinfo);
-var
-  vDBInfo :PDBInfo;
-begin
-  vDBInfo := New(PDBInfo);
-  vDBInfo^ := aValue;
-  FData.Add(vDBInfo);
 end;
 
 Procedure TDBRegistry.Delete(aIndex :Integer);
 begin
-  if Assigned(FDBList) and Between(0, FDBList.Count - 1, aIndex) then begin
+  if Assigned(FDBList) and Between(0, FDBList.Count - 1, aIndex) then
     FDBList.Delete(aIndex);
-    Exit;
-  end;
-
-  if Assigned(FData) and Between(0, FData.Count - 1, aIndex) then begin// >= 0 and aIndex < FData.Count ;
-    FData.Delete(aIndex);
-    Exit;
-  end;
 end;
 
 Function TDBRegistry.NewDatabase :IEvsDatabaseInfo;
@@ -636,9 +729,68 @@ begin
   Result := FDBList.New;
 end;
 
+Procedure TDBRegistry.RemoveDatabase(aDB :IEvsDatabaseInfo);
+begin
+  FDBList.Remove(aDB);
+end;
+
 function TDBRegistry.GetEnumerator :TDBEnumerator;
 begin
   Result := TDBEnumerator.Create(Self);
+end;
+
+procedure TDBRegistry.GetKnownServer(const aList :TStrings);
+var
+  vCntr :Integer;
+  vList :TStringList;
+begin
+  vList := TStringList.Create;
+  try
+    vList.Sorted := true;
+    vList.Duplicates := dupIgnore;
+    for vCntr := 0 to Count -1 do begin
+      vList.Add(Database[vCntr].Host);
+    end;
+    aList.Assign(vList);
+  finally
+    vList.Free;
+  end;
+end;
+
+function TDBRegistry.GetKnownServers :TStringArray;
+var
+  vCntr :Integer;
+  vTotal:Integer;
+
+  function InArray(const aStr:string; const aArray:Array of string):Boolean;
+  var
+    vStr :String;
+  begin
+    if Length(aArray)<=0 then Exit(False);
+    for vStr in aArray do begin
+      Result := AnsiSameText(aStr, vStr);
+      if Result then Exit;
+    end;
+  end;
+
+  procedure AppendHost(const aValue:String);inline;
+  begin
+    GetKnownServers[vTotal] := aValue;
+    Inc(vTotal);
+  end;
+
+begin
+  vTotal := 0;
+  if Count > 1 then begin;
+    SetLength(Result, Count);//assume all database are in different servers no duplicates
+    Result[vTotal] := Database[vTotal].Host;
+    inc(vTotal);
+    for vCntr := 1 to Count -1 do begin
+      if not inArray(Database[vCntr].Host, Result) then
+        AppendHost(Database[vCntr].Host);
+    end;
+    SetLength(Result, vTotal);//return only what we have found.;
+  end;
 end;
 
 Procedure TDBRegistry.Append(aValue :IEvsDatabaseInfo);
@@ -817,9 +969,9 @@ end;
 
 {$ENDREGION}
 initialization
-  DBRegistry := TDBRegistry.Create;
+  vDBRegistry := TDBRegistry.Create;
 finalization
-  DBRegistry.Free;
+  vDBRegistry.Free;
 end.
 
 

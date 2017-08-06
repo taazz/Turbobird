@@ -7,9 +7,10 @@ object DatabaseEditorFrame: TDatabaseEditorFrame
   BorderSpacing.InnerBorder = 3
   ClientHeight = 53
   ClientWidth = 533
+  LCLVersion = '1.4.4.0'
   TabOrder = 0
-  DesignLeft = 387
-  DesignTop = 333
+  DesignLeft = 397
+  DesignTop = 318
   object cmbHost: TComboBox
     Left = 6
     Height = 23
@@ -61,6 +62,7 @@ object DatabaseEditorFrame: TDatabaseEditorFrame
     Width = 28
     Caption = '...'
     Flat = True
+    OnClick = btnFileSelectClick
   end
   object Label3: TLabel
     Left = 278
@@ -69,5 +71,9 @@ object DatabaseEditorFrame: TDatabaseEditorFrame
     Width = 48
     Caption = 'Database'
     ParentColor = False
+  end
+  object DlgFBDatabase: TOpenDialog
+    left = 320
+    top = 4
   end
 end

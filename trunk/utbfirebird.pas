@@ -5,7 +5,8 @@ unit uTBFirebird;
 interface
 
 uses
-  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, MDOServices, {SysTables,}  uEvsDBSchema, utbcommon, uTBTypes, uWideStrings;
+  Classes, SysUtils, variants, db, MDODatabase, MDOQuery, MDODatabaseInfo, MDOServices, MDO, MDOIntf, MDOHeader, MDOExternals, uEvsDBSchema,
+  utbcommon, uTBTypes, uWideStrings, uCharSets;
 
 type
 
@@ -25,9 +26,10 @@ type
   { TEvsMDODatasetProxy }
   TEvsMDODatasetProxy = class(TEvsDatasetProxy)
   protected
-    function GetInTrans :ByteBool;override;extdecl;
+    function GetInTrans :ByteBool;override;  extdecl;
   public
     destructor Destroy; override;
+    procedure Execute;extdecl;
     Procedure Commit; override; extdecl;
     procedure RollBack; override; extdecl;
     procedure BeforeDestruction; override;
@@ -37,9 +39,10 @@ type
   TEvsMDOConnection = class(TEvsAbstractConnectionProxy, IEvsMetaData)
   private
     //FActiveConnection : TMDODataBase;
+    FReversing : Integer;
     {$IFDEF POOL_QRY}
-    //Class var FQryPool : TMDOQueryPool; //static;
-    //Class var FCnnPool : TMDODatabasePool;//static;
+    Class var FQryPool : TMDOQueryPool; //static;
+    Class var FCnnPool : TMDODatabasePool;//static;
     {$ENDIF}
     Function GetServerID :Integer;extdecl;
     Class Function NewQuery:TMDOQuery;
@@ -66,7 +69,7 @@ type
 
     //function GetConnection :IEvsConnection;extdecl;
     //procedure SetConnection(aValue :IEvsConnection);extdecl;
-
+    procedure DropDatabase; override;extdecl;
     Procedure GetTables(const aDB:IEvsTableList);       overload;extdecl; //append the tables in the list passed
     Procedure GetTableInfo(const aTable:IEvsTableInfo); extdecl;
     Procedure GetTables(const aDB:IEvsDatabaseInfo; const IncludeSystem:ByteBool = False);    overload;extdecl; //append the tables in the database passed.
@@ -88,6 +91,8 @@ type
     Procedure GetIndices    (const aObject:IEvsTableInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
     Procedure GetDomains    (const aObject:IEvsDatabaseInfo); overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
     Procedure GetForeignKeys(Const aObject:IEvsTableInfo);    overload;extdecl;{$MESSAGE WARN 'Needs Implementation'}
+    Procedure GetAll(const aDB:IEvsDatabaseInfo);                      extdecl;
+
     Function GetFieldDDL(Const aObject :IEvsFieldInfo):widestring; overload; extdecl;
     Function GetTableDDL(Const aObject :IEvsTableInfo):widestring; overload; extdecl;
     Function GetCharsets :PVarArray;extdecl;
@@ -104,7 +109,7 @@ function ConncetionSting(const aDB:TDatabase):string;
 
 implementation
 
-uses uCharSets, strutils;
+uses Forms, strutils;
 
 const
   pnCharset  = 'lc_type';
@@ -211,13 +216,161 @@ begin
   vObj := TMDODataBase.Create(Nil);
   {$ENDIF}
   vObj.UserName     := aUser;
-  vObj.DatabaseName := aHost + ':' + aDatabase;
+  if aHost <> '' then  vObj.DatabaseName := aHost + ':' + aDatabase
+  else vObj.DatabaseName := aDatabase;
   vObj.CharSet      := aCharset;
   vObj.Role         := aRole;
   vObj.Password     := aPwd;
   vObj.LoginPrompt  := False;
   vObj.Connected    := True;
   Result            := TEvsMDOConnection.Create(vObj);
+end;
+
+function CreateDirect(aHost,aDatabase,aUser,aPwd,aRole,aCharset,aCollation:Widestring;aPageSize:Integer):IEvsConnection;
+var
+  FHandle: TISC_DB_HANDLE;
+  tr_handle: TISC_TR_HANDLE;
+  function Check(ErrCode: ISC_STATUS; RaiseError: Boolean) : ISC_STATUS;
+  begin
+    result := ErrCode;
+    if RaiseError and (ErrCode > 0) then
+      MDODataBaseError;
+  end;
+
+begin
+  //isc_dsql_execute_immediate(StatusVector, @FHandle, @tr_handle, 0,
+  //                           PChar('CREATE DATABASE ''' + FDBName + ''' ' + {do not localize}
+  //                           Params.Text), SQLDialect, nil),
+
+end;
+
+function Create(aHost,aDatabase,aUser,aPwd,aRole,aCharset,aCollation:Widestring;aPageSize:Integer):IEvsConnection;
+var
+  vObj :TMDODataBase;
+begin
+  Result := Nil;
+  {$IFDEF POOL_QRY}
+  vObj := TEvsMDOConnection.FCnnPool.Aquire;
+  {$ELSE}
+  vObj := TMDODataBase.Create(Nil);
+  try
+  {$ENDIF}
+    //if aHost <> '' then  vObj.DatabaseName := aHost + ':' + aDatabase
+    //else
+    vObj.DatabaseName := aDatabase;
+//CREATE {DATABASE | SCHEMA} '<filespec>'
+//[USER 'username' [PASSWORD 'password']]
+//[PAGE_SIZE [=] size]
+//[LENGTH [=] num [PAGE[S]]
+//[DEFAULT CHARACTER SET default_charset
+//  [COLLATION collation]] -- not supported in ESQL
+//[<sec_file> [<sec_file> ...]]
+//[DIFFERENCE FILE 'diff_file']; -- not supported in ESQL
+//
+//<filespec> ::= [<server_spec>]{filepath | db_alias}
+//
+//<server_spec> ::= servername [/{port|service}]: | \\servername\
+//
+//<sec_file> ::= FILE 'filepath'
+//[LENGTH [=] num [PAGE[S]] [STARTING [AT [PAGE]] pagenum]
+    vObj.SQLDialect := 3;
+    vObj.Params.Clear;
+    vObj.Params.Add('USER '+QuotedStr(aUser));
+    vObj.Params.Add('PASSWORD '+QuotedStr(aPwd));
+    vObj.Params.Add('PAGE_SIZE '+IntToStr(aPageSize));
+    vObj.Params.Add('DEFAULT CHARACTER SET '+ aCharset);
+    vObj.Params.Add('COLLATION '+ aCollation);
+    vObj.CreateDatabase;
+    Result            := TEvsMDOConnection.Create(vObj);
+  {$IFNDEF POOL_QRY}
+  except
+    vObj.Free;
+    raise;
+  end;
+  {$ENDIF}
+end;
+
+function CharSets:TWideStringArray;
+begin
+  Result := uCharSets.SupportedCharacterSets;
+end;
+
+function CharSetCollations(const aCharset:String):TWideStringArray;
+begin
+  Result := uCharSets.SupportedCollations(aCharset);
+end;
+
+Function Backup(aFilename, aHost, aDatabase, aUser, aPwd, aRole:Widestring):Boolean;
+var
+  vSrv:TMDOBackupService;
+  vHost,vDatabase:string;
+  vStrL : TStringList;
+begin  { TODO -oJKOZ -cDatabaseAccess : Add support for SQL_Role_Name }
+  Result := False;
+  vSrv := TMDOBackupService.Create(Nil);
+  vStrL := TStringList.Create;
+  try
+    vSrv.BackupFile.Add(aFilename);
+    vSrv.Params.Values['user_name']     := aUser;
+    vSrv.Params.Values['password']      := aPwd;
+    vDatabase := ExtractDBName(aDatabase);
+    if aHost = '' then begin
+      vHost:= ExtractHost(aDatabase)
+    end else vHost    := aHost;
+    vSrv.ServerName   := vHost;
+    vSrv.DatabaseName := vDatabase;// ExtractDBName(aDatabase);
+    vSrv.Protocol     := TCP;
+    vSrv.Verbose      := True;
+    vSrv.LoginPrompt  := False;
+    vSrv.Active := True;
+    vSrv.ServiceStart;
+    while not vSrv.Eof do begin
+      vStrL.Add(vSrv.GetNextChunk);
+      Sleep(10);
+    end;
+    Result := True;
+  finally
+    vSrv.Free;
+    vStrL.Free;
+  end;
+end;
+
+Function Restore(aFilename, aHost, aDatabase, aUser, aPwd, aRole:Widestring):Boolean;
+var
+  vSrv  :TMDORestoreService;
+  vHost,vDatabase:string;
+  vStrL : TStringList;
+begin  { TODO -oJKOZ -cDatabaseAccess : Add support for SQL_Role_Name }
+  Result := False;
+  vSrv := TMDORestoreService.Create(Nil);
+  vStrL := TStringList.Create;
+  try
+    vSrv.BackupFile.Add(aFilename);
+    vSrv.Params.Values['user_name'] := aUser;
+    vSrv.Params.Values['password']  := aPwd;
+    vDatabase := ExtractDBName(aDatabase);
+    if aHost = '' then begin
+      vHost:= ExtractHost(aDatabase)
+    end else vHost := aHost;
+    vSrv.ServerName := vHost;
+    vSrv.DatabaseName.Add(vDatabase);// ExtractDBName(aDatabase);
+    vSrv.Protocol := TCP;
+    vSrv.Verbose := True;
+    vSrv.LoginPrompt := False;
+    vSrv.Active := True;
+    vSrv.ServiceStart;
+    while not vSrv.Eof do begin
+      vStrL.Add(vSrv.GetNextChunk);
+      Sleep(10);
+    end;
+    Result := True;
+  finally
+    //if vStrL.Count>0 then vStrL.SaveToFile(ChangeFileExt(Forms.Application.ExeName,'.log'))
+    //else if fileexists(ChangeFileExt(Forms.Application.ExeName,'.log')) then
+    //       DeleteFile(ChangeFileExt(Forms.Application.ExeName,'.log'));
+    vSrv.Free;
+    vStrL.Free;
+  end;
 end;
 
 {$ENDREGION}
@@ -232,6 +385,11 @@ end;
 destructor TEvsMDODatasetProxy.Destroy;
 begin
   inherited Destroy;
+end;
+
+procedure TEvsMDODatasetProxy.Execute;extdecl;
+begin
+  if FDS is TMDOQuery then TMDOQuery(FDS).ExecSQL else inherited
 end;
 
 Procedure TEvsMDODatasetProxy.Commit; extdecl;
@@ -298,7 +456,7 @@ begin
   if not Assigned(Result.Transaction) then Result.Transaction := TMDOTransaction.Create(Result);
 end;
 
-function TEvsMDOConnection.GetServerID :Integer;extdecl;
+Function TEvsMDOConnection.GetServerID :Integer; extdecl;
 begin
   Result := stFirebird;
 end;
@@ -514,16 +672,16 @@ Function TEvsMDOConnection.InternalQuery(aSQL :wideString) :IEvsDataset; extdecl
 var
   vObj:TMDOQuery;
 begin
-  //{$IFDEF POOL_QRY}
+  {.$IFDEF POOL_QRY}
   vObj := NewQuery;
-  //{$ELSE}
+  {.$ELSE}
   //vObj := TMDOQuery.Create(Nil);
-  //{$ENDIF}
+  {.$ENDIF}
   vObj.Database := TMDODataBase(FCnn);
   vObj.Transaction.DefaultDatabase := vObj.Database;
   vObj.SQL.Text := aSQL;
   vObj.Open;
-  Result := TEvsMDODatasetProxy.Create(vObj, True);
+  Result := TEvsMDODatasetProxy.Create(vObj, {$IFDEF POOL_QRY}True{$ELSE}False{$ENDIF});
 end;
 
 Procedure TEvsMDOConnection.InternalSetCharSet(aValue :WideString); extdecl;
@@ -554,22 +712,47 @@ begin
   {$ENDIF}
 end;
 
+procedure TEvsMDOConnection.DropDatabase;extdecl;
+begin
+  TMDODataBase(FCnn).DropDatabase;
+end;
+
 
 Procedure TEvsMDOConnection.GetTables(const aDB :IEvsTableList); extdecl;
 const
   cSql = 'select rdb$relation_name from rdb$relations where rdb$view_blr is null ' +
         ' and (rdb$system_flag is null or rdb$system_flag = 0) order by rdb$relation_name';
+
+  procedure GetAllInfo;
+  var
+    vCntr   :Integer;
+    //vFkCntr :Integer;
+  begin
+    for vCntr := 0 to aDB.Count -1 do begin
+      GetTableInfo(aDB[vCntr]);
+      //for vFkCntr := 0 to aDB[vCntr].ForeignKeyCount -1 do begin
+      //   aDB[vCntr].ForeignKey[vFkCntr].Relink;
+      //end;
+    end;
+  end;
+
 var
   vDts:IEvsDataset;
   vTbl :IEvsTableInfo;
 begin
-  vDts := Query(cSql);
-  vDts.First;
-  while not vDts.EOF do begin
-    vTbl := aDB.New;
-    vTbl.TableName := Trim(vDts.Field[0].AsString);
-    vTbl.ClearState;
-    vDts.Next;
+  inc(FReversing);
+  try
+    vDts := Query(cSql);
+    vDts.First;
+    while not vDts.EOF do begin
+      vTbl := aDB.New;
+      vTbl.TableName := Trim(vDts.Field[0].AsString);
+      vTbl.ClearState;
+      vDts.Next;
+    end;
+    GetAllInfo;
+  finally
+    Dec(FReversing);
   end;
 end;
 
@@ -601,6 +784,7 @@ begin
     if (vSys = 0) or IncludeSystem then begin
       vTbl := aDB.NewTable(Trim(vDts.Field[0].AsString));
       if vSys = 0 then vTbl.SystemTable := False else vTbl.SystemTable := True;
+      //GetTableInfo(vTbl);
       vTbl.ClearState;
     end;
     vDts.Next;
@@ -766,10 +950,10 @@ const
               'ORDER BY r.RDB$FIELD_POSITION';
 
 var
-  vDts  : IEvsDataset;
-  vFlds : IEvsDataset;
-  vFld  : IEvsFieldInfo;
-  vPrc  : IEvsStoredInfo;
+  vDts  : IEvsDataset    = nil;
+  vFlds : IEvsDataset    = nil;
+  vFld  : IEvsFieldInfo  = nil;
+  vPrc  : IEvsStoredInfo = nil;
   vName, vSQL : string;
 begin
   vDts := Query(cSql);
@@ -787,11 +971,15 @@ begin
       ParseFieldData(vFlds, vFld);
       vFld.ClearState;
       vFlds.Next;
+      vFld := Nil;
     end;
+    vFlds := Nil;
     vPrc.ClearState;
     vDts.Next;
   end;
   //raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  vDts := Nil;
+  vFld := Nil;
 end;
 
 Procedure TEvsMDOConnection.GetViewInfo (const aObject :IEvsViewInfo);    Overload;extdecl;{$MESSAGE WARN 'Needs Testing'}
@@ -923,7 +1111,7 @@ begin
     GetDetails(vUdf);
     vDts.Next;
   end;
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 Procedure TEvsMDOConnection.GetUsers(const aDB :IEvsDatabaseInfo); extdecl;
@@ -1118,7 +1306,7 @@ begin
   end;
 end;
 
-procedure TEvsMDOConnection.GetForeignKeys(Const aObject:IEvsTableInfo);extdecl;
+Procedure TEvsMDOConnection.GetForeignKeys(Const aObject :IEvsTableInfo); extdecl;
 const
   cSQL = 'SELECT PK.RDB$RELATION_NAME AS PrTable_Name' + //0
     LineEnding +' ,ISP.RDB$FIELD_NAME AS PrField_Name'    + //1
@@ -1177,6 +1365,25 @@ begin
   end;
 end;
 
+Procedure TEvsMDOConnection.GetAll(const aDB :IEvsDatabaseInfo);extdecl;
+begin
+  inc(FReversing);// := True;
+  try
+    GetTables(aDB);
+    GetDomains(aDB);
+    GetExceptions(aDB);
+    GetRoles(aDB);
+    GetUDFs(aDB);
+    GetStored(aDB);
+    GetTriggers(aDB);
+    GetSequences(aDB);
+    GetUsers(aDB);
+    GetViews(aDB);
+  finally
+    Dec(FReversing);// := False;
+  end;
+end;
+
 Function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
 begin
   raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
@@ -1204,8 +1411,7 @@ initialization
   TEvsMDOConnection.FQryPool := TMDOQueryPool.Create(10,True);
   TEvsMDOConnection.FCnnPool := TMDODatabasePool.Create(10,True);
   {$ENDIF}
-  RegisterDBType(stFirebird, 'Firebird', @Connect, nil, nil);
-
+  RegisterDBType(stFirebird, 'Firebird', @Connect, @Create, @Backup, @Restore,@CharSets, @CharSetCollations);
 finalization
   {$IFDEF POOL_QRY}
   FreeAndNil(TEvsMDOConnection.FQryPool);

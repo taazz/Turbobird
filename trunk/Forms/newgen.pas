@@ -203,7 +203,7 @@ var
   vDB:IEvsDatabaseInfo;
   vCntr :Integer;
 begin
-  Name := FGenerator.GeneratorName;
+  Name := FGenerator.Name;
   GeneratorStartValue := FGenerator.CurrentValue;
   vDB := GetDatabase(FGenerator);
   if Assigned(vDB) then begin
@@ -222,7 +222,7 @@ end;
 
 procedure TfmNewGen.FromScreen;
 begin
-  FGenerator.GeneratorName := GeneratorName;
+  FGenerator.Name := GeneratorName;
   FGenerator.CurrentValue  := GeneratorStartValue;
 end;
 

@@ -11,8 +11,10 @@ SysTables covers functionality for which a db connection is required. }
 interface
 {.$DEFINE EVS_Internal}
 {$DEFINE EVS_NEW}
+{$Include EvsDefs.inc}
 uses
-  Classes, SysUtils, variants, sqldb, uTBTypes, uCharSets {$IFDEF EVS_Internal}, uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs,
+  Classes, SysUtils, variants, sqldb, uTBTypes, uCharSets, uEvsGenIntf, uEvsIntfObjects, uEvsDBSchema
+  {$IFDEF EVS_Internal}, uEvsLinkedLists{$ELSE},contnrs{$ENDIF}, syncobjs,
   Forms, Controls, StdCtrls, MDODatabase, MDOQuery, IBConnection;
 
 // Common definitions for TurboBird
@@ -73,19 +75,7 @@ const
   DefaultFBCharacterSet = 42; //Used for GUI controls etc. UTF8 in CharacterSets below.
   // Available character sets as per Firebird 2.5
    ///Hate, hate, hate tall pieces of code.
-  FBCharacterSets: array[0..51] of string = //Make an external to avoid recompilation, or an addin.
-    ('NONE',      'ASCII',    'BIG_5',     'CP943C',    'CYRL',      'DOS437',   'DOS737',    'DOS775',    'DOS850',
-     'DOS852',    'DOS857',   'DOS858',    'DOS860',    'DOS861',    'DOS862',   'DOS863',    'DOS864',    'DOS865',
-     'DOS866',    'DOS869',   'EUCJ_0208', 'GB18030',   'GBK',       'GB_2312',  'ISO8859_1', 'ISO8859_13','ISO8859_2',
-     'ISO8859_3', 'ISO8859_4','ISO8859_5', 'ISO8859_6', 'ISO8859_7', 'ISO8859_8','ISO8859_9', 'KOI8R',     'KOI8U',
-     'KSC_5601',  'NEXT',     'OCTETS',    'SJIS_0208', 'TIS620',
-     'UNICODE_FSS', {//obsolete}
-     'UTF8',        {//good default}
-     'WIN1250',   'WIN1251',  'WIN1252',  'WIN1253',   'WIN1254',   'WIN1255',  'WIN1256',   'WIN1257',   'WIN1258');
-  // Available collations as per Firebird 2.5
-  // Pairs of collation names and the character set name
-  // that must be used to support this collation
-  FBReservedWords : array[0..166] of string = ( //JKOZ: make it an external source and dynamically chaneged (no need for recompilation).
+  FBReservedWords : array[0..166] of string = ( //JKOZ: make it an external source and dynamically changed (no need for recompilation).
                                            'ADD',                'ADMIN',  'ALL',      'ALTER',     'AND',        'ANY',      'AS',      'AT',
                                            'BETWEEN',            'BIGINT', 'BLOB',     'BOTH',      'BY',         'CASE',     'CAST',    'CHAR',
                                            'CHARACTER',          'CHECK',  'CLOSE',    'COLLATE',   'COLUMN',     'COMMIT',   'CONNECT', 'AVG',
@@ -108,34 +98,6 @@ const
                                            'SQLSTATE (2.5.1)',   'VIEW',   'TRAILING', 'VARYING',   'WHEN',       'WHILE',    'WHERE',   'CHAR_LENGTH',
                                            'RETURNING_VALUES',   'BEGIN',  'DELETE',   'VARIABLE',  'ESCAPE',     'FULL',     'DISCONNECT'
                                            );
-  //FBCollations: array[0..147, 0..1] of string = (
-  //  ('ASCII',      'ASCII'),    ('BIG_5',       'BIG_5'),    ('BS_BA',      'WIN1250'),    ('CP943C',   'CP943C'),          ('CP943C_UNICODE','CP943C'),     ('CS_CZ',    'ISO8859_2'),
-  //  ('CYRL',       'CYRL'),     ('DA_DA',       'ISO8859_1'),('DB_CSY',     'DOS852'),     ('DB_DAN865','DOS865'),          ('DB_DEU437',     'DOS437'),     ('DB_DEU850','DOS850'),
-  //  ('DB_ESP437',  'DOS437'),   ('DB_ESP850',   'DOS850'),   ('DB_FIN437',  'DOS437'),     ('DB_FRA437','DOS437'),          ('DB_FRA850',     'DOS850'),     ('DB_FRC850','DOS850'),
-  //  ('DB_FRC863',  'DOS863'),   ('DB_ITA437',   'DOS437'),   ('DB_ITA850',  'DOS850'),     ('DB_NLD437','DOS437'),          ('DB_NLD850',     'DOS850'),     ('DB_NOR865','DOS865'),
-  //  ('DB_PLK',     'DOS852'),   ('DB_PTB850',   'DOS850'),   ('DB_PTG860',  'DOS860'),     ('DB_RUS',   'CYRL'),            ('DB_SLO',        'DOS852'),     ('DB_SVE437','DOS437'),
-  //  ('DB_SVE850',  'DOS850'),   ('DB_TRK',      'DOS857'),   ('DB_UK437',   'DOS437'),     ('DB_UK850', 'DOS850'),          ('DB_US437',      'DOS437'),     ('DB_US850', 'DOS850'),
-  //  ('DE_DE',      'ISO8859_1'),('DOS437',      'DOS437'),   ('DOS737',     'DOS737'),     ('DOS775',   'DOS775'),          ('DOS850',        'DOS850'),     ('DOS852',   'DOS852'),
-  //  ('DOS857',     'DOS857'),   ('DOS858',      'DOS858'),   ('DOS860',     'DOS860'),     ('DOS861',   'DOS861'),          ('DOS862',        'DOS862'),     ('DOS863',   'DOS863'),
-  //  ('DOS864',     'DOS864'),   ('DOS865',      'DOS865'),   ('DOS866',     'DOS866'),     ('DOS869',   'DOS869'),          ('DU_NL',         'ISO8859_1'),  ('EN_UK',    'ISO8859_1'),
-  //  ('EN_US',      'ISO8859_1'),('ES_ES',       'ISO8859_1'),('ES_ES_CI_AI','ISO8859_1'),  ('EUCJ_0208','EUCJ_0208'),       ('FI_FI',         'ISO8859_1'),  ('FR_CA',    'ISO8859_1'),
-  //  ('FR_FR',      'ISO8859_1'),('FR_FR_CI_AI', 'ISO8859_1'),('GB18030',    'GB18030'),    ('GB18030_UNICODE','GB18030'),   ('GBK',           'GBK'),        ('GBK_UNICODE','GBK'),
-  //  ('GB_2312',    'GB_2312'),  ('ISO8859_1',   'ISO8859_1'),('ISO8859_13', 'ISO8859_13'), ('ISO8859_2',      'ISO8859_2'), ('ISO8859_3',     'ISO8859_3'),  ('ISO8859_4',  'ISO8859_4'),
-  //  ('ISO8859_5',  'ISO8859_5'),('ISO8859_6',   'ISO8859_6'),('ISO8859_7',  'ISO8859_7'),  ('ISO8859_8',      'ISO8859_8'), ('ISO8859_9',     'ISO8859_9'),  ('ISO_HUN',    'ISO8859_2'),
-  //  ('ISO_PLK',    'ISO8859_2'),('IS_IS',       'ISO8859_1'),('IT_IT',      'ISO8859_1'),  ('KOI8R',          'KOI8R'),     ('KOI8R_RU',      'KOI8R'),      ('KOI8U',      'KOI8U'),
-  //  ('KOI8U_UA',   'KOI8U'),    ('KSC_5601',    'KSC_5601'), ('KSC_DICTIONARY','KSC_5601'),('LT_LT',          'ISO8859_13'),('NEXT',          'NEXT'),       ('NONE',       'NONE'),
-  //  ('NO_NO',      'ISO8859_1'),('NXT_DEU',     'NEXT'),     ('NXT_ESP',     'NEXT'),      ('NXT_FRA',        'NEXT'),      ('NXT_ITA',       'NEXT'),       ('NXT_US',     'NEXT'),
-  //  ('OCTETS',     'OCTETS'),   ('PDOX_ASCII',  'DOS437'),   ('PDOX_CSY',    'DOS852'),    ('PDOX_CYRL',      'CYRL'),      ('PDOX_HUN',      'DOS852'),     ('PDOX_INTL',  'DOS437'),
-  //  ('PDOX_ISL',   'DOS861'),   ('PDOX_NORDAN4','DOS865'),   ('PDOX_PLK',    'DOS852'),    ('PDOX_SLO',       'DOS852'),    ('PDOX_SWEDFIN',  'DOS437'),     ('PT_BR',      'ISO8859_1'),
-  //  ('PT_PT',      'ISO8859_1'),('PXW_CSY',     'WIN1250'),  ('PXW_CYRL',    'WIN1251'),   ('PXW_GREEK',      'WIN1253'),   ('PXW_HUN',       'WIN1250'),    ('PXW_HUNDC',  'WIN1250'),
-  //  ('PXW_INTL',   'WIN1252'),  ('PXW_INTL850', 'WIN1252'),  ('PXW_NORDAN4', 'WIN1252'),   ('PXW_PLK',        'WIN1250'),   ('PXW_SLOV',      'WIN1250'),    ('PXW_SPAN',   'WIN1252'),
-  //  ('PXW_SWEDFIN','WIN1252'),  ('PXW_TURK',    'WIN1254'),  ('SJIS_0208',   'SJIS_0208'), ('SV_SV',          'ISO8859_1'), ('TIS620',        'TIS620'),     ('TIS620_UNICODE','TIS620'),
-  //  ('UCS_BASIC',  'UTF8'),     ('UNICODE',     'UTF8'),     ('UNICODE_CI',  'UTF8'),      ('UNICODE_CI_AI',  'UTF8'),      ('UNICODE_FSS',   'UNICODE_FSS'),('UTF8',          'UTF8'),
-  //  ('WIN1250',    'WIN1250'),  ('WIN1251',     'WIN1251'),  ('WIN1251_UA',  'WIN1251'),   ('WIN1252',        'WIN1252'),   ('WIN1253',       'WIN1253'),    ('WIN1254',       'WIN1254'),
-  //  ('WIN1255',    'WIN1255'),  ('WIN1256',     'WIN1256'),  ('WIN1257',     'WIN1257'),   ('WIN1257_EE',     'WIN1257'),   ('WIN1257_LT',    'WIN1257'),    ('WIN1257_LV',    'WIN1257'),
-  //  ('WIN1258',    'WIN1258'),  ('WIN_CZ',      'WIN1250'),  ('WIN_CZ_CI_AI','WIN1250'),   ('WIN_PTBR',       'WIN1252')
-  //);
-
   //why I did this?
   cFldName        = 'field_name';
   cFldDescription = 'field_description';
@@ -286,7 +248,7 @@ type
     function FormByClass(const aClass:TFormClass):TFormEnumerator;
   end;
 
-  function IsReservedWord(const aName:String):boolean;
+function IsReservedWord(const aName:String):boolean;
 
 
 // Retrieve available collations for specified Characterset into Collations
@@ -313,22 +275,12 @@ procedure SetTransactionIsolation(Params: TStrings);
 { Using a pool Manager return an existing query or create a new and return it.
   The procedure initializes the transaction to the one passed or creates a new only
   for the new query. }
-//function GetQuery(const aConnection : TSQLConnection; const aTransaction:TSQLTransaction=nil):TSQLQuery;overload;
-//function GetQuery(const aConnection : TSQLConnection; const aSQLCmd :string; const aParams:Array of const; const aTransaction:TSQLTransaction=nil):TSQLQuery;
-
-//
 function GetQuery(const aConnection :TMDODataBase; const aTransaction :TMDOTransaction=nil) :TMDOQuery;
 function GetQuery(const aConnection :TMDODataBase; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TMDOTransaction=Nil) :TMDOQuery;
 
 //the connection passed is used to initialize the new connection.
-//function GetConnection(const aConnection:TIBConnection=nil):TIBConnection;
-//function GetConnection(const aDB:TDBInfo):TIBConnection;
-
-//function GetConnection(const aConnection:TMDODataBase=nil):TIBConnection;
-//function GetConnection(const aDB:TDBInfo):TIBConnection;
-
 function GetConnection(const aConnection:TMDODataBase):TMDODataBase;
-function GetConnection(const aDB:TDBInfo):TMDODataBase;
+//function GetConnection(const aDB:TDBInfo):TMDODataBase;
 
 {
  If there is empty space in the pool the query is returned there if not the returned item is destroyed
@@ -337,27 +289,23 @@ procedure ReleaseQuery(const aQuery : TSQLQuery);deprecated 'use the MDO Query i
 procedure ReleaseQuery(const aQuery : TMDOQuery);
 procedure ReleaseConnection(const aConnection:TIBConnection);deprecated 'use the MDO Database instead';
 
-//procedure Connect(const aCnn:TIBConnection; aDatabase,aUser,aPassword:String; aCharset:string = ''; aRole:String='');deprecated 'use the MDO Database instead';
-//procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBDetails);overload;deprecated 'use the MDO Database instead';
-//procedure Connect(const aCnn:TIBConnection; const aDatabase:TDBInfo);overload;deprecated 'use the MDO Database instead';
 //MDO Jump;
-procedure Connect(const aCnn:TMDODataBase;const aDatabase:TDBInfo);overload;
+//procedure Connect(const aCnn:TMDODataBase;const aDatabase:TDBInfo);overload;
 procedure Connect(const aCnn:TMDODatabase;const aDatabase:TDBDetails);overload;
 
-function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBInfo):Boolean;overload;
+//function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBInfo):Boolean;overload;
 function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBDetails):Boolean;overload;
 
-//function SQLExecute(const aDB :TDBInfo; const aCommand:string; aParams:Array of const;const aTransaction:TSQLTransaction=nil) :Boolean;
 
-function SQLExecute(const aDB :TDBInfo; const aCommand:string; aParams:Array of const;const aTransaction:TMDOTransaction=nil) :Boolean;
+//function SQLExecute(const aDB :TDBInfo; const aCommand:string; aParams:Array of const;const aTransaction:TMDOTransaction=nil) :Boolean;
 function SQLExecute(const aConn :TMDODataBase; const aCommand:string; aParams:Array of const; const aTransaction:TMDOTransaction=nil) :Boolean;
 
 function FindCustomForm(aCaption: string; aClass: TFormClass): TForm;
 
 //initialization routines
-procedure InitDBInfo(var aDBInfo:TDBInfo);
+//procedure InitDBInfo(var aDBInfo:TDBInfo);
 procedure InitDBRec(var aRec:TDBDetails);
-function  NewDBInfo:PDBinfo;
+//function  NewDBInfo:PDBinfo;
 
 //generic call to clear on controls that support it.
 procedure ClearControls(const aParent:TWinControl);experimental;
@@ -379,8 +327,12 @@ function Split(const aSource:String; const aDelimiter:Char):TStringArray;
 function Split(const aSource:wideString; const aDelimiter:WideChar):TWideStringArray;
 function _VarArray(const aValues: array of const): Variant;
 function _VarArray(const aValues: TStringArray): Variant;
+function _VarArray(const aValues: TWideStringArray): Variant;
+procedure ToStrings(const aArray:TWideStringArray; const aStrings:TStrings);
 
 Function Between(const LowValue, HighValue, aValue :Int64):Boolean;inline;
+Function FullDBName(const aDatabase:IEvsdatabaseInfo):string;inline;
+procedure ParseFullDBName(const aCnnString:String; var aHost, aPort, aDatabase:string);
 
 implementation
 
@@ -568,25 +520,6 @@ begin
   SetLength(Result, vCntr);
 end;
 
-//function Split(const aSource :String; aDelimeter :Char) :TStringArray;
-//var
-//  vCntr,
-//  vIndex: integer;
-//begin
-//  ExtractStrings();
-//  vIndex := 0;
-//  SetLength(Result, (Length(aSource) div 2) + 1); //worst case senario every other letter is a delimeter.
-//  for vCntr := 1 to Length(aSource) do begin
-//    if aSource[vCntr] = aDelimeter then
-//      if Result[vIndex] <> '' then Inc(vIndex)
-//    else
-//      Result[vIndex] := Result[vIndex] + aSource[vCntr];
-//  end;
-//  if Result[vIndex + 1] <> '' then
-//    SetLength(Result, vIndex + 1)
-//  else SetLength(Result, vIndex);
-//end;
-
 function VarArrayOf(aValues: array of const): Variant;
 var
   vCntr: integer;
@@ -719,7 +652,7 @@ end;
 function GetCollations(const Characterset: string; var Collations: TStringList): boolean;
 var
   vCntr  :Integer;
-  vColls :TStringArray;
+  vColls :TWideStringArray;
 begin
   Result := False;
   Collations.BeginUpdate;
@@ -758,19 +691,6 @@ begin
 
 end;
 
-//function GetQuery(const aConnection :TSQLConnection; const aTransaction :TSQLTransaction) :TSQLQuery;
-//begin
-//  Result := TSQLQuery(QueryPool.Aquire);
-//  Result.DataBase := aConnection;
-//  Result.Transaction := aTransaction;
-//  if not Assigned(Result.Transaction) then begin
-//    Result.Transaction := TSQLTransaction.Create(Result);
-//    SetTransactionIsolation(TSQLTransaction(Result.Transaction).Params);
-//    Result.Transaction.DataBase := aConnection;
-//    Result.Tag := TransactionOwned; //jk: make it an embedded property or something and leave the tag free for other usage.
-//  end;
-//end;
-
 function GetQuery(const aConnection :TMDODataBase; const aTransaction :TMDOTransaction=nil) :TMDOQuery;
 begin
   Result := TMDOQuery(QueryPool.Aquire);
@@ -783,24 +703,6 @@ begin
     TEvsMDOQuery(Result).OwnsTransaction := True;
   end;
 end;
-
-//function GetQuery(const aConnection :TSQLConnection; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TSQLTransaction) :TSQLQuery;
-//begin
-//  Result := GetQuery(aConnection, aTransaction);
-//  try
-//    if aSQLCmd <> '' then begin
-//      Result.sql.Text := Format(aSQLCmd, aParams);
-//      Result.Open;
-//      Result.First;
-//    end;
-//  except
-//    On E:Exception do begin //make sure no memory leak in case of an exception.
-//      ReleaseQuery(Result);
-//      Result := nil;
-//      raise E;
-//    end;
-//  end;
-//end;
 
 function GetQuery(const aConnection :TMDODataBase; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TMDOTransaction=Nil) :TMDOQuery;
 begin
@@ -820,15 +722,15 @@ begin
   end;
 end;
 
-function GetConnection(const aDB :TDBInfo) :TMDODataBase;
-begin
-  Result := GetConnection(Nil);
-  Result.DatabaseName := aDB.RegRec.DatabaseName;
-  Result.UserName     := aDB.RegRec.UserName;
-  Result.Password     := aDB.RegRec.Password;
-  Result.Role         := aDB.RegRec.Role;
-  Result.CharSet      := aDB.RegRec.Charset;
-end;
+//function GetConnection(const aDB :TDBInfo) :TMDODataBase;
+//begin
+//  Result := GetConnection(Nil);
+//  Result.DatabaseName := aDB.RegRec.DatabaseName;
+//  Result.UserName     := aDB.RegRec.UserName;
+//  Result.Password     := aDB.RegRec.Password;
+//  Result.Role         := aDB.RegRec.Role;
+//  Result.CharSet      := aDB.RegRec.Charset;
+//end;
 
 function GetServerName(const aDBName: string): string;
 begin
@@ -856,9 +758,12 @@ begin
 end;
 
 function ExtractHost(const aDBName :string) :string;
+var
+  vPos : Integer;
 begin
-  if Pos(':', aDBName) > 2 then
-    Result := Copy(aDBName, 1, Pos(':', aDBName))//, Length(aDBName))
+  vPos := Pos(':', aDBName);
+  if  vPos> 2 then
+    Result := Copy(aDBName, 1, vPos-1)//, Length(aDBName))
   else
     Result := '';//aDBName;
 end;
@@ -943,15 +848,15 @@ begin
   aCnn.Connected    := True;
 end;
 
-procedure Connect(const aCnn :TIBConnection; const aDatabase :TDBInfo);
-begin
-  Connect(aCnn, aDatabase.RegRec);
-end;
-
-procedure Connect(const aCnn :TMDODataBase; const aDatabase :TDBInfo);
-begin
-  Connect(aCnn,aDatabase.RegRec);
-end;
+//procedure Connect(const aCnn :TIBConnection; const aDatabase :TDBInfo);
+//begin
+//  Connect(aCnn, aDatabase.RegRec);
+//end;
+//
+//procedure Connect(const aCnn :TMDODataBase; const aDatabase :TDBInfo);
+//begin
+//  Connect(aCnn,aDatabase.RegRec);
+//end;
 
 procedure Connect(const aCnn :TMDODatabase; const aDatabase :TDBDetails);
 begin
@@ -967,10 +872,10 @@ begin
   aCnn.Connected    := True;
 end;
 
-function IsConnectedTo(const aCnn :TMDODataBase; const aDB :TDBInfo):Boolean;
-begin
-  result := IsConnectedTo(aCnn, aDB.RegRec);
-end;
+//function IsConnectedTo(const aCnn :TMDODataBase; const aDB :TDBInfo):Boolean;
+//begin
+//  result := IsConnectedTo(aCnn, aDB.RegRec);
+//end;
 
 function IsConnectedTo(const aCnn :TMDODataBase; const aDB :TDBDetails):Boolean;
 begin
@@ -1000,20 +905,20 @@ begin
   Result := CompareText(S1, s2) = 0;
 end;
 
-function SQLExecute(const aDB :TDBInfo; const aCommand :string; aParams :Array of const; const aTransaction :TMDOTransaction) :Boolean;
-var
-  vQry:TMDOQuery;
-begin
-  vQry := GetQuery(aDB.Conn,aCommand,aParams, aTransaction);
-  try
-    vQry.SQL.Text := Format(aCommand, aParams);
-    vQry.ExecSQL;
-    if not Assigned(aTransaction) then vQry.Transaction.Commit;
-  finally
-    ReleaseQuery(vQry);
-  end;
-  Result := True;
-end;
+//function SQLExecute(const aDB :TDBInfo; const aCommand :string; aParams :Array of const; const aTransaction :TMDOTransaction) :Boolean;
+//var
+//  vQry:TMDOQuery;
+//begin
+//  vQry := GetQuery(aDB.Conn,aCommand,aParams, aTransaction);
+//  try
+//    vQry.SQL.Text := Format(aCommand, aParams);
+//    vQry.ExecSQL;
+//    if not Assigned(aTransaction) then vQry.Transaction.Commit;
+//  finally
+//    ReleaseQuery(vQry);
+//  end;
+//  Result := True;
+//end;
 
 function SQLExecute(const aConn :TMDODataBase; const aCommand :string; aParams :Array of const; const aTransaction :TMDOTransaction) :Boolean;
 var
@@ -1415,11 +1320,11 @@ begin
   //aRec.SavePassword := False;
 end;
 
-function NewDBInfo :PDBinfo;
-begin
-  Result := New(PDBInfo);
-  InitDBInfo(Result^);
-end;
+//function NewDBInfo :PDBinfo;
+//begin
+//  Result := New(PDBInfo);
+//  InitDBInfo(Result^);
+//end;
 
 procedure ClearControls(const aParent :TWinControl);
 var
@@ -1432,27 +1337,20 @@ begin //only text editing controls are cleared for now.
   end;
 end;
 
-//function PoolAquire(const aConnection :TSQLConnection; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TSQLTransaction) :TSQLQuery;
+//function PoolAquire(const aDB :TDBInfo) :TMDODataBase;
 //begin
-//  Result := GetQuery(aConnection, aSQLCmd, aParams, aTransaction);
+//  Result := GetConnection(aDB);
 //end;
 
-function PoolAquire(const aDB :TDBInfo) :TMDODataBase;
-begin
-  Result := GetConnection(aDB);
-end;
-
-procedure InitDBInfo(var aDBInfo :TDBInfo);
-begin
-  //fillbyte will do a faster job. I prefere the luxury of choice.
-  InitDBRec(aDBInfo.RegRec);
-  InitDBRec(aDBInfo.OrigRegRec);
-  //aDBInfo.IBConnection := nil;
-  //aDBInfo.SQLTrans     := nil;
-  aDBInfo.Conn  := Nil;
-  aDBInfo.Trans := Nil;
-  aDBInfo.Index := -1; //-1 not saved yet.
-end;
+//procedure InitDBInfo(var aDBInfo :TDBInfo);
+//begin
+//  //fillbyte will do a faster job. I prefere the luxury of choice.
+//  InitDBRec(aDBInfo.RegRec);
+//  InitDBRec(aDBInfo.OrigRegRec);
+//  aDBInfo.Conn  := Nil;
+//  aDBInfo.Trans := Nil;
+//  aDBInfo.Index := -1; //-1 not saved yet.
+//end;
 {$ENDREGION}
 
 function _VarArray(const aValues: array of const): Variant;
@@ -1500,17 +1398,135 @@ begin
     Result[vCntr] := WideString(aValues[vCntr]);
   end;
 end;
+function _VarArray(const aValues :TWideStringArray) :Variant;
+var
+  vCntr: Integer;
+begin
+  Result := VarArrayCreate([SizeInt(Low(aValues)), SizeInt(High(aValues))], varVariant);
+  for vCntr := Low(aValues) to High(aValues) do begin
+    Result[vCntr] := WideString(aValues[vCntr]);
+  end;
+end;
+
+procedure ToStrings(const aArray:TWideStringArray; const aStrings:TStrings);
+var
+  vCntr :Integer;
+begin
+  for vCntr := Low(aArray) to High(aArray) do begin
+    aStrings.Add(aArray[vCntr]);
+  end;
+end;
+
 
 Function Between(const LowValue, HighValue, aValue :Int64) :Boolean;inline;
 begin
   Result := (aValue>=LowValue) and (aValue<=HighValue);
 end;
 
+Function FullDBName(const aDatabase :IEvsDatabaseInfo) :string;
+begin
+  if aDatabase.Host <> '' then Result := aDatabase.Host+':'+aDatabase.Database
+  else Result := aDatabase.Database;
+end;
+
+procedure ParseFullDBName(const aCnnString :String; var aHost, aPort, aDatabase :string);
+var
+  vPos    :Integer;
+  vHost,
+  vPort,
+  vDBName :WideString;
+begin
+  vPort :=''; vHost:=''; vDBName:='';
+  vPos := Pos(':', aCnnString);
+  if vPos > 2 then begin
+    vHost   := Copy(aCnnString, 1, vPos-1);
+    vDBName := Copy(aCnnString, vPos+1, Length(aCnnString));
+    vPos    := Pos('/',vHost);
+    if vPos > 0 then begin
+      vPort   := Copy(vHost,vPos+1,Length(vHost));
+      SetLength(vHost, vPos-1);
+    end;
+  end else vDBName := aCnnString;
+  aHost     := vHost;
+  aPort     := vPort;
+  aDatabase := vDBName;
+end;
+
+//{$REGION ' TEVSInterfacedObject '}
+//procedure TEVSInterfacedObject.AfterConstruction;
+//begin
+//// Release the constructor's implicit refcount
+//  if FRefCounted then InterlockedDecrement(FRefCount);
+//end;
+//
+//procedure TEVSInterfacedObject.BeforeDestruction;
+//begin
+//  if FRefCounted and (RefCount <> 0) then
+//    System.Error(reInvalidPtr);
+//end;
+//
+//function TEvsInterfacedObject.ObjectRef : TObject; extdecl;
+//begin
+// Result := Self;
+//end;
+//
+//constructor TEvsInterfacedObject.Create(aRefCounted : Boolean = False);
+//begin
+//  FRefCounted := aRefCounted;
+//  if aRefCounted then FRefCount := 1;
+//  inherited Create;
+//end;
+//
+//constructor TEVSInterfacedObject.CreateCounted;
+//begin
+//  Create(True);
+//end;
+//
+//// Set an implicit refcount so that refcounting
+//// during construction won't destroy the object.
+//class function TEVSInterfacedObject.NewInstance: TObject;
+//begin
+//  Result := inherited NewInstance;
+//  TEVSInterfacedObject(Result).FRefCount := 1;
+//end;
+//
+//function TEVSInterfacedObject.QueryInterface({$IFDEF FPC}constref{$ELSE}const{$ENDIF} IID: TGUID; out Obj): HResult;extdecl;
+//begin
+//  if GetInterface(IID, Obj) then
+//    Result := 0
+//  else
+//    Result := E_NOINTERFACE;
+//end;
+//
+//function TEVSInterfacedObject.RefCounted: Boolean;
+//begin
+//  Result := FRefCounted;
+//end;
+//
+//function TEVSInterfacedObject._AddRef: Integer;extdecl;
+//begin
+//  if FRefCounted  then
+//    Result := InterlockedIncrement(FRefCount)
+//  else
+//    Result := -1; //FRefCount;
+//end;
+//
+//function TEVSInterfacedObject._Release: Integer;extdecl;
+//begin
+//  Result := -1;
+//  if FRefCounted then
+//  begin
+//    Result := InterlockedDecrement(FRefCount);
+//    if Result = 0 then
+//      Destroy;
+//  end;
+//end;
+//
+//{$ENDREGION}
+
 initialization
   QueryPool := TEvsCustomComponentPool.Create(10, True, TEvsMDOQuery);
   QueryPool.SoftMax := True; //create as many controls as requested only keep alive fmaxCount controls.
-  //ConnectionPool := TEvsCustomComponentPool.Create(10, True, TEVSIBConn);
-  //ConnectionPool.SoftMax := True; //create as many controls as requested, only keep alive fmaxCount controls.
   ConnectionPool := TEvsCustomComponentPool.Create(10, True, TEvsMDOConnection);
   ConnectionPool.SoftMax := True; //create as many controls as requested, only keep alive fmaxCount controls.
 finalization

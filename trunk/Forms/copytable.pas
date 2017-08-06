@@ -57,10 +57,12 @@ procedure TfmCopyTable.cbDestDatabaseChange(Sender: TObject);
 var
   Count: Integer;
 begin
-  laDatabase.Caption:= fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.DatabaseName;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //laDatabase.Caption:= fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.DatabaseName;
   cbDestDatabase.SetFocus;
   dmSysTables.Init(cbDestDatabase.ItemIndex);
-  cbDestTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex], otTables, count);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //cbDestTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex], otTables, count);
   if cbDestTable.Items.IndexOf(cbSourceTable.Text) <> -1 then
     cbDestTable.Text:= cbSourceTable.Text;
 end;
@@ -138,26 +140,30 @@ begin
   Statement:= Statement + ') Values (' + Values + ')';
 
   // Enter password if it is not saved
-  with fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex] do begin
-    if Conn.Password = '' then begin
-      if fmEnterPass.ShowModal = mrOk then begin
-        if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
-          RegRec.Charset) then
-          with fmMain do begin
-            RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.UserName:= fmEnterPass.edUser.Text;
-            RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.Password:= fmEnterPass.edPassword.Text;
-            RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.Role:= fmEnterPass.cbRole.Text;
-          end else begin
-            Exit;
-          end;
-      end
-    end;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //////with fmMain.RegisteredDatabases[cbDestDatabase.ItemIndex] do
+  begin
+  //////  if Conn.Password = '' then begin
+  //////    if fmEnterPass.ShowModal = mrOk then begin
+  //////      if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
+  //////        RegRec.Charset) then
+  //////        with fmMain do begin
+  //////          RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.UserName:= fmEnterPass.edUser.Text;
+  //////          RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.Password:= fmEnterPass.edPassword.Text;
+  //////          RegisteredDatabases[cbDestDatabase.ItemIndex].RegRec.Role:= fmEnterPass.cbRole.Text;
+  //////        end else begin
+  //////          Exit;
+  //////        end;
+  //////    end
+  //////  end;
 
     //SQLTarget:=  TSQLQuery.Create(nil); {$Warning 'SQLDB Removal'}
     SQLTarget:=  TMDOQuery.Create(nil); {$Warning 'SQLDB Removal'}
     try
-      SQLTarget.DataBase   := Conn;
-      SQLTarget.Transaction:= Trans;
+      {$MESSAGE WARN 'Needs Implementation'}
+      //SQLTarget.DataBase   := Conn;
+      {$MESSAGE WARN 'Needs Implementation'}
+      //SQLTarget.Transaction:= Trans;
       SQLTarget.SQL.Text   := Statement;
 
       // Start copy
@@ -172,7 +178,8 @@ begin
           Inc(Num);
           Next;
         end;
-        Trans.Commit;
+        {$MESSAGE WARN 'Needs Implementation'}
+        //Trans.Commit;
         ShowMessage(IntToStr(Num) + ' record(s) has been copied' + LineEnding + 'Don''t forget to set the Generator to the new value, ' +
           'if it exists');
         dmSysTables.MDOQuery.Close;
@@ -181,7 +188,8 @@ begin
         on E: Exception do
         begin
           MessageDlg('Error while copy: ' + e.Message, mtError, [mbOk], 0);
-          Trans.Rollback;
+          {$MESSAGE WARN 'Needs Implementation'}
+          //Trans.Rollback;
         end;
       end;
     finally
@@ -200,15 +208,17 @@ begin
   Caption := cCpTblCaption;
   dmSysTables.MDOQuery.Close; //todo: (low priority) is closing sqquery really necessary?
   FSourceIndex:= SourceIndex;
-  laSourceDatabase.Caption:= fmMain.RegisteredDatabases[SourceIndex].RegRec.Title;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //laSourceDatabase.Caption:= fmMain.RegisteredDatabases[SourceIndex].RegRec.Title;
   cbDestDatabase.Clear;
 
   // Display databases in destination combo box
-  for i:= 0 to High(fmMain.RegisteredDatabases) do
-    cbDestDatabase.Items.Add(fmMain.RegisteredDatabases[i].RegRec.Title);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //for i:= 0 to High(fmMain.RegisteredDatabases) do
+  //  cbDestDatabase.Items.Add(fmMain.RegisteredDatabases[i].RegRec.Title);
   laDatabase.Caption:= '';
-
-  cbSourceTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[SourceIndex], otTables, count);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //cbSourceTable.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[SourceIndex], otTables, count);
   cbSourceTable.Text:= ATableName;
   SynSQLSyn1.TableNames.Text:= cbSourceTable.Text;
   cbSourceTableChange(nil);

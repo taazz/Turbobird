@@ -149,8 +149,9 @@ begin
   if (ComparedDBIndex <> -1) then
   begin
     Connected:= True;
-    if (fmMain.RegisteredDatabases[ComparedDBIndex].RegRec.Password = '') then
-      Connected:= fmMain.ConnectToDBAs(ComparedDBIndex);
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //if (fmMain.RegisteredDatabases[ComparedDBIndex].RegRec.Password = '') then
+    //  Connected:= fmMain.ConnectToDBAs(ComparedDBIndex);
 
     if not Connected then
     begin
@@ -159,11 +160,12 @@ begin
     end;
 
     if Connected then
-    with fmMain.RegisteredDatabases[ComparedDBIndex].RegRec do
-    begin
-      laComparedDatabase.Caption:= DatabaseName;
-      bbStart.Enabled:= True;
-    end;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //with fmMain.RegisteredDatabases[ComparedDBIndex].RegRec do
+    //begin
+    //  laComparedDatabase.Caption:= DatabaseName;
+    //  bbStart.Enabled:= True;
+    //end;
 
   end;
 end;
@@ -662,12 +664,14 @@ begin
         meLog.Lines.Add('');
         meLog.Lines.Add('Checking Missing ' + dbObjectsEN[ObjectType] + ':');
 
-        List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
 
         Application.ProcessMessages;
         if FCanceled then
           Exit;
-        ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
         FDBObjectsList[ObjectType].Clear;
         FDBExistingObjectsList[ObjectType].Clear;
         for i:= 0 to List.Count -1 do
@@ -717,15 +721,15 @@ begin
     begin
       meLog.Lines.Add('');
       meLog.Lines.Add('Checking Removed ' + dbObjectsEN[ObjectType] + ':');
-
-      List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //List.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], ObjectType, Count);
       {$IFDEF NEVER}
       //Left for debugging
       Senddebug('current '+dbobjects[ord(ObjectType)]+': '+List.CommaText);
       Sleep(40);
       {$ENDIF}
-
-      ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //ComparedList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[cbComparedDatabase.ItemIndex], ObjectType, Count);
       {$IFDEF NEVER}
       //Left for debugging
       Senddebug('compared '+dbobjects[ord(ObjectType)]+': '+ComparedList.CommaText);
@@ -2018,14 +2022,16 @@ begin
   laComparedDatabase.Caption:= '[]';
   FDBIndex:= dbIndex;
   bbStart.Enabled:= False;
-  with fmMain.RegisteredDatabases[dbIndex].RegRec do
-    laDatabase.Caption:= Title + ' (' + DatabaseName + ')';
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //with fmMain.RegisteredDatabases[dbIndex].RegRec do
+  //  laDatabase.Caption:= Title + ' (' + DatabaseName + ')';
   cbComparedDatabase.Items.Clear;
-  for vCntr:= 0 to High(fmMain.RegisteredDatabases) do
-  begin
-    Servername:= fmMain.GetServerName(fmMain.RegisteredDatabases[vCntr].RegRec.DatabaseName);
-    cbComparedDatabase.Items.Add(ServerName + '-' + fmMain.RegisteredDatabases[vCntr].RegRec.Title);
-  end;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //for vCntr:= 0 to High(fmMain.RegisteredDatabases) do
+  //begin
+  //  Servername:= fmMain.GetServerName(fmMain.RegisteredDatabases[vCntr].RegRec.DatabaseName);
+  //  cbComparedDatabase.Items.Add(ServerName + '-' + fmMain.RegisteredDatabases[vCntr].RegRec.Title);
+  //end;
 
   for i:= Low(FDBObjectsList) to High(FDBObjectsList) do
     FDBObjectsList[i]:= TStringList.Create;
@@ -2048,7 +2054,8 @@ begin
   ComparedList:= TStringList.Create;
   TablesList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
 
     meLog.Lines.Add('');
     meLog.Lines.Add('Missing Indices:');
@@ -2113,7 +2120,8 @@ begin
   ComparedList:= TStringList.Create;
   TablesList:= TStringList.Create;
   try
-    TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //TablesList.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[FDBIndex], otTables, Count);
     FExistConstraintsList.Clear;
 
     meLog.Lines.Add('');

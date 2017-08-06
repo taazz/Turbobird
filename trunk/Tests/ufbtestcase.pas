@@ -10,6 +10,9 @@ interface
 
 uses
   Classes, SysUtils, variants, TestFramework, MDO, uEvsDBSchema, uTBFirebird;
+const
+  cSchema = 'Schema Suite';
+  //cMemTest = '';
 
 type
 
@@ -25,12 +28,12 @@ type
     procedure TearDownOnce; override;
     procedure DoConnect;
   public
-    procedure CheckNullVar   (const aVal :variant; const ErrorMsg :string='');   overload;
-    procedure CheckEmptyVar  (const aVal :variant; const ErrorMsg :string='');  overload;
-    procedure CheckEquals    (Expected,Actual:TEvsDataGroup; aMessage:string); overload;
-    procedure CheckEqualsVar(Expected,Actual:Variant; aMessage:string);   overload;
-    procedure CheckEqualFields(Expected,Actual:IEvsFieldInfo;aMessage:string='');
-    procedure CheckEqualText(const Expected, Actual, aMessage:string);//case insensitive check
+    procedure CheckNullVar    (const aVal :variant; const ErrorMsg :string='');   overload;
+    procedure CheckEmptyVar   (const aVal :variant; const ErrorMsg :string='');   overload;
+    procedure CheckEquals     (const Expected, Actual :TEvsDataGroup; aMessage :string); overload;
+    procedure CheckEqualsVar  (const Expected, Actual :Variant;       aMessage :string); overload;
+    procedure CheckEqualFields(const Expected, Actual :IEvsFieldInfo; aMessage :string='');
+    procedure CheckEqualText  (const Expected, Actual, aMessage :string);//case insensitive check
   end;
 
   { TEvsFBMetaTester }
@@ -47,13 +50,12 @@ type
     procedure TestRetrieveSequences;
     procedure TestRetrieveRoles;
     procedure TestRetrieveUsers;
-  public
-    procedure TestReverse;
   end;
 
 implementation
 uses
    strutils, typinfo;
+//Using Blockwrite, I have created 1 structure, but have 2 issues.
 
 {$REGION ' UTILS '}
 
@@ -63,7 +65,7 @@ var
 begin
   Result:=Nil;
   for vCntr := 0 to aDB.TableCount -1 do
-    if CompareText(aTableName,aDB.Table[vCntr].TableName) = 0 then Exit(aDB.Table[vCntr]);
+    if CompareText(aTableName, aDB.Table[vCntr].TableName) = 0 then Exit(aDB.Table[vCntr]);
 end;
 
 function GetTable(const aDB:IEvsDatabaseInfo; aTableName:String):IEvsTableInfo;
@@ -74,7 +76,7 @@ end;
 
 { TEvsFBMetaTester }
 
-procedure TEvsFBMetaTester.CheckEqualFields(Expected, Actual :IEvsFieldInfo; aMessage :string);
+procedure TEvsFBMetaTester.CheckEqualFields(const Expected, Actual :IEvsFieldInfo; aMessage :string);
 begin
   CheckEqualText(Expected.FieldName,   Actual.FieldName,   'Names Differ'         +LineEnding+aMessage);
   CheckEquals   (Expected.FieldScale,  Actual.FieldScale, 0.0001, 'Scale Differ'  +LineEnding+aMessage);
@@ -128,14 +130,14 @@ begin
     FailEquals('Empty', VarToStr(aVal), ErrorMsg, CallerAddr);
 end;
 
-procedure TEvsFBMetaTester.CheckEquals(Expected, Actual :TEvsDataGroup; aMessage :string);
+procedure TEvsFBMetaTester.CheckEquals(const Expected, Actual :TEvsDataGroup; aMessage :string);
 begin
   OnCheckCalled;
   if Expected <> Actual then
     FailNotEquals(GetEnumName(TypeInfo(TEvsDataGroup),Integer(Expected)), GetEnumName(TypeInfo(TEvsDataGroup),Integer(Actual)), aMessage, CallerAddr);
 end;
 
-procedure TEvsFBMetaTester.CheckEqualsVar(Expected, Actual :Variant; aMessage :string);
+procedure TEvsFBMetaTester.CheckEqualsVar(const Expected, Actual :Variant; aMessage :string);
 var
   vNl : Boolean;
   vNls: string;
@@ -161,7 +163,6 @@ end;
 procedure TFirebirdMetaDataTest.TestHookUp;
 begin
   DoConnect;
-  //FDB.Connection := Connect(FDB, stFirebird);
   CheckNotNull(FDB.Connection, Format('Connection to the database %S failed',[FDB.Database]));
 end;
 
@@ -262,13 +263,7 @@ procedure TFirebirdMetaDataTest.TestRetrieveUsers;
 begin
   DoConnect;
   FDB.Connection.MetaData.GetUsers(FDB);
-  CheckEquals(3,FDB.UserCount,'Unexpected number of users'); //evosi,testcases,sysdba
-end;
-
-procedure TFirebirdMetaDataTest.TestReverse;
-begin
-  //DoConnect;
-  //Fail('No test written');
+  CheckEquals(3, FDB.UserCount, 'Unexpected number of users'); //evosi,testcases,sysdba
 end;
 
 {$ENDREGION}

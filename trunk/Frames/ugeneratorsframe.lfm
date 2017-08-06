@@ -1,0 +1,46 @@
+object SequenceFrame: TSequenceFrame
+  Left = 0
+  Height = 151
+  Top = 0
+  Width = 340
+  ClientHeight = 151
+  ClientWidth = 340
+  TabOrder = 0
+  DesignLeft = 575
+  DesignTop = 280
+  object edtSequenceName: TEdit
+    Left = 24
+    Height = 23
+    Top = 32
+    Width = 272
+    OnEditingDone = edtSequenceNameEditingDone
+    OnExit = edtSequenceNameExit
+    TabOrder = 0
+  end
+  object sedtSequenceValue: TSpinEdit
+    Left = 24
+    Height = 23
+    Top = 92
+    Width = 158
+    MaxValue = 0
+    OnEditingDone = sedtSequenceValueEditingDone
+    OnExit = sedtSequenceValueExit
+    TabOrder = 1
+  end
+  object lblSeqName: TLabel
+    Left = 28
+    Height = 15
+    Top = 8
+    Width = 32
+    Caption = 'Name'
+    ParentColor = False
+  end
+  object lblCurValue: TLabel
+    Left = 28
+    Height = 15
+    Top = 68
+    Width = 71
+    Caption = 'Current value'
+    ParentColor = False
+  end
+end

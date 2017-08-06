@@ -20,7 +20,7 @@ object fmReg: TfmReg
     ClientHeight = 239
     ClientWidth = 432
     TabOrder = 2
-    object Panel4: TPanel
+    object pnlDBTitle: TPanel
       Left = 0
       Height = 39
       Top = 0

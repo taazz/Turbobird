@@ -16,11 +16,11 @@ uses
   cmem,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Controls, mdolaz, memdslaz, lazcontrols, dynlibs, ibase60dyn, sysutils, sqldblib, SysTables, Scriptdb, topologicalsort, utbConfig,
-  fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, utbcommon, csvdocument, uTBDBRegistry, dbInfo, main, QueryWindow, Reg, UDFInfo, About,
-  BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec, EditTable, EnterPass, NewConstraint,
-  NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions, uTBOptionsform, ViewDomain, ViewGen,
-  ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsGenIntf, ufrDatabaseEdit;
+  Forms, Controls, mdolaz, virtualtreeview_package, memdslaz, lazcontrols, dynlibs, ibase60dyn, sysutils, sqldblib, SysTables, Scriptdb,
+  topologicalsort, utbConfig, fileimport, UnitFirebirdServices, uTBTypes, uTBFirebird, utbcommon, csvdocument, uTBDBRegistry, dbInfo, main,
+  QueryWindow, Reg, UDFInfo, About, BackupRestore, Calen, CallProc, ChangePass, Comparison, CopyTable, CreateDb, CreateUser, EditDataFullRec,
+  EditTable, uLoginForm, NewConstraint, NewDomain, NewEditField, NewGen, NewTable, PermissionManage, SQLHistory, TableManage, Update, UserPermissions,
+  uTBOptionsform, ViewDomain, ViewGen, ViewSProc, ViewTrigger, ViewView, ufrFontEditor, uEvsDBSchema, uevsGenIntf, ufrDatabaseEdit, uTbDialogs;
 
 const
   Major   = 1;

@@ -4,16 +4,16 @@ program MetaDataTest;
 {$I ..\EvsDefs.inc}
 
 uses
-  {$IFDEF MEMORY_TRACE}
+{$IFDEF MEMORY_TRACE}
   {$IFDEF FASTMM}
   FastMM4,
   {$ELSE}
   heaptrc,
   {$ENDIF}
   sysutils,
-  {$ENDIF}
+{$ENDIF}
   Interfaces, Forms, GUITestRunner, TFB_TableInfoTester, uFBTestcase, mdolaz, ufptestHelper, uEvsFields,
-  uEvsFieldInfoTest, uFBViewTestCase, uEvsMemLeakTesting, uEvsIntfObjects, uevsfbqryleaktest;
+  uEvsFieldInfoTest, uFBViewTestCase, uEvsMemLeakTesting, uEvsIntfObjects, uevsfbqryleaktest, TCheckTests;
 
 {$R *.res}
 {$IFDEF MEMORY_TRACE}

@@ -139,35 +139,41 @@ var
   Num: Integer;
 begin
   // Enter password if it is not saved
-  with fmMain.RegisteredDatabases[FDestIndex] do
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //with fmMain.RegisteredDatabases[FDestIndex] do
   begin
     // If client/server password is empty, get it from user:
-    if (Conn.HostName<>'') and
-      (Conn.Password = '') then
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //if (Conn.HostName<>'') and (Conn.Password = '') then
     begin
       if fmEnterPass.ShowModal = mrOk then
       begin
-        if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
-          RegRec.Charset) then
+        //if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
+        //  RegRec.Charset) then
         begin
           with fmMain do
           begin
-            RegisteredDatabases[FDestIndex].RegRec.UserName:= fmEnterPass.edUser.Text;
-            RegisteredDatabases[FDestIndex].RegRec.Password:= fmEnterPass.edPassword.Text;
-            RegisteredDatabases[FDestIndex].RegRec.Role:= fmEnterPass.cbRole.Text;
+            raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+            //RegisteredDatabases[FDestIndex].RegRec.UserName:= fmEnterPass.edUser.Text;
+            raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+            //RegisteredDatabases[FDestIndex].RegRec.Password:= fmEnterPass.edPassword.Text;
+            raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+            //RegisteredDatabases[FDestIndex].RegRec.Role:= fmEnterPass.cbRole.Text;
           end;
         end
-        else
-        begin
-          exit;
-        end;
+        //else
+        //begin
+        //  exit;
+        //end;
       end;
     end;
     if not(assigned(FDestinationQuery)) then
       FDestinationQuery:=TMDOQuery.Create(Nil);// TSQLQuery.Create(nil);
     FDestinationQuery.Close;
-    FDestinationQuery.DataBase:=Conn;
-    FDestinationQuery.Transaction:=Trans;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //FDestinationQuery.DataBase:=Conn;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //FDestinationQuery.Transaction:=Trans;
     //FDestinationQuery.ParseSQL; //belts and braces - generate InsertSQL
     FDestinationQuery.SQL.Text:='select * from '+FDestTable;
     FDestinationQuery.Open;
@@ -297,14 +303,14 @@ begin
 
     // Enter password if it is not saved... and we're not connected to an embedded
     // database
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
     with fmMain.RegisteredDatabases[FDestIndex] do
     begin
       if (Conn.HostName<>'') and (Conn.Password = '') then
       begin
         if fmEnterPass.ShowModal = mrOk then
         begin
-          if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
-            RegRec.Charset) then
+          if fmReg.TestConnection(RegRec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text, RegRec.Charset) then
           begin
             with fmMain do
             begin

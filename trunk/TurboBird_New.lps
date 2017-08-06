@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="56">
+      <Unit0>
+        <Filename Value="TurboBird_New.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="49" Y="18"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uEvsMain"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="783"/>
+        <CursorPos X="20" Y="783"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="DataModules\udmmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="dmMain"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="uDMMain"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="92"/>
+        <CursorPos X="3" Y="134"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="Controls\uevsnotebook.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsNoteBook"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="326"/>
+        <CursorPos Y="378"/>
+        <UsageCount Value="204"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="utbdbregistry.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="utbDBRegistry"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="66"/>
+        <CursorPos X="23" Y="123"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="Frames\ufrdatabaseedit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DatabaseEditorFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="ufrDatabaseEdit"/>
+        <EditorIndex Value="16"/>
+        <TopLine Value="57"/>
+        <CursorPos X="38" Y="87"/>
+        <UsageCount Value="205"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="Frames\ufrfonteditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frFontEdit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="ufrFontEditor"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15" Y="11"/>
+        <UsageCount Value="205"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="Forms\udbdetails.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DBDetailsForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uDBDetails"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="101"/>
+        <CursorPos Y="131"/>
+        <UsageCount Value="205"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="utbdialogs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTbDialogs"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="57"/>
+        <CursorPos X="3" Y="88"/>
+        <UsageCount Value="205"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="utbtoarray.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTbToArray"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="7" Y="24"/>
+        <UsageCount Value="219"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="uevsdbschema.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsDBSchema"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="4953"/>
+        <CursorPos Y="4984"/>
+        <FoldState Value=" T3i*G26011A"/>
+        <UsageCount Value="216"/>
+        <Loaded Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="uevsgenintf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsGenIntf"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="36"/>
+        <CursorPos X="3" Y="65"/>
+        <UsageCount Value="245"/>
+        <Loaded Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="uevsintfobjects.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsIntfObjects"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="3" Y="40"/>
+        <UsageCount Value="245"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="Forms\uloginform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="LoginForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uLoginForm"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="43"/>
+        <CursorPos X="34" Y="77"/>
+        <UsageCount Value="207"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="uevswidestring.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsWideString"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="207"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SqlEditorFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uEvsSqlEditor"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="27" Y="27"/>
+        <UsageCount Value="225"/>
+        <Loaded Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="Controls\uevstabnotebook.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsTabNotebook"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="172"/>
+        <CursorPos X="3" Y="196"/>
+        <UsageCount Value="225"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="Frames\ugridresultframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="GridResultFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uGridResultFrame"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="23" Y="11"/>
+        <UsageCount Value="227"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="Frames\uuserloginframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="UserLoginFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uUserLoginFrame"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="16"/>
+        <CursorPos X="19" Y="59"/>
+        <UsageCount Value="226"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="Frames\ugeneratorsframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SequenceFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uGeneratorsFrame"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="32" Y="30"/>
+        <UsageCount Value="204"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="Frames\ubaseframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frBase"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uBaseFrame"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="3" Y="33"/>
+        <UsageCount Value="183"/>
+        <Loaded Value="True"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="Forms\uevsbackuprestore.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="BackupRestoreForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uEvsBackupRestore"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="55"/>
+        <CursorPos X="29" Y="65"/>
+        <UsageCount Value="143"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="utbtypes.pas"/>
+        <UnitName Value="uTBTypes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="183"/>
+        <CursorPos X="32" Y="231"/>
+        <UsageCount Value="77"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="..\..\..\1.4.4\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2155"/>
+        <CursorPos X="15" Y="2185"/>
+        <UsageCount Value="33"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="..\..\..\1.4.4\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5313"/>
+        <CursorPos Y="5342"/>
+        <UsageCount Value="42"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="842"/>
+        <CursorPos X="15" Y="870"/>
+        <UsageCount Value="25"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="utbcommon.pas"/>
+        <UnitName Value="uTBCommon"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="189"/>
+        <CursorPos X="31" Y="246"/>
+        <UsageCount Value="105"/>
+        <Loaded Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\persist.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="39"/>
+        <CursorPos X="3" Y="55"/>
+        <UsageCount Value="2"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="172"/>
+        <CursorPos X="21" Y="201"/>
+        <UsageCount Value="5"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\..\..\Components\VirtualTreeView\VirtualTrees.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1203"/>
+        <CursorPos X="14" Y="1241"/>
+        <UsageCount Value="4"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="utbfirebird.pas"/>
+        <UnitName Value="uTBFirebird"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="612"/>
+        <CursorPos X="21" Y="618"/>
+        <FoldState Value=" T3kF047 TJpX1e29"/>
+        <UsageCount Value="105"/>
+        <Loaded Value="True"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\base\db.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1768"/>
+        <CursorPos X="18" Y="1807"/>
+        <UsageCount Value="2"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\base\datasource.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="625"/>
+        <CursorPos X="3" Y="628"/>
+        <UsageCount Value="2"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="..\..\..\1.4.4\lcl\dbgrids.pas"/>
+        <UnitName Value="DBGrids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="148"/>
+        <CursorPos X="22" Y="192"/>
+        <UsageCount Value="2"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDODatabase.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="592"/>
+        <CursorPos X="63" Y="649"/>
+        <FoldState Value=" T8kb2+1,"/>
+        <UsageCount Value="26"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDOIntf.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="48"/>
+        <CursorPos X="3" Y="77"/>
+        <UsageCount Value="21"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDOHeader.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="65"/>
+        <CursorPos X="3" Y="94"/>
+        <UsageCount Value="18"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDO.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="396"/>
+        <CursorPos Y="425"/>
+        <UsageCount Value="13"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDOServices.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="552"/>
+        <CursorPos Y="580"/>
+        <UsageCount Value="23"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\filutilh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="52"/>
+        <CursorPos X="31" Y="72"/>
+        <UsageCount Value="17"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="Forms\backuprestore.pas"/>
+        <ComponentName Value="fmBackupRestore"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="BackupRestore"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="11"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="..\..\..\1.4.4\components\synedit\synexporthtml.pas"/>
+        <UnitName Value="SynExportHTML"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="12" Y="54"/>
+        <UsageCount Value="22"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\..\..\1.4.4\components\synedit\syneditexport.pas"/>
+        <UnitName Value="SynEditExport"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="125"/>
+        <CursorPos X="36" Y="127"/>
+        <UsageCount Value="22"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\osutilsh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="9"/>
+        <CursorPos X="10" Y="44"/>
+        <UsageCount Value="2"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\osutil.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="78"/>
+        <CursorPos X="3" Y="95"/>
+        <UsageCount Value="2"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="..\..\..\1.4.4\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="328"/>
+        <CursorPos X="5" Y="358"/>
+        <UsageCount Value="5"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="uCharSets.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="45"/>
+        <CursorPos Y="88"/>
+        <UsageCount Value="16"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-db\src\base\database.inc"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="12"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\..\..\Components\mdo\Samples\MDOIsql\ConverterBackup\MDODatabase.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1209"/>
+        <CursorPos X="33" Y="1238"/>
+        <UsageCount Value="6"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\backup\MDODatabase.pas.bak"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1209"/>
+        <CursorPos X="33" Y="1238"/>
+        <UsageCount Value="5"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="2707"/>
+        <CursorPos Y="2736"/>
+        <UsageCount Value="32"/>
+        <Loaded Value="True"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="..\..\..\1.4.4\lcl\include\bitbtn.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="35"/>
+        <CursorPos Y="65"/>
+        <UsageCount Value="9"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="..\..\..\1.4.4\lcl\lclmessageglue.pas"/>
+        <UnitName Value="LCLMessageGlue"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="91"/>
+        <CursorPos Y="123"/>
+        <UsageCount Value="9"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="..\..\..\1.4.4\lcl\interfaces\win32\win32callback.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2533"/>
+        <CursorPos X="59" Y="2554"/>
+        <UsageCount Value="9"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\streams.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="439"/>
+        <CursorPos X="5" Y="454"/>
+        <UsageCount Value="9"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="..\..\..\Components\mdo\Source\runtime\MDOExternals.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="3" Y="60"/>
+        <UsageCount Value="6"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit55>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="824" TopLine="816"/>
+      </Position1>
+      <Position2>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="825" TopLine="816"/>
+      </Position2>
+      <Position3>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="826" TopLine="816"/>
+      </Position3>
+      <Position4>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="833" TopLine="816"/>
+      </Position4>
+      <Position5>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="824" TopLine="816"/>
+      </Position5>
+      <Position6>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="825" TopLine="816"/>
+      </Position6>
+      <Position7>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="826" TopLine="816"/>
+      </Position7>
+      <Position8>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="4982" TopLine="4953"/>
+      </Position8>
+      <Position9>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="4983" TopLine="4953"/>
+      </Position9>
+      <Position10>
+        <Filename Value="uevsdbschema.pas"/>
+        <Caret Line="4984" TopLine="4953"/>
+      </Position10>
+      <Position11>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="836" Column="53" TopLine="817"/>
+      </Position11>
+      <Position12>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="32" Column="34"/>
+      </Position12>
+      <Position13>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="848" Column="51" TopLine="799"/>
+      </Position13>
+      <Position14>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="847" Column="51" TopLine="798"/>
+      </Position14>
+      <Position15>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="846" Column="51" TopLine="797"/>
+      </Position15>
+      <Position16>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="845" Column="51" TopLine="796"/>
+      </Position16>
+      <Position17>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="844" Column="51" TopLine="795"/>
+      </Position17>
+      <Position18>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="843" Column="51" TopLine="794"/>
+      </Position18>
+      <Position19>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="849" Column="51" TopLine="800"/>
+      </Position19>
+      <Position20>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="176" Column="60" TopLine="148"/>
+      </Position20>
+      <Position21>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="36" Column="38"/>
+      </Position21>
+      <Position22>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="25" Column="17"/>
+      </Position22>
+      <Position23>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="33" Column="19"/>
+      </Position23>
+      <Position24>
+        <Filename Value="Frames\ubaseframe.pas"/>
+        <Caret Line="21" Column="34"/>
+      </Position24>
+      <Position25>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="32" Column="8" TopLine="3"/>
+      </Position25>
+      <Position26>
+        <Filename Value="Frames\uevssqleditor.pas"/>
+        <Caret Line="57" Column="3" TopLine="33"/>
+      </Position26>
+      <Position27>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="781" Column="20" TopLine="781"/>
+      </Position27>
+      <Position28>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="782" Column="20" TopLine="782"/>
+      </Position28>
+      <Position29>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="783" Column="20" TopLine="783"/>
+      </Position29>
+      <Position30>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="782" Column="20" TopLine="782"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints Count="3">
+      <Item1>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uCharSets.pas"/>
+        <Line Value="88"/>
+      </Item1>
+      <Item2>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uevsdbschema.pas"/>
+        <Line Value="3002"/>
+      </Item2>
+      <Item3>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="uevsdbschema.pas"/>
+        <Line Value="3011"/>
+      </Item3>
+    </BreakPoints>
+    <Watches Count="1">
+      <Item1>
+        <Expression Value="fDatabase"/>
+      </Item1>
+    </Watches>
+  </Debugging>
+</CONFIG>

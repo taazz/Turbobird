@@ -1,7 +1,7 @@
 object fmBackupRestore: TfmBackupRestore
-  Left = 488
+  Left = 415
   Height = 445
-  Top = 139
+  Top = 216
   Width = 547
   BorderStyle = bsSingle
   Caption = 'Backup/Restore database'

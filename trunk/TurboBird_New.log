@@ -1,0 +1,149 @@
+gbak:readied database D:\Data\Firebird\GUIDE1.FDB for backup
+gbak:creating file D:\data\backup\GUIDE1.2.fbk
+gbak:starting transaction
+gbak:database D:\Data\Firebird\GUIDE1.FDB has a page size of 4096 bytes.
+gbak:writing domains
+gbak:    writing domain RDB$1
+gbak:    writing domain RDB$2
+gbak:    writing domain RDB$3
+gbak:    writing domain RDB$4
+gbak:    writing domain RDB$5
+gbak:    writing domain RDB$6
+gbak:    writing domain RDB$7
+gbak:    writing domain RDB$8
+gbak:    writing domain RDB$9
+gbak:    writing domain RDB$10
+gbak:    writing domain RDB$11
+gbak:    writing domain RDB$12
+gbak:    writing domain RDB$13
+gbak:    writing domain RDB$14
+gbak:    writing domain RDB$15
+gbak:    writing domain RDB$16
+gbak:    writing domain RDB$17
+gbak:    writing domain RDB$18
+gbak:    writing domain RDB$19
+gbak:    writing domain RDB$20
+gbak:    writing domain RDB$21
+gbak:    writing domain RDB$22
+gbak:    writing domain RDB$23
+gbak:    writing domain RDB$24
+gbak:    writing domain RDB$25
+gbak:    writing domain RDB$26
+gbak:    writing domain RDB$27
+gbak:    writing domain RDB$28
+gbak:    writing domain RDB$29
+gbak:    writing domain RDB$30
+gbak:    writing domain RDB$31
+gbak:    writing domain RDB$32
+gbak:    writing domain RDB$33
+gbak:    writing domain RDB$34
+gbak:    writing domain RDB$35
+gbak:    writing domain RDB$36
+gbak:    writing domain RDB$37
+gbak:    writing domain RDB$38
+gbak:    writing domain RDB$39
+gbak:    writing domain RDB$40
+gbak:writing shadow files
+gbak:writing character sets
+gbak:writing collations
+gbak:writing functions
+gbak:writing tables
+gbak:    writing table XVALUES
+gbak:         writing column FIELD0
+gbak:         writing column FIELD1
+gbak:         writing column FIELD2
+gbak:         writing column FIELD3
+gbak:         writing column FIELD4
+gbak:         writing column FIELD5
+gbak:         writing column FIELD6
+gbak:         writing column FIELD7
+gbak:         writing column FIELD8
+gbak:         writing column FIELD9
+gbak:         writing column FIELD10
+gbak:         writing column FIELD11
+gbak:         writing column FIELD12
+gbak:         writing column FIELD13
+gbak:         writing column FIELD14
+gbak:         writing column FIELD15
+gbak:         writing column FIELD16
+gbak:         writing column FIELD17
+gbak:         writing column FIELD18
+gbak:         writing column FIELD19
+gbak:    writing table VALUES
+gbak:         writing column FIELD0
+gbak:         writing column FIELD1
+gbak:         writing column FIELD2
+gbak:         writing column FIELD3
+gbak:         writing column FIELD4
+gbak:         writing column FIELD5
+gbak:         writing column FIELD6
+gbak:         writing column FIELD7
+gbak:         writing column FIELD8
+gbak:         writing column FIELD9
+gbak:         writing column FIELD10
+gbak:         writing column FIELD11
+gbak:         writing column FIELD12
+gbak:         writing column FIELD13
+gbak:         writing column FIELD14
+gbak:         writing column FIELD15
+gbak:         writing column FIELD16
+gbak:         writing column FIELD17
+gbak:         writing column FIELD18
+gbak:         writing column FIELD19
+gbak:writing types
+gbak:writing filters
+gbak:writing id generators
+gbak:    writing generator VALUES_FIELD0_GEN value 0
+gbak:    writing generator XVALUES_FIELD0_GEN value 0
+gbak:writing stored procedures
+gbak:writing exceptions
+gbak:    writing index PK_VALUES_1
+gbak:    writing data for table VALUES
+gbak:0 records written
+gbak:    writing index PK_XVALUES
+gbak:    writing data for table XVALUES
+gbak:0 records written
+gbak:writing triggers
+gbak:    writing trigger BI_XVALUES_FIELD0
+gbak:    writing trigger VALUES_FIELD0_AI
+gbak:writing trigger messages
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user PUBLIC
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user PUBLIC
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user PUBLIC
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:    writing privilege for user EVOSI
+gbak:writing table constraints
+gbak:writing constraint INTEG_1
+gbak:writing constraint INTEG_2
+gbak:writing constraint PK_VALUES_1
+gbak:writing constraint PK_XVALUES
+gbak:writing referential constraints
+gbak:writing check constraints
+gbak:writing SQL roles
+gbak:writing names mapping
+gbak:closing file, committing, and finishing. 6656 bytes written
+

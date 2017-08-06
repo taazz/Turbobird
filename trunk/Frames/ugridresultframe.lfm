@@ -1,0 +1,24 @@
+object GridResultFrame: TGridResultFrame
+  Left = 0
+  Height = 203
+  Top = 0
+  Width = 506
+  ClientHeight = 203
+  ClientWidth = 506
+  TabOrder = 0
+  DesignLeft = 657
+  DesignTop = 359
+  object vstResult: TVirtualStringTree
+    Left = 0
+    Height = 203
+    Top = 0
+    Width = 506
+    Align = alClient
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <>
+    Header.DefaultHeight = 17
+    Header.MainColumn = -1
+    TabOrder = 0
+  end
+end

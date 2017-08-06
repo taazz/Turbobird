@@ -7,8 +7,9 @@ interface
 { TODO -oJKOZ -cMetadata upgrade : Add support for page size }
 { TODO -oJKOZ -cMetadata upgrade : Add support for multiple files }
 uses
-  Classes, SysUtils, IBConnection, FileUtil, LResources, Forms, Controls, sqldb, sqldblib, uEvsWideString,
-  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, MDO, uTBTypes, utbConfig, utbcommon, uEvsDBSchema, ufrDatabaseEdit;
+  Classes, SysUtils, IBConnection, FileUtil, Forms, Controls, sqldb,
+  Graphics, Dialogs, StdCtrls, Buttons, ExtCtrls, MDODatabase, MDOQuery, MDO,
+  uTBTypes, utbConfig, utbcommon, uEvsDBSchema, ufrDatabaseEdit;
 { TODO -oJKOZ -cUser Expirience : Retreive the database default characterset during registration.(The button is
   in place write the code to go with it and make it visible). }
 type
@@ -43,7 +44,7 @@ type
     Panel1 :TPanel;
     Panel2 :TPanel;
     Panel3 :TPanel;
-    Panel4 :TPanel;
+    pnlDBTitle :TPanel;
     Panel5 :TPanel;
     Panel6 :TPanel;
     Panel7 :TPanel;
@@ -88,8 +89,7 @@ type
     { public declarations }
     NewReg: Boolean;
     //RecPos: Integer;
-    function RegisterDatabase(Title, DatabaseName, UserName, Password, Charset, Role: string;
-      SavePassword: Boolean): Boolean;
+    function RegisterDatabase(Title, DatabaseName, UserName, Password, Charset, Role: string; SavePassword: Boolean): Boolean;
 
     function TestConnection(DatabaseName, UserName, Password, Charset: string): Boolean;
     function GetDefaultCharSet:string;
@@ -107,7 +107,7 @@ type
     property Title         :string  read GetTitle    write SetTitle;
     property SavePassword  :Boolean read GetSavePwd  write SetSavePwd;
 
-    Property DBRec : PDBDetails read GetRec write SetRec;
+    //Property DBRec : PDBDetails read GetRec write SetRec;
     {$IFDEF EVS_Intf}
     Property DB :IEvsDatabaseInfo read GetDBInfo write SetDBInfo;
     {$ENDIF}
@@ -120,7 +120,6 @@ implementation
   {$R *.lfm}
 { TfmReg }
 
-uses main;
 
 procedure TfmReg.bbRegClick(Sender: TObject);
 begin
@@ -138,7 +137,7 @@ begin
   //  if EditRegisteration(RecPos, edTitle.Text, edDatabaseName.Text, edUserName.Text, edPassword.Text,
   //    cbCharset.Text, edRole.Text, cxSavePassword.Checked) then
   //    MOdalResult:= mrOk;
-  FromScreen;
+    FromScreen;
   ModalResult := mrOK;
 end;
 
@@ -208,7 +207,7 @@ var
   vFileName   :string;
 begin
   try
-    raise ReplaceException; {$MESSAGE WARN 'Function is replaced will be removed'}
+    raise ReplaceException('Function TfmReg.RegisterDatabase is replaced it will be removed'); {$MESSAGE WARN 'Function is replaced will be removed'}
     //vFileName:= GetConfigurationDirectory + GetRegistryFileName; //'turbobird.reg';
     //
     //AssignFile(vFile, vFileName);
@@ -477,11 +476,11 @@ const
 var
   vQry : TMDOQuery;
 begin
-  //, , , cbCharset.Text
   Connection.Close;
   Connection.DatabaseName := edDatabaseName.Text;
   Connection.UserName     := edUserName.Text;
   Connection.Password     := edPassword.Text;
+  Connection.Role         := edRole.Text;
   Connection.Open;
   vQry := GetQuery(Connection,cSQLCmd,[]);
   try
@@ -534,8 +533,8 @@ begin
     FileMode:= 2;
     Rewrite(F);
 
-    for i:= 0 to High(fmMain.RegisteredDatabases) do
-      Write(F, fmMain.RegisteredDatabases[i].OrigRegRec);
+    //for i:= 0 to High(fmMain.RegisteredDatabases) do
+    //  Write(F, fmMain.RegisteredDatabases[i].OrigRegRec);
     CloseFile(F);
     Result:= True;
   except
@@ -555,21 +554,21 @@ var
 begin
   repeat
     Done:= True;
-    for i:= 0 to High(fmMain.RegisteredDatabases) - 1 do
-    with fmMain do
-      if RegisteredDatabases[i].RegRec.LastOpened < RegisteredDatabases[i + 1].RegRec.LastOpened then
-      begin
-        Done:= False;
-        TempRec:= RegisteredDatabases[i].OrigRegRec;
-        RegisteredDatabases[i].OrigRegRec:= RegisteredDatabases[i + 1].OrigRegRec;
-        RegisteredDatabases[i].RegRec:= RegisteredDatabases[i + 1].RegRec;
-        RegisteredDatabases[i + 1].OrigRegRec:= TempRec;
-        RegisteredDatabases[i + 1].RegRec:= TempRec;
-
-        TempIndex:= RegisteredDatabases[i].Index;
-        RegisteredDatabases[i].Index:= RegisteredDatabases[i + 1].Index;
-        RegisteredDatabases[i + 1].Index:= TempIndex;
-      end;
+    //for i:= 0 to High(fmMain.RegisteredDatabases) - 1 do
+    //with fmMain do
+    //  if RegisteredDatabases[i].RegRec.LastOpened < RegisteredDatabases[i + 1].RegRec.LastOpened then
+    //  begin
+    //    Done:= False;
+    //    TempRec:= RegisteredDatabases[i].OrigRegRec;
+    //    RegisteredDatabases[i].OrigRegRec:= RegisteredDatabases[i + 1].OrigRegRec;
+    //    RegisteredDatabases[i].RegRec:= RegisteredDatabases[i + 1].RegRec;
+    //    RegisteredDatabases[i + 1].OrigRegRec:= TempRec;
+    //    RegisteredDatabases[i + 1].RegRec:= TempRec;
+    //
+    //    TempIndex:= RegisteredDatabases[i].Index;
+    //    RegisteredDatabases[i].Index:= RegisteredDatabases[i + 1].Index;
+    //    RegisteredDatabases[i + 1].Index:= TempIndex;
+    //  end;
   until Done;
 end;
 

@@ -164,7 +164,7 @@ var
 
 implementation
 {$R *.lfm}
-uses main, topologicalsort;
+uses {main,} topologicalsort;
 
 var
   FConnectionPool :utbcommon.TEvsConnectionPool;

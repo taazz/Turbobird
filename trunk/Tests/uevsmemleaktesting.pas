@@ -179,9 +179,11 @@ end;
 Procedure TSchemaLeakTester.TestIndex;
 var
   vTmp :IEvsIndexInfo;
+  vTmp2:TObject;
 begin
   vTmp := TEvsDBInfoFactory.NewIndex(Nil);
   CheckNotNull(vTmp);
+  vTmp2 := vTmp.ObjectRef;
   vTmp := Nil;
 end;
 

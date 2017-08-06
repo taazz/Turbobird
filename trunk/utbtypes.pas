@@ -6,11 +6,11 @@ interface
 //Generic unit to hold all the custom data types of the application to help with the deletion of public/published
 //variables and avoid circular reference
 {.$DEFINE EVS_Internal}
-{$I EvsDefs.inc}
-{$DEFINE EVS_MDO}//undefine this to use with the original MDO package.
+{$Include EvsDefs.inc}
+{.$DEFINE EVS_MDO}//undefine this to use with the original MDO package.
 
 uses
-  Classes, SysUtils, sqldb, syncobjs, ComCtrls, controls, StdCtrls, uEvsDBSchema, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
+  Classes, SysUtils, sqldb, syncobjs, ComCtrls, controls, StdCtrls, uEvsGenIntf, MDODatabase {$IFDEF EVS_Internal},uEvsTypes{$ENDIF};
 
 type
 
@@ -94,11 +94,11 @@ type
   end;
 
   //JKOZ: moved here from main.pas
-  PDBInfo = ^TDBInfo;
+//  PDBInfo = ^TDBInfo;
 
   { TDBInfo }
 
-  TDBInfo = record
+{  TDBInfo = record
     Index        :Integer;     //index of the database info in the file.
     RegRec       :TDBDetails;  //Database connection details.
     OrigRegRec   :TDBDetails;  //database details as they are loaded from the file.
@@ -115,7 +115,7 @@ type
     {$ENDIF}
   end;
   TDBInfoArray = array of TDBInfo;//to be used in a custom list class.
-
+ }
   //JKOZ: moved here from systables.pas
   // e.g. used for composite foreign key constraints
   TConstraintCount = record
@@ -128,19 +128,6 @@ type
   TEvsBackupRestoreOperation  {:TEvsOperation} = (opBackup, opRestore);
 
   {$PACKENUM 1}
-  // object types in a database. will replace the same type in TurboCommon unit. For now is used on identifying tree nodes only.
-  //TDBObjectType = (otTable, otGenerator, otTrigger, otView, otStoredProcedure, otUDF {User-Defined functions},
-  //                 otSystemTable, otDomain {excludes system domains}, otRole, otException, otUser,
-  //                 otIndex, otConstraint, otField);
-  //TDBGroupID = otTables..otConstraint;
-
-  //TDBObjectID = packed record
-  // case integer of
-  //   1:(GroupID :Byte;       ItemID  :array[0..2] of Byte);
-  //   2:(Grouped :Word;       Item    :Word);
-  //   3:(ID      :LongWord);
-  //   4:(GrpID   :TDBGroupID; ItmID :TDBObjectType);
-  //end;
                              {all queries are executable what is the point of qtExecute}
   TQueryTypes = (qtUnknown=0, qtSelectable=1, qtExecute=2, qtScript=3);
 
@@ -210,7 +197,7 @@ end;
 {$IFNDEF EVS_MDO}
 function TMDODatabaseHelper.GetCharSet :String;
 begin
-  Result := Params.Values['lc_type'];
+  Result := Params.Values['lc_ctype'];
 end;
 
 function TMDODatabaseHelper.GetPassword :String;
@@ -233,9 +220,9 @@ var
   vIdx : Integer;
 begin
   if aValue = '' then begin
-    vIdx := Params.IndexOfName('lc_Type');
+    vIdx := Params.IndexOfName('lc_ctype');
     if vIdx > -1 then Params.Delete(vIdx);
-  end else Params.Values['lc_type'] := aValue;
+  end else Params.Values['lc_ctype'] := aValue;
 end;
 
 procedure TMDODatabaseHelper.SetPassword(aValue :String);

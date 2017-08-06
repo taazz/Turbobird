@@ -50,13 +50,6 @@ uses
   MDOCustomDataSet, MDODatabaseInfo, uTBTypes, utbConfig, uEvsOptions, utbDBRegistry, uevsGenIntf, uEvsDBSchema, typinfo, importtable, dbInfo;
 
 type
-  //TDBInfo = record
-  //  Index        :Integer;
-  //  RegRec       :TDBDetails;
-  //  OrigRegRec   :TDBDetails;
-  //  IBConnection :TIBConnection;
-  //  SQLTrans     :TSQLTransaction;
-  //end;
 
   { TPageControl }
  //replace the existing pagecontrol with this one that closes
@@ -75,33 +68,32 @@ type
   { TfmMain }
 
   TfmMain = class(TForm)
-    actExit                 :TAction;
-    actFontEditor           :TAction;
-    actAbout                :TAction;
-    actBackupDB             :TAction;
-    actCut                  :TAction;
-    actCopy                 :TAction;
-    actDatabaseEdit         :TAction;
-    actSelectAll            :TAction;
-    actPaste                :TAction;
-    actQuery                :TAction;
-    actOptions              :TAction;
+    actAbout :TAction;
+    actBackupDB :TAction;
+    actCopy :TAction;
+    actCut :TAction;
+    actDatabaseEdit :TAction;
+    actExit :TAction;
+    actFontEditor :TAction;
+    ActionList1 :TActionList;
+    actNewDB :TAction;
+    actOptions :TAction;
+    actPaste :TAction;
+    actQuery :TAction;
     actRefre                :TAction;
-    actRefresh              :TAction;
-    actRefreshDatabase      :TAction;
-    actRegisterDB           :TAction;
-    actRestoreDB            :TAction;
-    actNewDB                :TAction;
-    ActionList1             :TActionList;
+    actRefresh :TAction;
+    actRefreshDatabase :TAction;
+    actRegisterDB :TAction;
+    actRestoreDB :TAction;
+    actSelectAll :TAction;
     CoolBar1                :TCoolBar;
-    EditCopy1               :TEditCopy;
-    EditCut1                :TEditCut;
+    EditCopy1 :TEditCopy;
+    EditCut1 :TEditCut;
     editorFontDialog        :TFontDialog;
-    EditPaste1              :TEditPaste;
-    EditSelectAll1          :TEditSelectAll;
-    EditUndo1               :TEditUndo;
+    EditPaste1 :TEditPaste;
+    EditSelectAll1 :TEditSelectAll;
+    EditUndo1 :TEditUndo;
     Image2                  :TImage;
-    ImageList1              :TImageList;
     MDODatabase1            :TMDODatabase;
     mniCut                  :TMenuItem;
     mniPaste                :TMenuItem;
@@ -110,7 +102,6 @@ type
     mnuEdit                 :TMenuItem;
     mniDummy                :TMenuItem;
     qryMain                 :TMDOQuery;
-    MenuImageList22         :TImageList;
     MainMenu2               :TMainMenu;
     mniAppExit2             :TMenuItem;
     mniOptions              :TMenuItem;
@@ -136,7 +127,6 @@ type
     tbtnDatabaseRegister    :TToolButton;
     tbtnDatabaseRestore     :TToolButton;
     ToolBar1                :TToolBar;
-    toolbarImages           :TImageList;
     MainMenu1               :TMainMenu;
     mdsHistory              :TMemDataset;
     lmImportTable           :TMenuItem;
@@ -218,7 +208,6 @@ type
     Splitter1               :TSplitter;
     StatusBar1              :TStatusBar;
     tbMain                  :TTabSheet;
-    TBarImages32            :TImageList;
     tbtnDatabaseQuery       :TToolButton;
     ToolButton2             :TToolButton;
     ToolButton3             :TToolButton;
@@ -489,17 +478,20 @@ begin
     try
       //SelNode:= tvMain.Selected;
       dbIndex := self.GetDBIndex(tvMain.Selected); //JKOZ:Removed direct access to database node. More freedom to change, lost some speed.
-      Init(RegisteredDatabases[dbIndex]);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //Init(RegisteredDatabases[dbIndex]);
       Clear; //JKOZ: removed direct access to form's controls.
       if ShowModal = mrOK then
       begin
-        dmSysTables.Init(RegisteredDatabases[dbIndex]);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //dmSysTables.Init(RegisteredDatabases[dbIndex]);
         //dmSysTables.sqQuery.Close;
         //dmSysTables.sqQuery.SQL.Text:= 'create user ' + UserName + ' password ' + QuotedStr(Password);//jkoz: Removed direct access to external controls.
         //dmSysTables.sqQuery.ExecSQL; //JKOZ: replace with a method on the dmSysTables instead of accessing external controls.
         //dmSysTables.ExecuteAction();
         // Grant rule
-        dmSysTables.CreateUser(RegisteredDatabases[dbIndex], UserName, Password, Role);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //dmSysTables.CreateUser(RegisteredDatabases[dbIndex], UserName, Password, Role);
         //////////////if SQLExecute(RegisteredDatabases[dbIndex],'create user ' + UserName + ' password ' + QuotedStr(Password),[]) then begin
         //////////////  if Role<>'' then dmSysTables.GrandRolesToUser(RegisteredDatabases[dbIndex], role, UserName);//(Role) then //cxGrantRole.Checked then begin
         //////////////    //dmSysTables.sqQuery.SQL.Text:= 'grant ' + Role + ' to ' + UserName; //JKOZ Removed direct access to external control.
@@ -532,8 +524,9 @@ begin
   fmBackupRestore := TfmBackupRestore.Create(Nil);
   try
     SelNode:= tvMain.Selected;
-    with RegisteredDatabases[PtrInt(tvMain.Selected.Data)].RegRec do
-      fmBackupRestore.Init(SelNode.Text, DatabaseName, UserName, Password);
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //with RegisteredDatabases[PtrInt(tvMain.Selected.Data)].RegRec do
+    //  fmBackupRestore.Init(SelNode.Text, DatabaseName, UserName, Password);
     fmBackupRestore.cbOperation.Enabled:= True;
     fmBackupRestore.ShowModal;
   finally
@@ -562,8 +555,9 @@ begin
        //dmSysTables.sqQuery.ExecSQL;
        //vQry := GetQuery();
        //TSQLTransaction(dmSysTables.sqQuery.Transaction).Commit;
-       if SQLExecute(RegisteredDatabases[GetDBIndex(tvMain.Selected)],cAlterUser, [tvMain.Selected.Text,QuotedStr(fmChangePass.Password)]) then
-         MessageDlg('Password has been changed', mtInformation, [mbOk], 0);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+       //if SQLExecute(RegisteredDatabases[GetDBIndex(tvMain.Selected)],cAlterUser, [tvMain.Selected.Text,QuotedStr(fmChangePass.Password)]) then
+       //  MessageDlg('Password has been changed', mtInformation, [mbOk], 0);
     except
       on E: Exception do
         ShowMessage('Error while changing password: ' + e.Message);
@@ -581,10 +575,12 @@ begin
 
   // Check if password is saved - it may be empty, which can be valid for
   // e.g. embedded databases
-  if (RegisteredDatabases[dbIndex].RegRec.SavePassword) or
-    ConnectToDBAs(dbIndex) then
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //if (RegisteredDatabases[dbIndex].RegRec.SavePassword) or
+  //  ConnectToDBAs(dbIndex) then
   begin
-    Title:= RegisteredDatabases[dbIndex].RegRec.Title + ': Database Comparison';
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Title:= RegisteredDatabases[dbIndex].RegRec.Title + ': Database Comparison';
     fmComparison:= TfmComparison(_FindCustomForm(Title, TfmComparison));
     if fmComparison = nil then
     begin
@@ -693,7 +689,8 @@ var
   vNode :TTreeNode;
 begin
   dbIndex:= PtrInt(tvMain.Selected.Data);
-  RegisteredDatabases[dbIndex].Conn.Close;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //RegisteredDatabases[dbIndex].Conn.Close;
   //if not RegisteredDatabases[dbIndex].RegRec.SavePassword then RegisteredDatabases[dbIndex].RegRec.Password := '';
   for i:= PageControl1.PageCount - 1 downto 0 do
     if (PageControl1.Pages[i] as TComponent).Tag = dbIndex then
@@ -782,8 +779,9 @@ end;
 
 procedure TfmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if Length(RegisteredDatabases) > 0 then
-    fmReg.SaveRegistrations;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //if Length(RegisteredDatabases) > 0 then
+  //  fmReg.SaveRegistrations;
   SaveAndCloseSQLHistory;
 end;
 
@@ -1077,18 +1075,25 @@ var
   vPasswordForm :TfmEnterPass;
 begin
   Result := False;
-  Rec    := RegisteredDatabases[dbIndex].RegRec;
-  Registry.Database[dbIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Rec    := RegisteredDatabases[dbIndex].RegRec;
+  DBRegistry.Database[dbIndex];
   vPasswordForm := TfmEnterPass.Create(Nil);
   try
-    if vPasswordForm.Execute(@RegisteredDatabases[dbIndex],Rec.UserName,'',rec.Role) = mrOK then //the data are alrady passed in the 1st parameter
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //if vPasswordForm.Execute(@RegisteredDatabases[dbIndex],Rec.UserName,'',rec.Role) = mrOK then //the data are alrady passed in the 1st parameter
     begin
-      RegisteredDatabases[dbIndex].RegRec.UserName := vPasswordForm.UserName;
-      RegisteredDatabases[dbIndex].RegRec.Password := vPasswordForm.Password;
-      RegisteredDatabases[dbIndex].RegRec.Role     := vPasswordForm.Role;
-      Connect(Registry.Database[dbIndex],Registry.Database[dbIndex].ServerKind);// RegisteredDatabases[dbIndex].Conn, RegisteredDatabases[dbIndex].RegRec);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //RegisteredDatabases[dbIndex].RegRec.UserName := vPasswordForm.UserName;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //RegisteredDatabases[dbIndex].RegRec.Password := vPasswordForm.Password;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //RegisteredDatabases[dbIndex].RegRec.Role     := vPasswordForm.Role;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //Connect(DBRegistry.Database[dbIndex],DBRegistry.Database[dbIndex].ServerKind);// RegisteredDatabases[dbIndex].Conn, RegisteredDatabases[dbIndex].RegRec);
       Result := True;
     end;//no the database registration is not to be changed by the connect as dialog connect as gives us a way to emulate a different user if needed only.
+
     //JKOZ: Moved the relevant parts to the password form and everything else is removed.
     // Use may have saved an empty password, which is valid for embedded dbs
     // So check SavePassword instead of Password itself.
@@ -1329,7 +1334,8 @@ begin
   SelNode:= tvMain.Selected;
   DBIndex:= PtrInt(SelNode.Parent.Data);
 
-  TableNames:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[DBIndex], otTables, Count);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //TableNames:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[DBIndex], otTables, Count);
   fmCreateTrigger.cbTables.Items.CommaText:= TableNames;
   CreateNewTrigger(DBIndex, '');
 end;
@@ -1416,7 +1422,8 @@ begin
   begin
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
     ATableName:= SelNode.Text;
-    Rec:= RegisteredDatabases[dbIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[dbIndex];
     EditForm:= TfmEditDataFullRec(FindCustomForm(Rec.RegRec.Title + ': Edit Data (Form) for Table : ' +
       ATableName, TfmEditDataFullRec));
     if EditForm = nil then
@@ -1475,7 +1482,8 @@ begin
   begin
     ATableName:= SelNode.Text;
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
-    Rec:= RegisteredDatabases[dbIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[dbIndex];
     EditWindow:= TfmEditTable(FindCustomForm(Rec.RegRec.Title + ': Edit Data for Table : ' + ATableName, TfmEditTable));
     if EditWindow = nil then
     begin
@@ -1553,15 +1561,19 @@ var
   Form: TfmTableManage;
 begin
   Form:= AForm as TfmTableManage;
-  Rec:= RegisteredDatabases[DatabaseIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Rec:= RegisteredDatabases[DatabaseIndex];
   AQuery:= TMDOQuery.Create(nil);
   try
     AQuery.Close;
 
-    if FConn <> RegisteredDatabases[DatabaseIndex].Conn then
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //if FConn <> RegisteredDatabases[DatabaseIndex].Conn then
     begin
-      FConn:= RegisteredDatabases[DatabaseIndex].Conn;
-      FTrans:= RegisteredDatabases[DatabaseIndex].Trans;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //FConn:= RegisteredDatabases[DatabaseIndex].Conn;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //FTrans:= RegisteredDatabases[DatabaseIndex].Trans;
     end;
     AQuery.DataBase:= FConn;
     FTrans.Commit;
@@ -1736,18 +1748,26 @@ procedure TfmMain.ReleaseRegisteredDatabases;
 var
   vCntr: Integer;
 begin
-  for vCntr:= 0 to High(RegisteredDatabases) do begin
-    RegisteredDatabases[vCntr].Conn.Close;
-    RegisteredDatabases[vCntr].Trans.Free;
-    RegisteredDatabases[vCntr].Conn.Free;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //for vCntr:= 0 to High(RegisteredDatabases) do
+  begin
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //RegisteredDatabases[vCntr].Conn.Close;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //RegisteredDatabases[vCntr].Trans.Free;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //RegisteredDatabases[vCntr].Conn.Free;
   end;
-  SetLength(RegisteredDatabases, 0);
-  RegisteredDatabases:= nil;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //SetLength(RegisteredDatabases, 0);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //RegisteredDatabases := nil;
 end;
 
 procedure TfmMain.SetConnection(Index: Integer);
 begin
-  SetConnection(RegisteredDatabases[Index]);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //SetConnection(RegisteredDatabases[Index]);
 end;
 
 procedure TfmMain.SetConnection(aDB :TDBInfo);
@@ -1832,11 +1852,14 @@ function TfmMain.GetDBIndex(const aDB :TDBInfo) :Integer;
 var
   vCntr :Integer;
 begin
-  for vCntr := Low(RegisteredDatabases) to High(RegisteredDatabases) do begin
-    if (RegisteredDatabases[vCntr].Conn = aDB.Conn) and (RegisteredDatabases[vCntr].Trans = aDB.Trans) and
-       (RegisteredDatabases[VCntr].Index = aDB.Index) then begin
-      Exit(vCntr);
-    end;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //for vCntr := Low(RegisteredDatabases) to High(RegisteredDatabases) do
+  begin
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //if (RegisteredDatabases[vCntr].Conn = aDB.Conn) and (RegisteredDatabases[vCntr].Trans = aDB.Trans) and
+    //   (RegisteredDatabases[VCntr].Index = aDB.Index) then begin
+    //  Exit(vCntr);
+    //end;
   end;
 end;
 
@@ -2026,7 +2049,8 @@ var
 begin
   SelNode:= tvMain.Selected;
   dbIndex:= PtrInt(SelNode.Parent.Data);
-  Rec:= RegisteredDatabases[dbIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Rec:= RegisteredDatabases[dbIndex];
 
   Title:= SelNode.Parent.Text + ': New Table';
 
@@ -2096,20 +2120,23 @@ var
   dbIndex: Integer;
 begin
   dbIndex:= PtrInt(tvMain.Selected.Data);
-  Rec:= RegisteredDatabases[dbIndex].RegRec;
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Rec:= RegisteredDatabases[dbIndex].RegRec;
   // Password form
   if (Rec.Password = '') and (not tvMain.Selected.Expanded) then
   begin
     fmEnterPass.edPassword.Clear;
     try
-      fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //fmEnterPass.cbRole.Items.CommaText:= dmSysTables.GetDBObjectNames(fmMain.RegisteredDatabases[dbIndex], otRoles, Count);
     except
     end;
     if fmEnterPass.ShowModal = mrOk then
     begin
       if fmReg.TestConnection(Rec.DatabaseName, fmEnterPass.edUser.Text, fmEnterPass.edPassword.Text,
         Rec.Charset) then
-          RegisteredDatabases[dbIndex].RegRec.Password:= fmEnterPass.edPassword.Text
+        raise NotImplementedException {$MESSAGE WARN 'Needs Implementation'}
+        //RegisteredDatabases[dbIndex].RegRec.Password:= fmEnterPass.edPassword.Text
         else
           Exit;
     end;
@@ -2725,7 +2752,8 @@ begin
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
-    Rec:= RegisteredDatabases[dbIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec := RegisteredDatabases[dbIndex];
     SetConnection(dbIndex);
 
     AGenName:= SelNode.Text;
@@ -2756,20 +2784,26 @@ begin
   Screen.Cursor:= crSQLWait;
   try
     FireBirdServices.VerboseOutput:= True;
-    with FireBirdServices, RegisteredDatabases[dbIndex] do
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //with FireBirdServices, RegisteredDatabases[dbIndex] do
     begin
-      HostName:= GetServerName(RegRec.DatabaseName);
-      AdbName:= RegRec.DatabaseName;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //HostName:= GetServerName(RegRec.DatabaseName);
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //AdbName:= RegRec.DatabaseName;
       if Pos(':', AdbName) > 2 then
         Delete(AdbName, 1, Pos(':', AdbName));
-      DBName:= AdbName;
-      UserName := RegRec.UserName;
-      Password := RegRec.Password;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //DBName:= AdbName;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //UserName := RegRec.UserName;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //Password := RegRec.Password;
 
       try
-        AttachService;
-        StartSweep;
-        while ServiceQuery(S) do
+        FireBirdServices.AttachService;
+        FireBirdServices.StartSweep;
+        while FireBirdServices.ServiceQuery(S) do
           Lines:= Lines + S;
         Screen.Cursor:= crDefault;
         ShowMessage('Sweep database: ' + AdbName + ' completed');
@@ -2779,7 +2813,7 @@ begin
           MessageDlg('Error: ' + E.Message, mtError, [mbOK], 0);
         end;
       end;
-      DetachService;
+      FireBirdServices.DetachService;
     end;
   finally
     Screen.Cursor:= crDefault;
@@ -2802,7 +2836,8 @@ begin
     SelNode:= tvMain.Selected;
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
 
-    Title:= RegisteredDatabases[dbIndex].RegRec.Title +  ': Management of : ' + SelNode.Text;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Title:= RegisteredDatabases[dbIndex].RegRec.Title +  ': Management of : ' + SelNode.Text;
     // Fields
     fmTableManage:= FindCustomForm(Title, TfmTableManage) as TfmTableManage;
     if fmTableManage = nil then
@@ -2955,7 +2990,8 @@ begin
   before changing the query's transaction}
   if (Assigned(FTrans) and FTrans.Active) then
     FTrans.Commit;
-  vRec := RegisteredDatabases[DatabaseIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //vRec := RegisteredDatabases[DatabaseIndex];
   SetConnection(DatabaseIndex);
   qryMain.SQL.Text:= format(QueryTemplate,[ATableName]);
   {$IFDEF NEVER}
@@ -3065,7 +3101,8 @@ begin
     AProcName:= UpperCase(AProcName);
     BodyList:= TStringList.Create;
     try
-      Rec:= RegisteredDatabases[DatabaseIndex];
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //Rec:= RegisteredDatabases[DatabaseIndex];
       SetConnection(DatabaseIndex);
 
       // Get number of input and output parameters
@@ -3174,7 +3211,8 @@ const//JKOZ : Metadata move.
 var
   Rec: TDBInfo;
 begin
-  Rec := RegisteredDatabases[DatabaseIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Rec := RegisteredDatabases[DatabaseIndex];
   SetConnection(DatabaseIndex);
 
   // View Body
@@ -3210,7 +3248,8 @@ var
   ActiveStr: string;
 begin //JKOZ: metadata move;
   try
-    Rec:= RegisteredDatabases[DatabaseIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[DatabaseIndex];
     SetConnection(DatabaseIndex);
 
     qryMain.Close;
@@ -3283,7 +3322,8 @@ var
   Rec: TDBInfo;
 begin//JKOZ: Metadata Move
   try
-    Rec:= RegisteredDatabases[DatabaseIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[DatabaseIndex];
     SetConnection(DatabaseIndex);
 
     qryMain.Close;
@@ -3354,7 +3394,8 @@ var
   //vTab     :TKTabSheet;
   vCaption :string;
 begin
-  vRec := RegisteredDatabases[DatabaseIndex];
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //vRec := RegisteredDatabases[DatabaseIndex];
   vCaption:= vRec.RegRec.Title + ': ' + ATitle;
 
   // Search for already opened query window for the same title
@@ -3376,7 +3417,8 @@ begin
     //vTab.Tag           := DatabaseIndex;
   end else // Already opened query window found
     vTab := Result.Parent as TTabSheet;
-  Result.Init(@RegisteredDatabases[DatabaseIndex]);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Result.Init(@RegisteredDatabases[DatabaseIndex]);
   vTab.Show;
   OpenSQLHistory(vRec.RegRec.Title);
   Result.Show;
@@ -3445,7 +3487,8 @@ begin
       // Tables
       if vNodeText = 'Tables' then begin
         //vObjects.CommaText := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otTables, vCount); //Jkoz:cleanup remove it after testing.
-        vCount := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otTables, vObjects);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vCount := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otTables, vObjects);
 
         vTableNode := aNode;
 
@@ -3461,7 +3504,8 @@ begin
 
       end else if vNodeText = 'Generators' then  begin        // Generators
         vGenNode := aNode;
-        vObjects.CommaText := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otGenerators, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otGenerators, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vGenNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3471,7 +3515,8 @@ begin
         end;
       end else if aNode.Text = 'Triggers' then begin           // Triggers
         vTrigNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otTriggers, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otTriggers, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vTrigNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3482,7 +3527,8 @@ begin
       end else if aNode.Text = 'Views' then begin              // Views
 
         vViewsNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otViews, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otViews, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vViewsNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3492,7 +3538,8 @@ begin
         end;
       end else if aNode.Text = 'Stored Procedures' then begin  // Stored Procedures
         vStoredProcNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otStoredProcedures, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otStoredProcedures, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vStoredProcNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3502,7 +3549,8 @@ begin
         end;
       end  else if aNode.Text = 'Functions' then begin         // UDF (Functions)
         vUDFNode := aNode;
-        vObjects.CommaText := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otUDFs, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText := dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otUDFs, vCount);
         aNode.Text := vNodeText + ' (' + IntToStr(vCount) + ')';
         vUDFNode.DeleteChildren;
         for i := 0 to vObjects.Count - 1 do begin
@@ -3512,7 +3560,8 @@ begin
         end;
       end else if aNode.Text = 'System Tables' then  begin     // System Tables
         vSysTableNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otSystemTables, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otSystemTables, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vSysTableNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3523,7 +3572,8 @@ begin
       end else
       if aNode.Text = 'Domains' then begin                     // Domains
         vDomainsNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otDomains, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otDomains, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vDomainsNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3534,7 +3584,8 @@ begin
       end else
       if aNode.Text = 'Roles' then begin                       // Roles
         vRoleNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otRoles, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otRoles, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vRoleNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do begin
@@ -3547,7 +3598,8 @@ begin
       if aNode.Text = 'Exceptions' then
       begin
         vExceptionNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otExceptions, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otExceptions, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vExceptionNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do
@@ -3562,7 +3614,8 @@ begin
       if aNode.Text = 'Users' then
       begin
         vUserNode:= aNode;
-        vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otUsers, vCount);
+        raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+        //vObjects.CommaText:= dmSysTables.GetDBObjectNames(RegisteredDatabases[vDBIndex], otUsers, vCount);
         aNode.Text:= vNodeText + ' (' + IntToStr(vCount) + ')';
         vUserNode.DeleteChildren;
         for i:= 0 to vObjects.Count - 1 do
@@ -3708,7 +3761,8 @@ begin
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
-    Rec:= RegisteredDatabases[dbIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[dbIndex];
     AViewName:= SelNode.Text;
 
     // Fill ViewView grid
@@ -3832,7 +3886,8 @@ begin
   if (SelNode <> nil) and (SelNode.Parent <> nil) then
   begin
     dbIndex:= PtrInt(SelNode.Parent.Parent.Data);
-    Rec:= RegisteredDatabases[dbIndex];
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[dbIndex];
     qryMain.Close;
     SetConnection(dbIndex);
     AGenName:= SelNode.Text;
@@ -4115,14 +4170,17 @@ begin
     vRegDlg.bbReg.Caption:= 'Save';
     //vRegDlg.RecPos:= RegisteredDatabases[PtrInt(SelNode.Data)].Index;
 
-    Rec := RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec := RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec;
     //vRegDlg.Rec := @Rec;
-    vRegDlg.DB := RegisteredDatabases[PtrInt(SelNode.Data)].DataBase;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //vRegDlg.DB := RegisteredDatabases[PtrInt(SelNode.Data)].DataBase;
     vRegDlg.SavePassword := Rec.SavePassword;
     if vRegDlg.ShowModal = mrOK then
     begin
 
-      RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec := Rec;
+      raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+      //RegisteredDatabases[PtrInt(SelNode.Data)].OrigRegRec := Rec;
       vRegDlg.SaveRegistrations;
       LoadRegisteredDatabases;
     end;
@@ -4144,7 +4202,8 @@ begin
   if (SelNode <> nil) and (SelNode.Parent <> nil) and (SelNode.Parent.Parent = nil) then
   if MessageDlg('Are you sure you want to Unregister this database', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    DeleteRegistration(RegisteredDatabases[PtrInt(SelNode.Data)].Index);
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //DeleteRegistration(RegisteredDatabases[PtrInt(SelNode.Data)].Index);
     LoadRegisteredDatabases;
   end;
   SelNode:= nil;
@@ -4373,7 +4432,8 @@ begin
              QWindow.Show;
            end else begin // Expand object
              tvMainExpanded(nil, Node);
-             Rec := RegisteredDatabases[PtrInt(Node.Parent.Data)].RegRec;
+             raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+             //Rec := RegisteredDatabases[PtrInt(Node.Parent.Data)].RegRec;
            end;
          end;
       3: begin // Object Item Level, like tables, procedures....
@@ -4422,9 +4482,12 @@ begin
   if (Node <> nil) then
   if (Node.Parent <> nil) and (Node.Parent.Parent = nil) then   // Expand database    { TODO -ojkoz -cInternals : Mark and recognization method change }
   begin
-    Rec:= RegisteredDatabases[PtrInt(Node.Data)].RegRec;
-    RegisteredDatabases[PtrInt(Node.Data)].RegRec.LastOpened:= Now;
-    RegisteredDatabases[PtrInt(Node.Data)].OrigRegRec.LastOpened:= Now;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //Rec:= RegisteredDatabases[PtrInt(Node.Data)].RegRec;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //RegisteredDatabases[PtrInt(Node.Data)].RegRec.LastOpened:= Now;
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //RegisteredDatabases[PtrInt(Node.Data)].OrigRegRec.LastOpened:= Now;
     // Password form
     if Rec.Password = '' then
     if ConnectToDBAs(PtrInt(Node.Data)) then
@@ -4481,25 +4544,26 @@ begin
       while not system.EOF(F) do begin
         Read(F, Rec);
         if not Rec.Deleted then begin
-          SetLength(RegisteredDatabases, Length(RegisteredDatabases) + 1);
-          with RegisteredDatabases[high(RegisteredDatabases)] do begin
-            RegRec := Rec;
-            OrigRegRec := Rec;
-            Index := FilePos(F) - 1;
-            //JKOZ :01.002
-            Conn := GetConnection(RegisteredDatabases[high(RegisteredDatabases)]); //TMDODataBase.Create(Nil); //TIBConnection.Create(nil);
-            //{$IFDEF DEBUG}
-            {$WARNING 'Enable Logging of commands'} //JKOZ
-            //Conn.OnLog := @GetLogEvent;
-            //Conn.LogEvents := [detCustom,detExecute,detCommit,detRollBack];
-            Conn.TraceFlags := [tfQPrepare, tfQExecute, tfQFetch, tfError, tfStmt, tfMisc];
-            //tfConnect, tfTransact, tfBlob, tfService
-            //{$ENDIF DEBUG}
-            Trans:= TMDOTransaction.Create(nil);//TSQLTransaction.Create(nil);
-            SetTransactionIsolation(Trans.Params);
-            Conn.DefaultTransaction:= Trans;
-            Trans.DefaultDatabase := Conn;
-          end;
+          raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+          //SetLength(RegisteredDatabases, Length(RegisteredDatabases) + 1);
+          //with RegisteredDatabases[high(RegisteredDatabases)] do begin
+          //  RegRec := Rec;
+          //  OrigRegRec := Rec;
+          //  Index := FilePos(F) - 1;
+          //  //JKOZ :01.002
+          //  Conn := GetConnection(RegisteredDatabases[high(RegisteredDatabases)]); //TMDODataBase.Create(Nil); //TIBConnection.Create(nil);
+          //  //{$IFDEF DEBUG}
+          //  {$WARNING 'Enable Logging of commands'} //JKOZ
+          //  //Conn.OnLog := @GetLogEvent;
+          //  //Conn.LogEvents := [detCustom,detExecute,detCommit,detRollBack];
+          //  Conn.TraceFlags := [tfQPrepare, tfQExecute, tfQFetch, tfError, tfStmt, tfMisc];
+          //  //tfConnect, tfTransact, tfBlob, tfService
+          //  //{$ENDIF DEBUG}
+          //  Trans:= TMDOTransaction.Create(nil);//TSQLTransaction.Create(nil);
+          //  SetTransactionIsolation(Trans.Params);
+          //  Conn.DefaultTransaction:= Trans;
+          //  Trans.DefaultDatabase := Conn;
+          //end;
 
           // Server node
           AServerName := GetServerName(Rec.DatabaseName);
@@ -4616,13 +4680,13 @@ function TfmMain.LoadRegisteredDatabases2 :Boolean;
     try
       tvMain.Items.Clear;
 
-      for vCntr := 0 to Registry.Count do begin;
+      for vCntr := 0 to DBRegistry.Count do begin;
         // Server node
         tvMain.Items.Add(nil, '');
         //vParentNode := AppendNode(nil, GetServerName(RegisteredDatabases[vCntr].RegRec.DatabaseName), 25, 26, nil);
-        vParentNode := HostNode(Registry.Database[vCntr].Host);
+        vParentNode := HostNode(DBRegistry.Database[vCntr].Host);
         //vParentNode := AppendNode(vParentNode, RegisteredDatabases[vCntr].RegRec.Title, 0, 3, Pointer(vCntr));
-        vParentNode := AppendNode(vParentNode, Registry.Database[vCntr].Title, 0, 3, Registry.Database[vCntr]);
+        vParentNode := AppendNode(vParentNode, DBRegistry.Database[vCntr].Title, 0, 3, DBRegistry.Database[vCntr]);
 
         vNode := AppendNode(vParentNode, rsotQueryWindow,   1, 1,  Pointer(-1));
         vNode.HasChildren := True;
@@ -4655,8 +4719,9 @@ var
 begin
   try
     ReleaseRegisteredDatabases;
-    LoadRegistrations(RegisteredDatabases);
-    Registry.LoadFrom(utbConfig.GetConfigurationDirectory + 'turbobird.reg');
+    raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+    //LoadRegistrations(RegisteredDatabases);
+    DBRegistry.LoadFrom(utbConfig.GetConfigurationDirectory + 'turbobird.reg');
     RebuildTree;
     Result := True;
   except
@@ -4845,7 +4910,8 @@ function TfmMain.GetTableNames(dbIndex: Integer): string;
 var
   Count: Integer = 0;
 begin
-  Result:= dmSysTables.GetDBObjectNames(RegisteredDatabases[dbIndex], otTables, Count);
+  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  //Result:= dmSysTables.GetDBObjectNames(RegisteredDatabases[dbIndex], otTables, Count);
 end;
 
 Procedure RegisterOptions(aOptions:TEvsOptions);

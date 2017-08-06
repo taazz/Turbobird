@@ -1,0 +1,9 @@
+object frBase: TfrBase
+  Left = 0
+  Height = 246
+  Top = 0
+  Width = 409
+  TabOrder = 0
+  DesignLeft = 1059
+  DesignTop = 148
+end

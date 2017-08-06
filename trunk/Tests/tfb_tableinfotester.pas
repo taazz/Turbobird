@@ -185,10 +185,11 @@ procedure TFBTableInfo.ForeignKeyRetrieval;
 var
   vCntr :Integer;
 begin
-
-  for vCntr := 0 to FDB.TableCount -1 do
+  for vCntr := 0 to FDB.TableCount -1 do begin
     FDB.Connection.MetaData.GetForeignKeys(FDB.Table[vCntr]);
-  //Fail('No test written');
+  end;
+  Check(TableByName(FDB, 'Customer').ForeignKeyCount >0);
+  Fail('No test writen');
 end;
 
 procedure TFBTableInfo.PrimaryKeyRetrieval;
@@ -205,6 +206,7 @@ end;
 procedure TFBTableInfo.CheckRetrieval;
 begin
   Fail('No test written');
+
 end;
 
 procedure TFBTableInfo.IndexRetrieval;
@@ -218,7 +220,7 @@ begin
 end;
 
 initialization
-  RegisterTest('Schema Suite', TFBTableInfo.Suite);
+  RegisterTest(cSchema, TFBTableInfo.Suite);
 
 end.
 

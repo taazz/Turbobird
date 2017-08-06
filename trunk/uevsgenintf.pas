@@ -13,17 +13,17 @@ type
 
   IEvsCopyPaste = Interface(IInterface)//
     ['{85BF366A-A410-4D16-8D8B-5298143CBABD}']
-    function CanCopy  :LongBool; extdecl;
-    function CanPaste :Longbool; extdecl;
-    function Cut      :LongBool; extdecl;
-    function Copy     :longbool; extdecl;
-    function Paste    :LongBool; extdecl;
+    Function CanCopy  :LongBool; extdecl;
+    Function CanPaste :Longbool; extdecl;
+    Function Cut      :LongBool; extdecl;
+    Function Copy     :longbool; extdecl;
+    Function Paste    :LongBool; extdecl;
 
     // Move it to its own interface
-    function CanUndo  :LongBool; extdecl;
-    function CanRedo  :LongBool; extdecl;
-    function Undo     :LongBool; extdecl;
-    function Redo     :LongBool; extdecl;
+    Function CanUndo  :LongBool; extdecl;
+    Function CanRedo  :LongBool; extdecl;
+    Function Undo     :LongBool; extdecl;
+    Function Redo     :LongBool; extdecl;
   end;
 
   { IEvsTreeNode }
@@ -40,96 +40,98 @@ type
     Property NextSibling :IEvsTreeNode read GetNextSibling;
   end;
 
-  { IEvsCopyable }
-  IEvsCopyable = interface(IInterface) // this is backwards copyable should inherit from objectref.
-    ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
-    function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
-    function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;
-    function EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
-  end;
-
-  IEvsObjectRef = interface(IEvsCopyable)
+  IEvsObjectRef = interface(IInterface)
     ['{06704B77-F3A4-4CAA-9E8A-6E13AD70EA07}']
     Function ObjectRef:TObject;extdecl;
   end;
-
+  { IEvsCopyable }
+  IEvsCopyable = interface(IEvsObjectRef) // this is backwards copyable should inherit from objectref.
+    ['{6E27BDDF-6A40-4E69-9252-8FF7CA0A4FE3}']
+    Function CopyFrom(const aSource  :IEvsCopyable) :Integer; extdecl;
+    Function CopyTo  (const aDest    :IEvsCopyable) :Integer; extdecl;
+    Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; extdecl;
+  end;
   { IEvsParented }
-  IEvsParented = interface(IEvsObjectRef)
+  IEvsParented = interface(IEvsCopyable)
     ['{916AA6A8-EFE4-4360-AC14-35D9E15FAD28}']
     Function GetParent :IEvsParented;             extdecl;
     Procedure SetParent(aValue :IEvsParented);    extdecl;
     Property Parent :IEvsParented read GetParent write SetParent;
   end;
 
-  //IObservable = interface;
   {This is the interface to be implemented for any object that needs to be notified
-   about changes in any observable object.
-  }
+   about changes in any observable object.  }
+
   IEvsObserver = interface(IEvsObjectRef)
     ['{CBB67A46-C5A2-4507-A39F-C8AFC44540A5}']
     // Gets notified for changes of an observable. It can observe only a single observable.
-    procedure Update(aSubject:IEvsObjectRef; Action:TEVSGenAction);extdecl;
+    Procedure Update(aSubject:IEvsObjectRef; Action:TEVSGenAction; const Data:NativeUInt);extdecl;
   end;
 
   {This is the interface that an observable object must have to be able to notify
    observers about changes in its data or metadata}
   IEvsObservable = interface(IEvsObjectRef)
     ['{D3A8D212-094E-4F17-BB3D-21D151CC8559}']
-    procedure AddObserver(Observer:IEvsObserver);    extdecl;
-    procedure DeleteObserver(Observer:IEvsObserver); extdecl;
-    procedure ClearObservers;                        extdecl;
-    procedure Notify(const Action: TEVSGenAction; const aSubject:IEvsObjectRef); extdecl;
+    Procedure AddObserver(Observer:IEvsObserver);    extdecl;
+    Procedure DeleteObserver(Observer:IEvsObserver); extdecl;
+    Procedure ClearObservers;                        extdecl;
+    Procedure Notify(const Action: TEVSGenAction; const aSubject:IEvsObjectRef;const aData:NativeUInt); extdecl;
   end;
+
+  { IEvsObserverList }
 
   IEvsObserverList = interface(IInterface)
-     ['{19E3A48C-E857-4EF3-A1DE-3726C5A23AB7}']
-    function Get(Index: Integer): IEvsObserver; extdecl;
-    function GetCapacity: Integer;              extdecl;
-    function GetCount: Integer;                 extdecl;
-    procedure Put(Index: Integer; const Item: IEvsObserver);   extdecl;
-    procedure SetCapacity(NewCapacity: Integer);               extdecl;
-    procedure SetCount(NewCount: Integer);                     extdecl;
-    procedure Clear;                                           extdecl;
-    procedure Delete(Index: Integer);                          extdecl;
-    procedure Exchange(Index1, Index2: Integer);               extdecl;
-    function First: IEvsObserver;                              extdecl;
-    function IndexOf(const Item: IEvsObserver): Integer;       extdecl;
-    function Add(const Item: IEvsObserver): Integer;           extdecl;
-    procedure Insert(Index: Integer; const Item: IEvsObserver);extdecl;
-    function Last: IEvsObserver;                               extdecl;
-    function Remove(const Item: IEvsObserver): Integer;        extdecl;
-    procedure Lock;                                            extdecl;
-    procedure Unlock;                                          extdecl;
+    ['{19E3A48C-E857-4EF3-A1DE-3726C5A23AB7}']
+    Function Get(Index: Integer): IEvsObserver; extdecl;
+    Function GetCapacity: Integer;              extdecl;
+    Function GetCount: Integer;                 extdecl;
+    Procedure Put(Index: Integer; const Item: IEvsObserver);   extdecl;
+    Procedure SetCapacity(NewCapacity: Integer);               extdecl;
+    Procedure SetCount(NewCount: Integer);                     extdecl;
+    Procedure Clear;                                           extdecl;
+    Procedure Delete(Index: Integer);                          extdecl;
+    Procedure Exchange(Index1, Index2: Integer);               extdecl;
+    Function First: IEvsObserver;                              extdecl;
+    Function IndexOf(const Item: IEvsObserver): Integer;       extdecl;
+    Function Add(const Item: IEvsObserver): Integer;           extdecl;
+    Procedure Insert(Index: Integer; const Item: IEvsObserver);extdecl;
+    Function Last: IEvsObserver;                               extdecl;
+    Function Remove(const Item: IEvsObserver): Integer;        extdecl;
+    Procedure Lock;                                            extdecl;
+    Procedure Unlock;                                          extdecl;
 
-    property Capacity: Integer read GetCapacity write SetCapacity;
-    property Count: Integer read GetCount write SetCount;
-    property Items[Index: Integer]: IEvsObserver read Get write Put; default;
+    Procedure Notify(aAction:TEvsGenAction; const aSubject:IEvsObjectRef; const aData:NativeUInt);extdecl;
+
+    Property Capacity: Integer read GetCapacity write SetCapacity;
+    Property Count: Integer read GetCount write SetCount;
+    Property Items[Index: Integer]: IEvsObserver read Get write Put; default;
+
   end;
 
-  IEvsInterfaceList<T> = interface(IEvsCopyable) //OK
-    Function  Get(aIndex : Integer) : T;          extdecl;
-    Function  GetCapacity : Integer;              extdecl;
-    Function  GetCount : Integer;                 extdecl;
-    Procedure Put(aIndex : Integer;aItem : T);    extdecl;
-    Procedure SetCapacity(NewCapacity : Integer); extdecl;
-    Procedure SetCount(NewCount : Integer);       extdecl;
-    Procedure Clear;                              extdecl;
-    Procedure Delete(index : Integer);            extdecl;
-    Procedure Exchange(index1,index2 : Integer);  extdecl;
-    Function  New   :T;                           extdecl;
-    Function  First :T;                           extdecl;
-    Function  IndexOf(aItem : T) : Integer;       extdecl;
-    Function  Add(aItem : T) : Integer;           extdecl;
-    Procedure Insert(aIndex : Integer;aItem : T); extdecl;
-    Function  Last :T;                            extdecl;
-    Function  Remove(aItem : T): Integer;         extdecl;
-    Procedure Lock;                               extdecl;
-    Procedure Unlock;                             extdecl;
-
-    Property Capacity :Integer read GetCapacity write SetCapacity;
-    Property Count    :Integer read GetCount    write SetCount;
-    Property Items[aIndex :Integer] :T read Get write Put; default;
-  end;
+  //IEvsInterfaceList<T> = interface(IEvsCopyable) //OK
+  //  Function  Get(aIndex : Integer) : T;          extdecl;
+  //  Function  GetCapacity : Integer;              extdecl;
+  //  Function  GetCount : Integer;                 extdecl;
+  //  Procedure Put(aIndex : Integer;aItem : T);    extdecl;
+  //  Procedure SetCapacity(NewCapacity : Integer); extdecl;
+  //  Procedure SetCount(NewCount : Integer);       extdecl;
+  //  Procedure Clear;                              extdecl;
+  //  Procedure Delete(index : Integer);            extdecl;
+  //  Procedure Exchange(index1,index2 : Integer);  extdecl;
+  //  Function  New   :T;                           extdecl;
+  //  Function  First :T;                           extdecl;
+  //  Function  IndexOf(aItem : T) : Integer;       extdecl;
+  //  Function  Add(aItem : T) : Integer;           extdecl;
+  //  Procedure Insert(aIndex : Integer;aItem : T); extdecl;
+  //  Function  Last :T;                            extdecl;
+  //  Function  Remove(aItem : T): Integer;         extdecl;
+  //  Procedure Lock;                               extdecl;
+  //  Procedure Unlock;                             extdecl;
+  //
+  //  Property Capacity :Integer read GetCapacity write SetCapacity;
+  //  Property Count    :Integer read GetCount    write SetCount;
+  //  Property Items[aIndex :Integer] :T read Get write Put; default;
+  //end;
 
 implementation
 

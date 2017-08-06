@@ -25,13 +25,14 @@ Interface
 uses
   uTBTypes, SysUtils;
 
-Function SupportedCollations(const aCharset:String):TStringArray;
-Function SupportedCharacterSets:TStringArray;
+Function SupportedCollations(const aCharset:wideString):TWideStringArray;
+Function SupportedCharacterSets:TWideStringArray;
 
 Implementation
 
-Function SupportedCharacterSets : TStringArray;
+Function SupportedCharacterSets : TWideStringArray;
 begin
+  SetLength(Result, 52);
   Result[  0] := 'NONE';
   Result[  1] := 'OCTETS';
   Result[  2] := 'ASCII';
@@ -86,31 +87,31 @@ begin
   Result[ 51] := 'GB18030';
 end;
 
-function csNONE_Collations :TStringArray;inline;
+function csNONE_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'NONE';
 end;
 
-function csOCTETS_Collations :TStringArray;inline;
+function csOCTETS_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'OCTETS';
 end;
 
-function csASCII_Collations :TStringArray;inline;
+function csASCII_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ASCII';
 end;
 
-function csUNICODE_FSS_Collations :TStringArray;inline;
+function csUNICODE_FSS_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'UNICODE_FSS';
 end;
 
-function csUTF8_Collations :TStringArray;inline;
+function csUTF8_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,5);
   Result[0] := 'UTF8';
@@ -120,19 +121,19 @@ begin
   Result[4] := 'UNICODE_CI_AI';
 end;
 
-function csSJIS_0208_Collations :TStringArray;inline;
+function csSJIS_0208_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'SJIS_0208';
 end;
 
-function csEUCJ_0208_Collations :TStringArray;inline;
+function csEUCJ_0208_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'EUCJ_0208';
 end;
 
-function csDOS437_Collations :TStringArray;inline;
+function csDOS437_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,13);
   Result[0] := 'DOS437';
@@ -150,7 +151,7 @@ begin
   Result[12] := 'DB_US437';
 end;
 
-function csDOS850_Collations :TStringArray;inline;
+function csDOS850_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,11);
   Result[0] := 'DOS850';
@@ -166,7 +167,7 @@ begin
   Result[10] := 'DB_US850';
 end;
 
-function csDOS865_Collations :TStringArray;inline;
+function csDOS865_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,4);
   Result[0] := 'DOS865';
@@ -175,7 +176,7 @@ begin
   Result[3] := 'DB_NOR865';
 end;
 
-function csISO8859_1_Collations :TStringArray;inline;
+function csISO8859_1_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,19);
   Result[0] := 'ISO8859_1';
@@ -199,7 +200,7 @@ begin
   Result[18] := 'FR_CA_CI_AI';
 end;
 
-function csISO8859_2_Collations :TStringArray;inline;
+function csISO8859_2_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,4);
   Result[0] := 'ISO8859_2';
@@ -208,56 +209,56 @@ begin
   Result[3] := 'ISO_PLK';
 end;
 
-function csISO8859_3_Collations :TStringArray;inline;
+function csISO8859_3_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_3';
 end;
 
-function csISO8859_4_Collations :TStringArray;inline;
+function csISO8859_4_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_4';
 end;
 
-function csISO8859_5_Collations :TStringArray;inline;
+function csISO8859_5_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_5';
 end;
 
-function csISO8859_6_Collations :TStringArray;inline;
+function csISO8859_6_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_6';
 end;
 
-function csISO8859_7_Collations :TStringArray;inline;
+function csISO8859_7_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_7';
 end;
 
-function csISO8859_8_Collations :TStringArray;inline;
+function csISO8859_8_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_8';
 end;
 
-function csISO8859_9_Collations :TStringArray;inline;
+function csISO8859_9_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'ISO8859_9';
 end;
 
-function csISO8859_13_Collations :TStringArray;inline;
+function csISO8859_13_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'ISO8859_13';
   Result[1] := 'LT_LT';
 end;
 
-function csDOS852_Collations :TStringArray;inline;
+function csDOS852_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,8);
   Result[0] := 'DOS852';
@@ -270,35 +271,35 @@ begin
   Result[7] := 'PDOX_SLO';
 end;
 
-function csDOS857_Collations :TStringArray;inline;
+function csDOS857_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'DOS857';
   Result[1] := 'DB_TRK';
 end;
 
-function csDOS860_Collations :TStringArray;inline;
+function csDOS860_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'DOS860';
   Result[1] := 'DB_PTG860';
 end;
 
-function csDOS861_Collations :TStringArray;inline;
+function csDOS861_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'DOS861';
   Result[1] := 'PDOX_ISL';
 end;
 
-function csDOS863_Collations :TStringArray;inline;
+function csDOS863_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'DOS863';
   Result[1] := 'DB_FRC863';
 end;
 
-function csCYRL_Collations :TStringArray;inline;
+function csCYRL_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,3);
   Result[0] := 'CYRL';
@@ -306,49 +307,49 @@ begin
   Result[2] := 'PDOX_CYRL';
 end;
 
-function csDOS737_Collations :TStringArray;inline;
+function csDOS737_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS737';
 end;
 
-function csDOS775_Collations :TStringArray;inline;
+function csDOS775_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS775';
 end;
 
-function csDOS858_Collations :TStringArray;inline;
+function csDOS858_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS858';
 end;
 
-function csDOS862_Collations :TStringArray;inline;
+function csDOS862_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS862';
 end;
 
-function csDOS864_Collations :TStringArray;inline;
+function csDOS864_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS864';
 end;
 
-function csDOS866_Collations :TStringArray;inline;
+function csDOS866_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS866';
 end;
 
-function csDOS869_Collations :TStringArray;inline;
+function csDOS869_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'DOS869';
 end;
 
-function csWIN1250_Collations :TStringArray;inline;
+function csWIN1250_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,9);
   Result[0] := 'WIN1250';
@@ -362,7 +363,7 @@ begin
   Result[8] := 'WIN_CZ_CI_AI';
 end;
 
-function csWIN1251_Collations :TStringArray;inline;
+function csWIN1251_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,3);
   Result[0] := 'WIN1251';
@@ -370,7 +371,7 @@ begin
   Result[2] := 'WIN1251_UA';
 end;
 
-function csWIN1252_Collations :TStringArray;inline;
+function csWIN1252_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,7);
   Result[0] := 'WIN1252';
@@ -382,21 +383,21 @@ begin
   Result[6] := 'WIN_PTBR';
 end;
 
-function csWIN1253_Collations :TStringArray;inline;
+function csWIN1253_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'WIN1253';
   Result[1] := 'PXW_GREEK';
 end;
 
-function csWIN1254_Collations :TStringArray;inline;
+function csWIN1254_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'WIN1254';
   Result[1] := 'PXW_TURK';
 end;
 
-function csNEXT_Collations :TStringArray;inline;
+function csNEXT_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,6);
   Result[0] := 'NEXT';
@@ -407,19 +408,19 @@ begin
   Result[5] := 'NXT_ESP';
 end;
 
-function csWIN1255_Collations :TStringArray;inline;
+function csWIN1255_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'WIN1255';
 end;
 
-function csWIN1256_Collations :TStringArray;inline;
+function csWIN1256_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'WIN1256';
 end;
 
-function csWIN1257_Collations :TStringArray;inline;
+function csWIN1257_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,4);
   Result[0] := 'WIN1257';
@@ -428,178 +429,178 @@ begin
   Result[3] := 'WIN1257_LV';
 end;
 
-function csKSC_5601_Collations :TStringArray;inline;
+function csKSC_5601_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'KSC_5601';
   Result[1] := 'KSC_DICTIONARY';
 end;
 
-function csBIG_5_Collations :TStringArray;inline;
+function csBIG_5_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'BIG_5';
 end;
 
-function csGB_2312_Collations :TStringArray;inline;
+function csGB_2312_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'GB_2312';
 end;
 
-function csKOI8R_Collations :TStringArray;inline;
+function csKOI8R_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'KOI8R';
   Result[1] := 'KOI8R_RU';
 end;
 
-function csKOI8U_Collations :TStringArray;inline;
+function csKOI8U_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'KOI8U';
   Result[1] := 'KOI8U_UA';
 end;
 
-function csWIN1258_Collations :TStringArray;inline;
+function csWIN1258_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,1);
   Result[0] := 'WIN1258';
 end;
 
-function csTIS620_Collations :TStringArray;inline;
+function csTIS620_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'TIS620';
   Result[1] := 'TIS620_UNICODE';
 end;
 
-function csGBK_Collations :TStringArray;inline;
+function csGBK_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'GBK';
   Result[1] := 'GBK_UNICODE';
 end;
 
-function csCP943C_Collations :TStringArray;inline;
+function csCP943C_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'CP943C';
   Result[1] := 'CP943C_UNICODE';
 end;
 
-function csGB18030_Collations :TStringArray;inline;
+function csGB18030_Collations :TWideStringArray;inline;
 begin
   SetLength(Result,2);
   Result[0] := 'GB18030';
   Result[1] := 'GB18030_UNICODE';
 end;
 
-Function SupportedCollations(const aCharset:String):TStringArray;
+Function SupportedCollations(const aCharset:wideString):TWideStringArray;
 begin
-  if CompareText(aCharset,'NONE')        = 0 then 
+  if WideCompareText(aCharset,'NONE')        = 0 then
     Result := csNONE_Collations;
-  if CompareText(aCharset,'OCTETS')      = 0 then 
+  if WideCompareText(aCharset,'OCTETS')      = 0 then
     Result := csOCTETS_Collations;
-  if CompareText(aCharset,'ASCII')       = 0 then 
+  if WideCompareText(aCharset,'ASCII')       = 0 then
     Result := csASCII_Collations;
-  if CompareText(aCharset,'UNICODE_FSS') = 0 then 
+  if WideCompareText(aCharset,'UNICODE_FSS') = 0 then
     Result := csUNICODE_FSS_Collations;
-  if CompareText(aCharset,'UTF8')        = 0 then 
+  if WideCompareText(aCharset,'UTF8')        = 0 then
     Result := csUTF8_Collations;
-  if CompareText(aCharset,'SJIS_0208')   = 0 then 
+  if WideCompareText(aCharset,'SJIS_0208')   = 0 then
     Result := csSJIS_0208_Collations;
-  if CompareText(aCharset,'EUCJ_0208')   = 0 then 
+  if WideCompareText(aCharset,'EUCJ_0208')   = 0 then
     Result := csEUCJ_0208_Collations;
-  if CompareText(aCharset,'DOS437')      = 0 then 
+  if WideCompareText(aCharset,'DOS437')      = 0 then
     Result := csDOS437_Collations;
-  if CompareText(aCharset,'DOS850')      = 0 then 
+  if WideCompareText(aCharset,'DOS850')      = 0 then
     Result := csDOS850_Collations;
-  if CompareText(aCharset,'DOS865')      = 0 then 
+  if WideCompareText(aCharset,'DOS865')      = 0 then
     Result := csDOS865_Collations;
-  if CompareText(aCharset,'ISO8859_1')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_1')   = 0 then
     Result := csISO8859_1_Collations;
-  if CompareText(aCharset,'ISO8859_2')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_2')   = 0 then
     Result := csISO8859_2_Collations;
-  if CompareText(aCharset,'ISO8859_3')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_3')   = 0 then
     Result := csISO8859_3_Collations;
-  if CompareText(aCharset,'ISO8859_4')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_4')   = 0 then
     Result := csISO8859_4_Collations;
-  if CompareText(aCharset,'ISO8859_5')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_5')   = 0 then
     Result := csISO8859_5_Collations;
-  if CompareText(aCharset,'ISO8859_6')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_6')   = 0 then
     Result := csISO8859_6_Collations;
-  if CompareText(aCharset,'ISO8859_7')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_7')   = 0 then
     Result := csISO8859_7_Collations;
-  if CompareText(aCharset,'ISO8859_8')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_8')   = 0 then
     Result := csISO8859_8_Collations;
-  if CompareText(aCharset,'ISO8859_9')   = 0 then 
+  if WideCompareText(aCharset,'ISO8859_9')   = 0 then
     Result := csISO8859_9_Collations;
-  if CompareText(aCharset,'ISO8859_13')  = 0 then 
+  if WideCompareText(aCharset,'ISO8859_13')  = 0 then
     Result := csISO8859_13_Collations;
-  if CompareText(aCharset,'DOS852')   = 0 then 
+  if WideCompareText(aCharset,'DOS852')   = 0 then
     Result := csDOS852_Collations;
-  if CompareText(aCharset,'DOS857')   = 0 then 
+  if WideCompareText(aCharset,'DOS857')   = 0 then
     Result := csDOS857_Collations;
-  if CompareText(aCharset,'DOS860')   = 0 then 
+  if WideCompareText(aCharset,'DOS860')   = 0 then
     Result := csDOS860_Collations;
-  if CompareText(aCharset,'DOS861')   = 0 then 
+  if WideCompareText(aCharset,'DOS861')   = 0 then
     Result := csDOS861_Collations;
-  if CompareText(aCharset,'DOS863')   = 0 then 
+  if WideCompareText(aCharset,'DOS863')   = 0 then
     Result := csDOS863_Collations;
-  if CompareText(aCharset,'CYRL')     = 0 then 
+  if WideCompareText(aCharset,'CYRL')     = 0 then
     Result := csCYRL_Collations;
-  if CompareText(aCharset,'DOS737')   = 0 then 
+  if WideCompareText(aCharset,'DOS737')   = 0 then
     Result := csDOS737_Collations;
-  if CompareText(aCharset,'DOS775')   = 0 then 
+  if WideCompareText(aCharset,'DOS775')   = 0 then
     Result := csDOS775_Collations;
-  if CompareText(aCharset,'DOS858')   = 0 then 
+  if WideCompareText(aCharset,'DOS858')   = 0 then
     Result := csDOS858_Collations;
-  if CompareText(aCharset,'DOS862')   = 0 then 
+  if WideCompareText(aCharset,'DOS862')   = 0 then
     Result := csDOS862_Collations;
-  if CompareText(aCharset,'DOS864')   = 0 then 
+  if WideCompareText(aCharset,'DOS864')   = 0 then
     Result := csDOS864_Collations;
-  if CompareText(aCharset,'DOS866')   = 0 then 
+  if WideCompareText(aCharset,'DOS866')   = 0 then
     Result := csDOS866_Collations;
-  if CompareText(aCharset,'DOS869')   = 0 then 
+  if WideCompareText(aCharset,'DOS869')   = 0 then
     Result := csDOS869_Collations;
-  if CompareText(aCharset,'WIN1250')  = 0 then 
+  if WideCompareText(aCharset,'WIN1250')  = 0 then
     Result := csWIN1250_Collations;
-  if CompareText(aCharset,'WIN1251')  = 0 then 
+  if WideCompareText(aCharset,'WIN1251')  = 0 then
     Result := csWIN1251_Collations;
-  if CompareText(aCharset,'WIN1252')  = 0 then 
+  if WideCompareText(aCharset,'WIN1252')  = 0 then
     Result := csWIN1252_Collations;
-  if CompareText(aCharset,'WIN1253')  = 0 then 
+  if WideCompareText(aCharset,'WIN1253')  = 0 then
     Result := csWIN1253_Collations;
-  if CompareText(aCharset,'WIN1254')  = 0 then 
+  if WideCompareText(aCharset,'WIN1254')  = 0 then
     Result := csWIN1254_Collations;
-  if CompareText(aCharset,'NEXT')     = 0 then 
+  if WideCompareText(aCharset,'NEXT')     = 0 then
     Result := csNEXT_Collations;
-  if CompareText(aCharset,'WIN1255')  = 0 then 
+  if WideCompareText(aCharset,'WIN1255')  = 0 then
     Result := csWIN1255_Collations;
-  if CompareText(aCharset,'WIN1256')  = 0 then 
+  if WideCompareText(aCharset,'WIN1256')  = 0 then
     Result := csWIN1256_Collations;
-  if CompareText(aCharset,'WIN1257')  = 0 then 
+  if WideCompareText(aCharset,'WIN1257')  = 0 then
     Result := csWIN1257_Collations;
-  if CompareText(aCharset,'KSC_5601') = 0 then 
+  if WideCompareText(aCharset,'KSC_5601') = 0 then
     Result := csKSC_5601_Collations;
-  if CompareText(aCharset,'BIG_5')    = 0 then 
+  if WideCompareText(aCharset,'BIG_5')    = 0 then
     Result := csBIG_5_Collations;
-  if CompareText(aCharset,'GB_2312')  = 0 then 
+  if WideCompareText(aCharset,'GB_2312')  = 0 then
     Result := csGB_2312_Collations;
-  if CompareText(aCharset,'KOI8R')    = 0 then 
+  if WideCompareText(aCharset,'KOI8R')    = 0 then
     Result := csKOI8R_Collations;
-  if CompareText(aCharset,'KOI8U')    = 0 then 
+  if WideCompareText(aCharset,'KOI8U')    = 0 then
     Result := csKOI8U_Collations;
-  if CompareText(aCharset,'WIN1258')  = 0 then 
+  if WideCompareText(aCharset,'WIN1258')  = 0 then
     Result := csWIN1258_Collations;
-  if CompareText(aCharset,'TIS620')   = 0 then 
+  if WideCompareText(aCharset,'TIS620')   = 0 then
     Result := csTIS620_Collations;
-  if CompareText(aCharset,'GBK')      = 0 then 
+  if WideCompareText(aCharset,'GBK')      = 0 then
     Result := csGBK_Collations;
-  if CompareText(aCharset,'CP943C')   = 0 then 
+  if WideCompareText(aCharset,'CP943C')   = 0 then
     Result := csCP943C_Collations;
-  if CompareText(aCharset,'GB18030')  = 0 then 
+  if WideCompareText(aCharset,'GB18030')  = 0 then 
     Result := csGB18030_Collations;
 end;
 

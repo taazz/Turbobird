@@ -5,7 +5,7 @@ unit uTbDialogs;
 interface
 
 uses
-  Classes, SysUtils, Controls, Dialogs, uEvsDBSchema, uTBTypes, uTbToArray, uTBCommon, Forms;
+  Classes, SysUtils, Controls, Dialogs, uEvsDBSchema, uTBTypes, uTbToArray, uTBCommon, ufrFontEditor, uEvsFrameDialog, Forms, Graphics;
 
 Function RegisterDatabase(const aDatabase: IEvsDatabaseInfo):word;
 Function CreateDatabase(var aDatabase: IEvsDatabaseInfo):word;
@@ -16,13 +16,14 @@ Function ShowInfo(const Caption,Message:String; aButtons:TMsgDlgButtons=[mbOK]):
 Function ShowInfoFmt(const Caption,Message:string; aParams:Array of const; aButtons:TMsgDlgButtons=[mbOK]):TModalResult;
 Function ShowError(const Caption,Message:String; aButtons:TMsgDlgButtons=[mbOK]):TModalResult;
 Function GetConfirmation(const Caption, Message:String; aButtons:TMsgDlgButtons=[mbYes,mbNo]):TModalResult;
-Function GetCredentials(const aDB:IEvsDatabaseInfo):Boolean;
+//Function GetCredentials(const aDB:IEvsDatabaseInfo):Boolean;
 Function BackupDB(const aDB:IEvsDatabaseInfo):Integer;
-Function RestoreDB(const aDB:IEvsDatabaseInfo):Integer;
+Function RestoreDB(var aDB:IEvsDatabaseInfo):Integer;
+Function SelectFont(const aFont:TFont):Integer;
 
 implementation
 
-uses uDBDetails, uLoginForm, uEvsBackupRestore;
+uses uDBDetails, uLoginForm, uEvsBackupRestore, ButtonPanel;
 
 Function RegisterDatabase(const aDatabase :IEvsDatabaseInfo) :word;
 var
@@ -112,13 +113,13 @@ begin
   Result := MessageDlg(Caption, Message, mtConfirmation, aButtons, 0);
 end;
 
-Function GetCredentials(const aDB :IEvsDatabaseInfo) :Boolean;
-var
-  vFrm :TLoginForm;
-begin
-  Result := False;
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
-end;
+//Function GetCredentials(const aDB :IEvsDatabaseInfo) :Boolean;
+//var
+//  vFrm :TLoginForm;
+//begin
+//  Result := False;
+//  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+//end;
 
 Function BackupDB(const aDB :IEvsDatabaseInfo) :Integer;
 var
@@ -135,18 +136,48 @@ begin
   end;
 end;
 
-Function RestoreDB(const aDB :IEvsDatabaseInfo) :Integer;
+Function RestoreDB(var aDB :IEvsDatabaseInfo) :Integer;
 var
   vFrm : TBackupRestoreForm;
   vTmp : IEvsDatabaseInfo;
 begin
   vFrm := TBackupRestoreForm.Create(Nil);
   try
-    vFrm.Restore := True;
-    vFrm.Database := aDB;
     if Assigned(aDB) then vTmp := aDB else vTmp := NewDatabase(stFirebird);
+    vFrm.Restore := True;
+    vFrm.Database := vTmp;
     vFrm.AllowDBChanges := (aDB = nil);
     Result := vFrm.ShowModal;
+    if (Result = mrOK) and (aDB = nil) then aDB := vTmp;
+  finally
+    vFrm.Free;
+  end;
+end;
+
+Function SelectFont(const aFont:TFont):Integer;
+var
+  vFrm       :TEvsFrameDialog;
+  vFont      :TFont;
+  vFontFrame :TEvsFontEditFrame;
+begin
+  vFrm := TEvsFrameDialog.Create(Nil);
+  try
+    vFrm.BorderStyle := bsDialog;
+    vFontFrame := TEvsFontEditFrame.Create(Nil);
+    try
+      vFontFrame.Top := 0;
+      vFontFrame.Left := 0;
+      vFontFrame.Parent := vFrm;
+      vFontFrame.EditFont := aFont;
+      vFrm.Height := vFontFrame.Height+vFrm.ButtonPanel1.Height + 4;
+      vFrm.Height := vFontFrame.Width +2;
+      Result := vFrm.ShowModal;
+      if Result = mrOK then begin
+        vFont := vFontFrame.EditFont; //execute the ScreenToObject
+      end;
+    finally
+      vFontFrame.Free;
+    end;
   finally
     vFrm.Free;
   end;

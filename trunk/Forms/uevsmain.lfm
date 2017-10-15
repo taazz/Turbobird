@@ -1,17 +1,17 @@
 object MainForm: TMainForm
-  Left = 388
-  Height = 601
-  Top = 174
-  Width = 935
+  Left = 333
+  Height = 537
+  Top = 155
+  Width = 910
   Caption = 'Turbobird'
-  ClientHeight = 581
-  ClientWidth = 935
+  ClientHeight = 517
+  ClientWidth = 910
   Menu = MainMenu1
   ShowHint = True
   LCLVersion = '1.4.4.0'
   object vstMain: TVirtualStringTree
     Left = 0
-    Height = 512
+    Height = 448
     Top = 46
     Width = 235
     Align = alLeft
@@ -23,11 +23,11 @@ object MainForm: TMainForm
     Header.Columns = <>
     Header.DefaultHeight = 17
     Header.MainColumn = -1
-    Images = dmMain.ImageList1
+    Images = dmMain.ilOld
     ScrollBarOptions.ScrollBarStyle = sbmFlat
     TabOrder = 1
     TreeOptions.AnimationOptions = [toAnimatedToggle, toAdvancedAnimatedToggle]
-    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnDblClick]
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toInitOnSave, toWheelPanning, toEditOnDblClick]
     TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toRightClickSelect]
     TreeOptions.StringOptions = [toSaveCaptions, toShowStaticText, toAutoAcceptEditChange]
@@ -44,8 +44,8 @@ object MainForm: TMainForm
   object StatusBar1: TStatusBar
     Left = 0
     Height = 23
-    Top = 558
-    Width = 935
+    Top = 494
+    Width = 910
     Panels = <    
       item
         Text = 'Pages :'
@@ -61,14 +61,14 @@ object MainForm: TMainForm
     Left = 0
     Height = 46
     Top = 0
-    Width = 935
+    Width = 910
     AutoSize = True
     BandBorderStyle = bsNone
     BandMaximize = bmNone
     Bands = <    
       item
         Control = ToolBar1
-        Width = 320
+        Width = 410
       end    
       item
         Break = False
@@ -78,7 +78,8 @@ object MainForm: TMainForm
       item
         Break = False
         Control = ToolBar2
-        Width = 100
+        MinWidth = 70
+        Width = 70
       end>
     EdgeBorders = []
     EdgeInner = esNone
@@ -90,7 +91,7 @@ object MainForm: TMainForm
       Left = 22
       Height = 40
       Top = 3
-      Width = 298
+      Width = 380
       Align = alNone
       AutoSize = True
       BorderSpacing.Left = 22
@@ -113,13 +114,13 @@ object MainForm: TMainForm
         Action = actRegisterDB
       end
       object tlbRestoreDB: TToolButton
-        Left = 257
+        Left = 339
         Hint = 'Restore from a previous backup'
         Top = 0
         Action = actRestoreDB
       end
       object tlbBackupDB: TToolButton
-        Left = 216
+        Left = 298
         Top = 0
         Action = actBackupDB
       end
@@ -129,7 +130,7 @@ object MainForm: TMainForm
         Action = actDatabaseEdit
       end
       object ToolButton11: TToolButton
-        Left = 211
+        Left = 293
         Height = 40
         Top = 0
         Width = 5
@@ -142,7 +143,7 @@ object MainForm: TMainForm
         Action = actUnRegister
       end
       object tlbDisconnect: TToolButton
-        Left = 170
+        Left = 211
         Top = 0
         Action = actDisconnectDB
       end
@@ -154,17 +155,27 @@ object MainForm: TMainForm
         Caption = 'ToolButton4'
         Style = tbsDivider
       end
+      object ToolButton3: TToolButton
+        Left = 252
+        Top = 0
+        Action = actConnectAs
+      end
+      object ToolButton5: TToolButton
+        Left = 170
+        Top = 0
+        Action = actConnectDB
+      end
     end
     object ToolBar2: TToolBar
       AnchorSideLeft.Control = cbMain
       AnchorSideTop.Control = cbMain
-      Left = 455
+      Left = 545
       Height = 40
       Top = 3
       Width = 42
       Align = alNone
       AutoSize = True
-      BorderSpacing.Left = 455
+      BorderSpacing.Left = 545
       BorderSpacing.Top = 3
       ButtonHeight = 40
       ButtonWidth = 41
@@ -183,13 +194,13 @@ object MainForm: TMainForm
     object ToolBar3: TToolBar
       AnchorSideLeft.Control = cbMain
       AnchorSideTop.Control = cbMain
-      Left = 342
+      Left = 432
       Height = 40
       Top = 3
       Width = 83
       Align = alNone
       AutoSize = True
-      BorderSpacing.Left = 342
+      BorderSpacing.Left = 432
       BorderSpacing.Top = 3
       ButtonHeight = 40
       ButtonWidth = 41
@@ -212,9 +223,9 @@ object MainForm: TMainForm
   end
   object Image1: TImage
     Left = 242
-    Height = 512
+    Height = 448
     Top = 46
-    Width = 693
+    Width = 668
     Align = alClient
     Center = True
     Picture.Data = {
@@ -2324,7 +2335,7 @@ object MainForm: TMainForm
   end
   object Bevel1: TBevel
     Left = 240
-    Height = 512
+    Height = 448
     Top = 46
     Width = 2
     Align = alLeft
@@ -2333,7 +2344,7 @@ object MainForm: TMainForm
   end
   object Splitter1: TSplitter
     Left = 235
-    Height = 512
+    Height = 448
     Top = 46
     Width = 5
   end
@@ -2374,6 +2385,7 @@ object MainForm: TMainForm
     object actFontEditor: TAction
       Caption = 'Font Editor'
       ImageIndex = 10
+      OnExecute = actFontEditorExecute
     end
     object actAbout: TAction
       Caption = 'About'
@@ -2453,6 +2465,7 @@ object MainForm: TMainForm
     object actDropTable: TAction
       Category = 'Table'
       Caption = 'actDropTable'
+      OnExecute = actDropTableExecute
     end
     object actRefreshTable: TAction
       Category = 'Table'
@@ -2461,6 +2474,8 @@ object MainForm: TMainForm
     object actEditTable: TAction
       Category = 'Table'
       Caption = 'actEditTable'
+      OnExecute = actEditTableExecute
+      OnUpdate = actEditTableUpdate
     end
     object actDisconnectDB: TAction
       Category = 'Database'
@@ -2482,6 +2497,11 @@ object MainForm: TMainForm
       ImageIndex = 33
       OnExecute = actConnectAsExecute
       OnUpdate = actConnectAsUpdate
+    end
+    object actRestoreAsNewDB: TAction
+      Category = 'Database'
+      Caption = 'Restore as New'
+      OnExecute = actRestoreAsNewDBExecute
     end
   end
   object MainMenu1: TMainMenu
@@ -2528,6 +2548,9 @@ object MainForm: TMainForm
       end
       object MenuItem6: TMenuItem
         Action = actRestoreDB
+      end
+      object MenuItem15: TMenuItem
+        Action = actRestoreAsNewDB
       end
       object MenuItem12: TMenuItem
         Caption = '-'

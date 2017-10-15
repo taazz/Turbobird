@@ -109,7 +109,7 @@ function ConncetionSting(const aDB:TDatabase):string;
 
 implementation
 
-uses Forms, strutils;
+uses {Forms,} strutils;
 
 const
   pnCharset  = 'lc_type';
@@ -761,7 +761,7 @@ begin
   GetFields      (aTable);
   GetIndices     (aTable);
   GetTriggers    (aTable);
-  GetForeignKeys (aTable);
+  //GetForeignKeys (aTable);
   //GetChecks
   {$MESSAGE WARN 'Needs more details.'}
 end;
@@ -773,9 +773,20 @@ const
          //' AND (RDB$SYSTEM_FLAG is NULL or RDB$SYSTEM_FLAG = 0) ' +
          ' ORDER BY RDB$RELATION_NAME';
 var
-  vDts:IEvsDataset;
-  vTbl:IEvsTableInfo;
-  vSys:Integer;
+  vDts     :IEvsDataset;
+  vTbl     :IEvsTableInfo;
+  vSys     :Integer;
+  procedure LoadForeignKeys;
+  var
+    vCntr :Integer;
+    vTblName :String;
+  begin
+    for vCntr := 0 to aDB.TableCount -1 do begin
+      vTblName := aDB.Table[vCntr].TableName;
+      GetForeignKeys(aDB.Table[vCntr]);
+    end;
+  end;
+
 begin
   vDts := Query(cSql);
   vDts.First;
@@ -784,11 +795,12 @@ begin
     if (vSys = 0) or IncludeSystem then begin
       vTbl := aDB.NewTable(Trim(vDts.Field[0].AsString));
       if vSys = 0 then vTbl.SystemTable := False else vTbl.SystemTable := True;
-      //GetTableInfo(vTbl);
+      GetTableInfo(vTbl);
       vTbl.ClearState;
     end;
     vDts.Next;
   end;
+  LoadForeignKeys;
 end;
 
 Procedure TEvsMDOConnection.GetFields(const aObject :IEvsTableInfo); extdecl;
@@ -1348,11 +1360,14 @@ var
     //else if WideCompareText(aValue,'Restrict') = 0 then Result := crNoAction
     ;
   end;
+//var
+//  dbg:integer;
 begin
   vCmd := Format(cSQL,[QuotedStr(aObject.TableName)]);
   vDts := Query(Format(cSQL,[QuotedStr(aObject.TableName)]));
   vDts.First;
   while not vDts.EOF do begin
+    //dbg := WideCompareText(CurrentFK, FieldValueDef(vDts.Field[8], '', True));
     if (WideCompareText(CurrentFK, FieldValueDef(vDts.Field[8], '', True)) <> 0) then begin
       vFK := aObject.NewForeignKey;
       vFK.Name := FieldValueDef(vDts.Field[8], '', True);

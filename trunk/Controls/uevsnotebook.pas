@@ -61,6 +61,7 @@ type
   TEvsNoteImage = class(TImage){$MESSAGE WARN 'Needs Implementation'}
     constructor Create(aOwner :TComponent); override;
   end;
+  TEvsPageEnumerator = class;
   { TEvsNotebook }
 
   TEvsNotebook = class(TCustomControl)
@@ -75,12 +76,13 @@ type
     function GetPageCount : integer;
     function GetPageIndex: Integer;
     procedure InsertPage(APage: TEvsPage; Index: Integer);
-    procedure SetActivePage(aValue :TEvsPage);
-    procedure SetPageIndex(aValue: Integer);
   protected
     function ChildClassAllowed(ChildClass :TClass) :Boolean; override;
     procedure Notification (aComponent :TComponent; aOperation :TOperation); override;
     function RemovePage(Index: Integer):TEvsPage;
+    function GetTrueIndex(Const aIndex:integer):Integer;
+    procedure SetActivePage(aValue :TEvsPage);virtual;
+    procedure SetPageIndex(aValue: Integer);virtual;
   public
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
@@ -96,6 +98,7 @@ type
     property ActivePage: TEvsPage read GetActivePage write SetActivePage;
     property Page[Index: Integer]: TEvsPage read GetPage;
     property PageCount: integer read GetPageCount;
+    function Pages : TEvsPageEnumerator;
   published
     property PageIndex: Integer read GetPageIndex write SetPageIndex default -1;
     // Generic properties
@@ -132,6 +135,19 @@ type
     property TabStop;
   end;
 
+  { TEvsPageEnumerator }
+
+  TEvsPageEnumerator = class
+  private
+    FNotebook :TEvsNotebook;
+    FPosition :Integer;
+  public
+    constructor Create(aComponent: TEvsNotebook);
+    function GetCurrent: TEvsPage;
+    function MoveNext: Boolean;
+    property Current: TEvsPage read GetCurrent;
+  end;
+
 implementation
 
 function CheckBounds(aLowerLimit, aUpperLimit, aIndex:Integer; const aSender:String=''; const RaiseException:Boolean=False):Boolean;
@@ -139,6 +155,26 @@ begin
   Result := (aIndex>=aLowerLimit) and (aIndex<=aUpperLimit);
   if not Result and RaiseException then
     raise EEvsException.CreateFmt('%S Index <%D> out of bounds',[aSender,aIndex]) at get_caller_addr(get_frame);
+end;
+
+{ TEvsPageEnumerator }
+
+constructor TEvsPageEnumerator.Create(aComponent :TEvsNotebook);
+begin
+  inherited Create;
+  FNotebook := AComponent;
+  FPosition := -1;
+end;
+
+function TEvsPageEnumerator.GetCurrent :TEvsPage;
+begin
+  Result := FNotebook.Page[FPosition];
+end;
+
+function TEvsPageEnumerator.MoveNext :Boolean;
+begin
+  Inc(FPosition);
+  Result := FPosition < FNotebook.PageCount;
 end;
 
 { TEvsNoteImage }
@@ -206,21 +242,30 @@ begin
   Result.Parent := Nil;
 end;
 
+function TEvsNotebook.GetTrueIndex(Const aIndex :integer) :Integer;
+begin
+  //controlcount has all controls that are parented to this notebook
+  //FPageList.count has all page lists that are parented to this notebook
+  //the difference of the two counts dictates the index in the page list and in the tablist.
+  Result := aIndex - ControlCount + FPageList.Count;
+  //this must only be used inside the insertcontrol and removeconhtrol methods where index is defined by lcl
+end;
+
 procedure TEvsNotebook.SetPageIndex(aValue: Integer);
 var
   vTmp: TEvsPage;
 begin
   if (not CheckBounds(-1, FPageList.Count-1 ,aValue)) or (FPageIndex = aValue) then Exit;
 
-  if (FPageIndex >= 0) and (FPageIndex < FPageList.Count) then begin
-    vTmp := ActivePage;
+  vTmp := GetActivePage;
+  if Assigned(vTmp) then begin
     if (csDesigning in ComponentState) then vTmp.ControlStyle := vTmp.ControlStyle + [csNoDesignVisible];
     vTmp.Visible := False;
   end;
 
   FPageIndex := AValue;
   if (FPageIndex = -1) then
-    exit;
+    Exit;
 
   vTmp := Page[FPageIndex];
   vTmp.Visible := True;
@@ -245,8 +290,7 @@ begin
     //must be shifted down. This means that the notebook is parent to other controls
     //like the tabset or a background image etc those controls usually are static
     //and added before any page was ever created. all other controls use a page as a parent.
-    vDif := ControlCount - FPageList.Count -1;//-1 because controlcount already includes the new page.
-    Index := Index - vDif;
+    Index := GetTrueIndex(Index) + 1;//1 because controlcount already includes the new page.
     FPageList.Insert(Index, aControl);
     aControl.FreeNotification(Self);
     //if PageIndex = -1 then
@@ -326,9 +370,9 @@ end;
 function TEvsNotebook.NewPage(aCaption :TCaption) :TEvsPage;
 begin
   Result := TEvsPage.Create(Self);
-  Result.Parent := Self;
   Result.Caption := aCaption;
   Result.Visible := False;
+  Result.Parent  := Self;
   ActivePage := Result;
 end;
 
@@ -341,10 +385,15 @@ begin
   if PageCount >0 then begin
     vTmp := PageIndex;
     inc(vTmp, cStep[aForward]);
-    if vTmp <0 then vTmp := PageCount-1;
+    if vTmp < 0 then vTmp := PageCount-1;
     if vTmp >= PageCount then vTmp := 0;
     PageIndex := vTmp;
   end;
+end;
+
+function TEvsNotebook.Pages :TEvsPageEnumerator;
+begin
+  Result := TEvsPageEnumerator.Create(Self);
 end;
 
 

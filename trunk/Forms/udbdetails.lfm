@@ -1,7 +1,7 @@
 object DBDetailsForm: TDBDetailsForm
-  Left = 565
+  Left = 460
   Height = 307
-  Top = 420
+  Top = 188
   Width = 588
   AutoSize = True
   BorderStyle = bsSingle

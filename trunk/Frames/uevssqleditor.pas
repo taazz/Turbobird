@@ -6,16 +6,23 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterSQL, SynCompletion, Forms, Controls, ExtCtrls, uEvsTabNotebook, uEvsDBSchema, uBaseFrame,
-  ComCtrls;
+  ComCtrls, ActnList;
 
 type
 
   { TSqlEditorFrame }
 
   TSqlEditorFrame = class(TfrBase)
+    aclQuery :TActionList;
+    actExecute :TAction;
+    actExport :TAction;
+    actImport :TAction;
+    actToggleComment :TAction;
     SynCompletion1 :TSynCompletion;
     sneQuery :TSynEdit;
     SynSQLSyn1 :TSynSQLSyn;
+    ToolBar1 :TToolBar;
+    procedure actExecuteUpdate(Sender :TObject);
   private
     { private declarations }
     //FDatabase  :IEvsDatabaseInfo;
@@ -26,6 +33,7 @@ type
   protected
     procedure SetDatabase(aValue :IEvsDatabaseInfo);override;
     procedure Clear;
+    function GetCommand:String;
   public
     { public declarations }
     constructor Create(aOwner :TComponent); override;
@@ -38,6 +46,11 @@ implementation
 {$R *.lfm}
 
 { TSqlEditorFrame }
+
+procedure TSqlEditorFrame.actExecuteUpdate(Sender :TObject);
+begin
+  actExecute.Enabled := (FDatabase <> nil) and ( FDatabase.Connection <> nil ) and (GetCommand <> '');
+end;
 
 procedure TSqlEditorFrame.SetupResultSet;
 begin
@@ -72,6 +85,11 @@ end;
 procedure TSqlEditorFrame.Clear;
 begin
   sneQuery.ClearAll;
+end;
+
+function TSqlEditorFrame.GetCommand :String;
+begin
+  if sneQuery.SelAvail then Result := sneQuery.SelText else Result := sneQuery.Text;
 end;
 
 constructor TSqlEditorFrame.Create(aOwner :TComponent);

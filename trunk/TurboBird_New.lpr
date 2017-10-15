@@ -8,7 +8,8 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, virtualtreeview_package, mdolaz, uEvsMain, uDMMain, uEvsNoteBook, utbDBRegistry, uTbToArray, uEvsDBSchema, uEvsGenIntf, uEvsIntfObjects,
-  uEvsSqlEditor, uEvsTabNotebook, uGridResultFrame, uGeneratorsFrame, uBaseFrame, uEvsBackupRestore;
+  uEvsSqlEditor, uEvsTabNotebook, uGridResultFrame, uGeneratorsFrame, uBaseFrame, uEvsBackupRestore, uTableDetailsFrame, uTableFieldsFrame, 
+uEvsGUICommon, uTableIndicesFrame, uEvsFrameDialog;
 
 {$R *.res}
 

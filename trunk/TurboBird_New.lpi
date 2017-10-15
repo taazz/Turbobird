@@ -9,6 +9,10 @@
       <AutoCreateForms Value="False"/>
       <Title Value="TurboBird_New"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -52,7 +56,7 @@
         <PackageName Value="LCL"/>
       </Item7>
     </RequiredPackages>
-    <Units Count="22">
+    <Units Count="27">
       <Unit0>
         <Filename Value="TurboBird_New.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -94,7 +98,7 @@
       <Unit6>
         <Filename Value="Frames\ufrfonteditor.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frFontEdit"/>
+        <ComponentName Value="EvsFontEditFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="ufrFontEditor"/>
@@ -198,6 +202,42 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uEvsBackupRestore"/>
       </Unit21>
+      <Unit22>
+        <Filename Value="Frames\utabledetailsframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TableDetailsFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uTableDetailsFrame"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="Frames\utablefieldsframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TableFieldsFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uTableFieldsFrame"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="uevsguicommon.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uEvsGUICommon"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="Frames\utableindicesframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Frame1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="uTableIndicesFrame"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="Forms\uevsframedialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EvsFrameDialog"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uEvsFrameDialog"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

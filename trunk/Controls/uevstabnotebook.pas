@@ -11,17 +11,38 @@ uses
 type
   EEvsPageControl = class({$IFDEF EvosiLib} EEvsException {$ELSE} Exception {$ENDIF});
   TEvsNewTabClick = procedure(var Allow:Boolean; var aCaption:string; var aChildClass:TControlClass = nil) of Object;
+
+  { TEvsTabProperties }
+
+  TEvsTabProperties = class(TPersistent)
+  private
+    function GetHeight :Integer;
+    function GetShowCloseButton :Boolean;
+    function GetTabAngle :Integer;
+    procedure SetHeight(aValue :Integer);
+    procedure SetShowCloseButton(aValue :Boolean);
+    procedure SetTabAngle(aValue :Integer);
+  published
+    property TabAngle : Integer read GetTabAngle write SetTabAngle;
+    property ShowCloseButton:Boolean Read GetShowCloseButton Write SetShowCloseButton;
+    property Height:Integer read GetHeight Write SetHeight;
+  end;
+
   { TEvsATTabsNoteBook }
 
   TEvsATTabsNoteBook = class(TEvsNotebook)
   private
     FOnChanging      :TATTabChangeQueryEvent;
     FOnNewTabClicked :TEvsNewTabClick;
-    FPageClass :TEvsPageClass;
+    FPageClass       :TEvsPageClass;
     FTabPosition     :TTabPosition;
     FTabSet          :TATTabs;
     function GetAddButtonVisible :Boolean;
     function GetNewPageButton :Boolean;
+    function GetShowCloseButton :Boolean;
+    function GetTabAngle :integer;
+    function GetTabData(aIndex :Integer) :TATTabData;
+    function GetTabHeight :Integer;
     function GetTabset :TATTabs;
     function GetTabsVisible :Boolean;
     procedure SetAddButtonVisible(aValue :Boolean);
@@ -29,30 +50,46 @@ type
     procedure SetOnChanging(aValue :TATTabChangeQueryEvent);
     procedure SetOnNewTabClicked(aValue :TEvsNewTabClick);
     procedure SetPageClass(aValue :TEvsPageClass);
+    procedure SetShowCloseButton(aValue :Boolean);
+    procedure SetTabAngle(aValue :integer);
+    procedure SetTabHeight(aValue :Integer);
     procedure SetTabPosition(aValue :TTabPosition);
     procedure SetTabSet(aValue :TATTabs);
     procedure SetTabsVisible(aValue :Boolean);
   protected
-    procedure DoNewTab(aSender :TObject);
+    function  IndexOfTab(aCaption:String):Integer;
+    procedure DoNewTabButtonClick(aSender :TObject);
     procedure TabChanging(Sender: TObject; ANewTabIndex: Integer; var ACanChange: boolean) ;
     procedure TabClosing(Sender: TObject; ATabIndex: Integer; var ACanClose, aCanContinue: Boolean);
     property Tabset:TATTabs read GetTabset write SetTabSet;
     procedure ApplyTheme1;
     function TabIndex(const aPage:TEvsPage):Integer;
+  protected
+    procedure SetActivePage(aValue :TEvsPage); override;
+    procedure SetPageIndex(aValue :Integer); override;
+    property Tab[aIndex:Integer]:TATTabData read GetTabData;
+    procedure InsertControl(aControl :TControl; Index :Integer); override;
+    procedure RemoveControl(aControl :TControl); override;
+  public //overriden methods.
+    property TabHeight : Integer read GetTabHeight write SetTabHeight;
+    property TabAngle:integer read GetTabAngle Write SetTabAngle;
   public
-    constructor Create(aOwner :TComponent); override;
-    property PageClass:TEvsPageClass read FPageClass write SetPageClass;
-    function NewPage(aCaption :TCaption) :TEvsPage; override; overload;
-    function AddChildToNewPage(const aCaption :String; const aChild :TControl=nil; ChildAlignment :TAlign=alClient) :TEvsPage; overload;
-    function AddNewPage(const aCaption :String; const aChildClass :TControlClass=nil; ChildAlignment :TAlign=alClient) :TEvsPage; overload;
-    procedure DeletePage(const aPage:TEvsPage);
-    Property NewPageButton:Boolean read GetNewPageButton write SetNewPageButton;
-    property OnChanging :TATTabChangeQueryEvent read FOnChanging write SetOnChanging;
-    property ShowAddTabButton:Boolean read GetAddButtonVisible write SetAddButtonVisible;
-    Property ShowTabs:Boolean read GetTabsVisible write SetTabsVisible;
-    property TabPosition : TTabPosition read FTabPosition write SetTabPosition default tpTop; //tpLeft, tpRight are not supported
+    Constructor Create(aOwner :TComponent); override;
+    Function NewPage          (aCaption :TCaption) :TEvsPage; override; overload;
+    Function NewPage          (aCaption :TCaption; aPageClass:TEvsPageClass) :TEvsPage; overload;
+    Function AddChildToNewPage(const aCaption :String; const aChild :TControl=nil; ChildAlignment :TAlign=alClient) :TEvsPage; overload;
+    Function AddNewPage       (const aCaption :String) :TEvsPage; overload;deprecated 'Use NewPage Instead';
+    Procedure DeletePage      (const aPage:TEvsPage);
 
-    property OnNewTabClicked:TEvsNewTabClick read FOnNewTabClicked write SetOnNewTabClicked;
+    Property PageClass          :TEvsPageClass read FPageClass          write SetPageClass;
+    Property NewPageButton      :Boolean       read GetNewPageButton    write SetNewPageButton;
+    Property ShowAddTabButton   :Boolean       read GetAddButtonVisible write SetAddButtonVisible;
+    Property TabShowCloseButton :Boolean       read GetShowCloseButton  write SetShowCloseButton;
+    Property ShowTabs           :Boolean       read GetTabsVisible      write SetTabsVisible;
+    Property TabPosition        :TTabPosition  read FTabPosition        write SetTabPosition    default tpTop; //tpLeft, tpRight are not supported
+
+    Property OnNewTabClicked:TEvsNewTabClick        read FOnNewTabClicked write SetOnNewTabClicked;
+    Property OnChanging     :TATTabChangeQueryEvent read FOnChanging      write SetOnChanging;
   end;
 
 
@@ -68,6 +105,38 @@ type
 function EvsRandomColor :TColor;
 begin
   Result := RGBToColor(150 + Round(Random*100), 150 + round(Random*100),155 + round(random*100));
+end;
+
+{ TEvsTabProperties }
+
+function TEvsTabProperties.GetHeight :Integer;
+begin
+
+end;
+
+function TEvsTabProperties.GetShowCloseButton :Boolean;
+begin
+
+end;
+
+function TEvsTabProperties.GetTabAngle :Integer;
+begin
+
+end;
+
+procedure TEvsTabProperties.SetHeight(aValue :Integer);
+begin
+
+end;
+
+procedure TEvsTabProperties.SetShowCloseButton(aValue :Boolean);
+begin
+
+end;
+
+procedure TEvsTabProperties.SetTabAngle(aValue :Integer);
+begin
+
 end;
 
 
@@ -91,6 +160,26 @@ end;
 function TEvsATTabsNoteBook.GetNewPageButton :Boolean;
 begin
   Result := FTabSet.TabShowPlus;
+end;
+
+function TEvsATTabsNoteBook.GetShowCloseButton :Boolean;
+begin
+  Result := FTabSet.TabShowClose <> tbShowNone;
+end;
+
+function TEvsATTabsNoteBook.GetTabAngle :integer;
+begin
+  Result := FTabSet.TabAngle;
+end;
+
+function TEvsATTabsNoteBook.GetTabData(aIndex :Integer) :TATTabData;
+begin
+  Result := FTabSet.GetTabData(aIndex);
+end;
+
+function TEvsATTabsNoteBook.GetTabHeight :Integer;
+begin
+  Result := FTabSet.TabHeight;
 end;
 
 function TEvsATTabsNoteBook.GetAddButtonVisible :Boolean;
@@ -121,6 +210,23 @@ begin
   FPageClass:=aValue;
 end;
 
+procedure TEvsATTabsNoteBook.SetShowCloseButton(aValue :Boolean);
+const
+  CloseBtnVal : array[Boolean] of TATTabShowClose = (tbShowNone, tbShowAll);
+begin
+  FTabSet.TabShowClose := CloseBtnVal[aValue];
+end;
+
+procedure TEvsATTabsNoteBook.SetTabAngle(aValue :integer);
+begin
+  FTabSet.TabAngle := aValue;
+end;
+
+procedure TEvsATTabsNoteBook.SetTabHeight(aValue :Integer);
+begin
+  FTabSet.TabHeight := aValue;
+end;
+
 procedure TEvsATTabsNoteBook.SetTabPosition(aValue :TTabPosition);
 begin
   if aValue in [tpLeft, tpRight] then
@@ -149,33 +255,76 @@ begin
   FTabSet.Visible := aValue;
 end;
 
-constructor TEvsATTabsNoteBook.Create(aOwner :TComponent);
+procedure TEvsATTabsNoteBook.InsertControl(aControl :TControl; Index :Integer);
+begin
+  inherited InsertControl(aControl, Index);
+  Index := GetTrueIndex(Index)+1;//1 because controlcount already includes the new page.
+  if aControl is TEvsPage then begin
+    FTabSet.AddTab(Index, TEvsPage(aControl).Caption, aControl, False, TEvsPage(aControl).Color);
+  end;
+end;
+
+procedure TEvsATTabsNoteBook.RemoveControl(aControl :TControl);
+var
+  vIdx:Integer;
+begin
+  inherited RemoveControl(aControl);
+  if aControl is TEvsPage then begin
+    vIdx := IndexOfTab(TEvsPage(aControl).Caption);
+    if vIdx > -1 then FTabSet.DeleteTab(vIdx, False, False);
+  end;
+end;
+
+function TEvsATTabsNoteBook.IndexOfTab(aCaption :String) :Integer;
+var
+  vCntr :Integer;
+begin
+  Result := -1;
+  for vCntr := 0 to FTabSet.TabCount -1 do begin
+    if AnsiCompareText(aCaption, Tab[vCntr].TabCaption) = 0 then Exit(vCntr);
+  end;
+end;
+
+Constructor TEvsATTabsNoteBook.Create(aOwner :TComponent);
 begin
   inherited Create(aOwner);
   FTabSet                := TATTabs.Create(Self);
   FTabSet.Parent         := Self;
   FTabSet.Align          := alTop;
   FTabSet.OnTabClose     := @TabClosing;
-  FTabSet.OnTabPlusClick := @DoNewTab;
+  FTabSet.OnTabPlusClick := @DoNewTabButtonClick;
   FTabSet.OnTabChangeQuery := @TabChanging;
   FTabSet.TabShowPlus      := False;
   FTabSet.TabDoubleClickClose := False;
   FTabSet.TabMiddleClickClose := True;
   FTabPosition                := tpTop;
+  FTabSet.TabShowClose := tbShowAll;
   ApplyTheme1;
   FPageClass := TEvsPage;
 end;
 
-function TEvsATTabsNoteBook.NewPage(aCaption :TCaption) :TEvsPage;
+Function TEvsATTabsNoteBook.NewPage(aCaption :TCaption) :TEvsPage;
 begin
   Result := FPageClass.Create(Self);
-  Result.Parent := Self;
   Result.Caption := aCaption;
   Result.Visible := False;
+  Result.Parent := Self;
   ActivePage := Result;
 end;
 
-function TEvsATTabsNoteBook.AddChildToNewPage(const aCaption :String; const aChild:TControl = nil; ChildAlignment : TAlign = alClient):TEvsPage;
+Function TEvsATTabsNoteBook.NewPage(aCaption :TCaption; aPageClass :TEvsPageClass) :TEvsPage;
+begin
+  if Assigned(aPageClass ) then
+    Result := aPageClass.Create(Self)
+  else
+    Result := FPageClass.Create(Self);
+  Result.Caption := aCaption;
+  Result.Visible := False;
+  Result.Parent := Self;
+  ActivePage := Result;
+end;
+
+Function TEvsATTabsNoteBook.AddChildToNewPage(const aCaption :String; const aChild :TControl; ChildAlignment :TAlign) :TEvsPage;
 var
   vIdx:Integer;
 begin
@@ -189,23 +338,23 @@ begin
   end;
 end;
 
-function TEvsATTabsNoteBook.AddNewPage(const aCaption :String; const aChildClass :TControlClass; ChildAlignment :TAlign) :TEvsPage;
+Function TEvsATTabsNoteBook.AddNewPage(const aCaption :String) :TEvsPage;
 var
   vIdx:Integer;
 begin
   Result := NewPage(aCaption);
   vIdx   := IndexOf(Result);
-  FTabSet.AddTab(vIdx, aCaption, Result);
-  FTabSet.TabIndex := vIDx;
-  if Assigned(aChildClass) then begin
-    with aChildClass.Create(Result) do begin
-      Parent := Result;
-      Align  := ChildAlignment;
-    end;
-  end;
+  //FTabSet.AddTab(vIdx, aCaption, Result);
+  //FTabSet.TabIndex := vIDx;
+  //if Assigned(aChildClass) then begin
+  //  with aChildClass.Create(Result) do begin
+  //    Parent := Result;
+  //    Align  := ChildAlignment;
+  //  end;
+  //end;
 end;
 
-procedure TEvsATTabsNoteBook.DeletePage(const aPage :TEvsPage);
+Procedure TEvsATTabsNoteBook.DeletePage(const aPage :TEvsPage);
 var
   vIdx:Integer;
 begin
@@ -216,15 +365,19 @@ begin
   end else raise EEvsPageControl.Createfmt('Invalid Page : %S',[aPage.Caption]);
 end;
 
-procedure TEvsATTabsNoteBook.DoNewTab(aSender :TObject);
+procedure TEvsATTabsNoteBook.DoNewTabButtonClick(aSender :TObject);
 var
   vChild   :TControlClass;
   vAllow   :Boolean = False;
   vCaption :String;
+  vPage    :TEvsPage;
 begin
   vCaption := Format('New Tab %D ',[FTabSet.TabCount]);
   if Assigned(FOnNewTabClicked) then FOnNewTabClicked(vAllow, vCaption, vChild);
-  if vAllow then AddNewPage(vCaption, vChild);
+  if vAllow then begin
+    vPage := NewPage(vCaption);
+
+  end;
 end;
 
 procedure TEvsATTabsNoteBook.TabChanging(Sender :TObject; ANewTabIndex :Integer; var ACanChange :boolean);
@@ -236,7 +389,7 @@ begin
     vData := FTabSet.GetTabData(ANewTabIndex);
     ACanChange := (vData.TabObject is TEvsPage);
     if ACanChange then begin
-      PageIndex := IndexOf(TEvsPage(vData.TabObject));
+      inherited SetPageIndex(IndexOf(TEvsPage(vData.TabObject)));
     end;
   end;
 end;
@@ -248,7 +401,8 @@ begin
   if Sender is TATTabs then begin
     vObj := TATTabs(Sender).GetTabData(ATabIndex);
     if Assigned(vObj) and(vObj.TabObject is TEvsPage) then begin
-        FreeAndNil(vObj.TabObject);
+      FreeAndNil(vObj.TabObject);
+      aCanContinue := False;
     end;
     NextPage(False);
   end else aCanClose := False;
@@ -276,7 +430,17 @@ begin
   end;
 end;
 
-{$ENDRegion 'TEvsNoteBook' }
+procedure TEvsATTabsNoteBook.SetActivePage(aValue :TEvsPage);
+begin
+  FTabSet.TabIndex := TabIndex(aValue);
+end;
+
+procedure TEvsATTabsNoteBook.SetPageIndex(aValue :Integer);
+begin
+  //inherited SetPageIndex(aValue);
+end;
+
+{$EndRegion 'TEvsNoteBook' }
 
 end.
 

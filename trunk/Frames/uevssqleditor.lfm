@@ -1,17 +1,14 @@
-object SqlEditorFrame: TSqlEditorFrame
-  Left = 0
+inherited SqlEditorFrame: TSqlEditorFrame
   Height = 391
-  Top = 0
   Width = 790
   ClientHeight = 391
   ClientWidth = 790
-  TabOrder = 0
-  DesignLeft = 424
-  DesignTop = 383
-  inline sneQuery: TSynEdit
+  DesignLeft = 434
+  DesignTop = 205
+  inline sneQuery: TSynEdit[0]
     Left = 0
-    Height = 391
-    Top = 0
+    Height = 365
+    Top = 26
     Width = 790
     Align = alClient
     Font.Height = -13
@@ -508,7 +505,15 @@ object SqlEditorFrame: TSqlEditorFrame
       end
     end
   end
-  object SynSQLSyn1: TSynSQLSyn
+  object ToolBar1: TToolBar[1]
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 790
+    Caption = 'ToolBar1'
+    TabOrder = 1
+  end
+  object SynSQLSyn1: TSynSQLSyn[2]
     DefaultFilter = 'SQL Files (*.sql)|*.sql'
     Enabled = False
     CommentAttri.Foreground = clTeal
@@ -522,7 +527,7 @@ object SqlEditorFrame: TSqlEditorFrame
     left = 396
     top = 140
   end
-  object SynCompletion1: TSynCompletion
+  object SynCompletion1: TSynCompletion[3]
     Position = 0
     LinesInWindow = 6
     SelectedColor = clHighlight
@@ -531,7 +536,25 @@ object SqlEditorFrame: TSqlEditorFrame
     ShortCut = 16416
     EndOfTokenChr = '()[].'
     ExecCommandID = ecSynCompletionExecute
-    left = 483
-    top = 194
+    left = 476
+    top = 140
+  end
+  object aclQuery: TActionList[4]
+    left = 255
+    top = 186
+    object actExecute: TAction
+      Caption = 'actExecute'
+      OnUpdate = actExecuteUpdate
+      ShortCut = 120
+    end
+    object actToggleComment: TAction
+      Caption = 'actToggleComment'
+    end
+    object actExport: TAction
+      Caption = 'actExport'
+    end
+    object actImport: TAction
+      Caption = 'actImport'
+    end
   end
 end

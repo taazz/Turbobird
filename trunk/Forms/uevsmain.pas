@@ -8,7 +8,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, SynEdit, Forms, Controls, Graphics, Dialogs, ComCtrls, Buttons, ExtCtrls, StdCtrls, Grids, ActnList, StdActns, Menus,
   VirtualTrees, uevscolorutils, utbDBRegistry, GpStructuredStorage, uEvsTabNotebook, uEvsNoteBook, uEvsGenIntf, uTBCommon, uTBTypes, uEvsDBSchema,
-  utbConfig, uTbDialogs, uEvsIntfObjects, uEvsSqlEditor, uDMMain;
+  utbConfig, uTbDialogs, uEvsIntfObjects, uEvsGUICommon, uEvsSqlEditor, uTableDetailsFrame, uDMMain;
 
 type
 
@@ -25,18 +25,6 @@ type
   //
   // Should I auto focus the correct tree node in the tree when a page is activated? this is a smaller change
   // and probably the user is already used or can learn to ignore easier.
-
-  { TEvsDBPage }
-
-  TEvsDBPage = class(TEvsPage)
-  private
-    FDatabase :IEvsDatabaseInfo;
-    procedure SetDatabase(aValue :IEvsDatabaseInfo);
-  public
-    constructor Create(aOwner :TComponent); override;
-    destructor Destroy; override;
-    property Database:IEvsDatabaseInfo read FDatabase write SetDatabase;
-  end;
 
   { TEvsDBTreeData }
   //under consideration do not use.
@@ -57,6 +45,18 @@ type
     Property NextSibling :IEvsTreeNode read GetNextSibling;
   end;
 
+  { TTBDefaults }
+
+  TTBDefaults = object
+  private
+    FFont :TFont;
+    procedure SetFont(aValue :TFont);
+  public
+    property QueryFont :TFont read FFont write SetFont;
+    constructor Init;
+    destructor  Done;
+  end;
+
   { TMainForm }
   TMainForm = class(TForm, IEvsObserver)
     actAbout           :TAction;
@@ -68,13 +68,14 @@ type
     actFontEditor      :TAction;
     aclMain            :TActionList;
     actDropDatabase    :TAction;
-    actDropTable :TAction;
-    actEditTable :TAction;
-    actDisconnectDB :TAction;
-    actConnectDB :TAction;
-    actConnectAs :TAction;
-    actRefreshTable :TAction;
-    actNewTable :TAction;
+    actDropTable       :TAction;
+    actEditTable       :TAction;
+    actDisconnectDB    :TAction;
+    actConnectDB       :TAction;
+    actConnectAs       :TAction;
+    actRestoreAsNewDB  :TAction;
+    actRefreshTable    :TAction;
+    actNewTable        :TAction;
     actUnRegister      :TAction;
     actNewDB           :TAction;
     actOptions         :TAction;
@@ -88,60 +89,68 @@ type
     Bevel1             :TBevel;
     cbMain             :TCoolBar;
     Image1             :TImage;
-    MainMenu1 :TMainMenu;
-    MenuItem1 :TMenuItem;
-    MenuItem10 :TMenuItem;
-    MenuItem11 :TMenuItem;
-    MenuItem12 :TMenuItem;
-    MenuItem13 :TMenuItem;
-    MenuItem14 :TMenuItem;
-    MenuItem2 :TMenuItem;
-    MenuItem3 :TMenuItem;
-    MenuItem4 :TMenuItem;
-    MenuItem5 :TMenuItem;
-    MenuItem6 :TMenuItem;
-    MenuItem7 :TMenuItem;
-    MenuItem8 :TMenuItem;
-    MenuItem9 :TMenuItem;
+    MainMenu1   :TMainMenu;
+    MenuItem1   :TMenuItem;
+    MenuItem10  :TMenuItem;
+    MenuItem11  :TMenuItem;
+    MenuItem12  :TMenuItem;
+    MenuItem13  :TMenuItem;
+    MenuItem14  :TMenuItem;
+    MenuItem15  :TMenuItem;
+    MenuItem2   :TMenuItem;
+    MenuItem3   :TMenuItem;
+    MenuItem4   :TMenuItem;
+    MenuItem5   :TMenuItem;
+    MenuItem6   :TMenuItem;
+    MenuItem7   :TMenuItem;
+    MenuItem8   :TMenuItem;
+    MenuItem9   :TMenuItem;
     mnuDatabase :TMenuItem;
     mniCreateDB :TMenuItem;
-    Splitter1          :TSplitter;
-    StatusBar1         :TStatusBar;
-    ToolBar1           :TToolBar;
-    ToolBar2           :TToolBar;
-    tlbNewDB           :TToolButton;
-    tlbEditDB          :TToolButton;
-    ToolBar3           :TToolBar;
-    ToolButton1        :TToolButton;
-    ToolButton11       :TToolButton;
-    tlbUnregisterDB    :TToolButton;
-    tlbRegisterDB      :TToolButton;
-    tlbRestoreDB       :TToolButton;
-    tlbBackupDB        :TToolButton;
-    ToolButton2        :TToolButton;
-    tlbDisconnect :TToolButton;
-    ToolButton4 :TToolButton;
-    ToolButton9        :TToolButton;
-    vstMain            :TVirtualStringTree;
+    Splitter1       :TSplitter;
+    StatusBar1      :TStatusBar;
+    ToolBar1        :TToolBar;
+    ToolBar2        :TToolBar;
+    tlbNewDB        :TToolButton;
+    tlbEditDB       :TToolButton;
+    ToolBar3        :TToolBar;
+    ToolButton1     :TToolButton;
+    ToolButton11    :TToolButton;
+    tlbUnregisterDB :TToolButton;
+    tlbRegisterDB   :TToolButton;
+    tlbRestoreDB    :TToolButton;
+    tlbBackupDB     :TToolButton;
+    ToolButton2     :TToolButton;
+    tlbDisconnect   :TToolButton;
+    ToolButton3     :TToolButton;
+    ToolButton4     :TToolButton;
+    ToolButton5     :TToolButton;
+    ToolButton9     :TToolButton;
+    vstMain         :TVirtualStringTree;
     procedure actBackupDBExecute    (Sender :TObject);
     procedure actBackupDBUpdate     (Sender :TObject);
-    procedure actConnectAsExecute(Sender :TObject);
-    procedure actConnectAsUpdate(Sender :TObject);
-    procedure actConnectDBExecute(Sender :TObject);
-    procedure actConnectDBUpdate(Sender :TObject);
-    procedure actCutUpdate(Sender :TObject);
+    procedure actConnectAsExecute   (Sender :TObject);
+    procedure actConnectAsUpdate    (Sender :TObject);
+    procedure actConnectDBExecute   (Sender :TObject);
+    procedure actConnectDBUpdate    (Sender :TObject);
+    procedure actCutUpdate          (Sender :TObject);
     procedure actDatabaseEditExecute(Sender :TObject);
-    procedure actDatabaseEditUpdate(Sender :TObject);
+    procedure actDatabaseEditUpdate (Sender :TObject);
     procedure actDisconnectDBExecute(Sender :TObject);
-    procedure actDisconnectDBUpdate(Sender :TObject);
+    procedure actDisconnectDBUpdate (Sender :TObject);
     procedure actDropDatabaseExecute(Sender :TObject);
     procedure actDropDatabaseUpdate (Sender :TObject);
+    procedure actDropTableExecute   (Sender :TObject);
+    procedure actEditTableExecute   (Sender :TObject);
+    procedure actEditTableUpdate    (Sender :TObject);
     procedure actExitExecute        (Sender :TObject);
+    procedure actFontEditorExecute  (Sender :TObject);
     procedure actNewDBExecute       (Sender :TObject);
-    procedure actQueryUpdate(Sender :TObject);
+    procedure actQueryUpdate        (Sender :TObject);
     procedure actRefreshDatabaseExecute(Sender :TObject);
     procedure actRefreshDatabaseUpdate (Sender :TObject);
     procedure actRegisterDBExecute     (Sender :TObject);
+    procedure actRestoreAsNewDBExecute (Sender :TObject);
     procedure actRestoreDBExecute      (Sender :TObject);
     procedure actRestoreDBUpdate       (Sender :TObject);
     procedure actUnRegisterExecute     (Sender :TObject);
@@ -161,13 +170,16 @@ type
   private
     { private declarations }
     FSettingFileName :string;
+    FDefaults        :TTBDefaults;
     FWorkBench       :IGpStructuredStorage; //settings monitored sql and known databases.
-    FWorkSpace       :TEvsATTabsNoteBook; //all the windows, queries and editors
+    FDesktop         :TEvsATTabsNoteBook;   //all the windows, queries and editors
     function FocusedDBTitle:String;inline;
     procedure HandleNewTabClik(var Allow:Boolean; var aCaption:string; var aChild:TControlClass = nil);
     function GetDB(aNode:PVirtualNode):IEvsDatabaseInfo;inline;
     procedure TabChanging(aSender: TObject; aNewTabIndex: Integer; var ACanChange: Boolean);
     Function IsDatabaseNode(const aNode :PVirtualNode):Boolean;inline;
+    Function IsTableNode(const aNode:PVirtualNode):Boolean;inline;
+    function FocusedDBObject:IEvsDBBaseObject;
     procedure LoadConfig;
     procedure SaveConfig;
     procedure SetupWorkbench;
@@ -176,9 +188,10 @@ type
     function NewPage(const aDatabase:IEvsDatabaseInfo; const aCaption:string):TEvsDBPage;
     function NodeGenID(const aNode:PVirtualNode):Integer;
     function GetDBNode (const aNode:PVirtualNode):PVirtualNode;inline;
-    procedure DefaultAction(const aNode:PVirtualNode);
+    Function DoDefaultAction(const aNode:PVirtualNode):Boolean;                                                  //default action execution. needs its own container.
     function SupportedClass(const aControl:TObject):Boolean;
     Function FocusedDB:IEvsDatabaseInfo;inline;
+    Function NodeTable(const aNode:PVirtualNode):IEvsTableInfo;
    public
     { public declarations }
     constructor Create(aOwner :TComponent); override;
@@ -204,30 +217,56 @@ const
   cGroupLevel2 = 3;
   cObjectLevel = 2;
   cFieldLevel  = 3; //Only tables have extra info under them and for now only fields. In the next relase more will be added.
+  nIDTableGroup     = 101;//table group
+  nIDSequenceGroup  = 102;//Sequence group
+  nIDTriggerGroup   = 103;//Trigger Group
+  nIDViewGroup      = 104;//View Group
+  nIDProcedureGroup = 105;//Procedure Group
+  nIDUdfGroup       = 106;//Udf Group
+  //nIDTablesGroup    = 107;//Tables Group??
+  nIDDomainGroup    = 107;//Domain Group
+  nIDRoleGroup      = 108;//Role Group
+  nIDExceptionGroup = 109;//Exception Group
+
+  nIDDatabase   = -1; //Database
+  nIDTable      = -2; //table
+  nIDView       = -3; //view
+  nIDProcedure  = -4; //stored
+  nIDException  = -5; //exception
+  nIDUDF        = -6; //UDF
+  nIDDomain     = -7; //Domain
+  nIDField      = -8; //Field
+  nIDForeignKey = -9; //ForeignKey
+  nIDSequence   = -10;//Sequence
+  nIDIndex      = -11;//Index
+  nIDRole       = -12;//Role
+  nIDUser       = -13;//User
+  nIDTrigger    = -14;//Trigger
 
 type
   PIEvsDBBaseObject = ^IEvsDBBaseObject;
   PIEvsDataBaseInfo = ^IEvsDatabaseInfo;
   PIEvsTableInfo    = ^IEvsTableInfo;
 
-{ TEvsDBPage }
+var
+  vDefaultAction : Array[-14 .. -1] of TAction;
 
-procedure TEvsDBPage.SetDatabase(aValue :IEvsDatabaseInfo);
+{ TTBDefaults }
+
+procedure TTBDefaults.SetFont(aValue :TFont);
 begin
-  if FDatabase=aValue then Exit;
-  FDatabase:=aValue;
+  if FFont=aValue then Exit;
+  FFont.Assign(aValue);
 end;
 
-constructor TEvsDBPage.Create(aOwner :TComponent);
+constructor TTBDefaults.Init;
 begin
-  FDatabase := Nil;
-  inherited Create(aOwner);
+  FFont := TFont.Create;
 end;
 
-destructor TEvsDBPage.Destroy;
+destructor TTBDefaults.Done;
 begin
-  FDatabase := Nil;
-  inherited Destroy;
+  FFont.Free;
 end;
 
 {$REGION ' TEvsDBTreeData '}
@@ -276,7 +315,9 @@ end;
 
 procedure TMainForm.vstMainDblClick(Sender :TObject);
 begin
-  if Assigned(vstMain.FocusedNode) then DefaultAction(vstMain.FocusedNode)
+  if Assigned(vstMain.FocusedNode) then
+    if not DoDefaultAction(vstMain.FocusedNode) then //if not default action is executed/found then expand/collapse the focused node.
+      vstMain.Expanded[vstMain.FocusedNode] := not vstMain.Expanded[vstMain.FocusedNode];
 end;
 
 procedure TMainForm.actRegisterDBExecute(Sender :TObject);
@@ -291,6 +332,16 @@ begin
     end;
   finally
     DBRegistry.EndUpdate;
+  end;
+end;
+
+procedure TMainForm.actRestoreAsNewDBExecute(Sender :TObject);
+var
+  vDB:IEvsDatabaseInfo = Nil;
+begin
+  if RestoreDB(vDB) = mrOK then begin
+    DBRegistry.Append(vDB);
+    vstMain.RootNodeCount := vstMain.RootNodeCount + 1;
   end;
 end;
 
@@ -365,6 +416,11 @@ begin
   Application.Terminate;
 end;
 
+procedure TMainForm.actFontEditorExecute(Sender :TObject);
+begin
+  uTbDialogs.SelectFont(FDefaults.QueryFont);
+end;
+
 procedure TMainForm.actBackupDBUpdate(Sender :TObject);
 begin
   actBackupDB.Enabled := Assigned(GetDB(vstMain.FocusedNode)) and (not Assigned(FocusedDB.Connection));
@@ -398,21 +454,21 @@ end;
 procedure TMainForm.actDatabaseEditExecute(Sender :TObject);
 var
   vDB:IEvsDatabaseInfo;
-  procedure CopyRegInfoFrom(const aDB:IEvsDatabaseInfo);
+  procedure CopyRegInfoFrom(const aFrom, aTo:IEvsDatabaseInfo);
   begin
-    vDB.Title := aDB.Title;
-    vDB.Host := aDB.Host;
-    vDB.Database := aDB.Database;
-    vDB.DefaultCharset := aDB.DefaultCharset;
-    vDB.DefaultCollation := aDB.DefaultCollation;
-    vDB.Credentials.CopyFrom(aDB.Credentials);
+    aTo.Title            := aFrom.Title;
+    aTo.Host             := aFrom.Host;
+    aTo.Database         := aFrom.Database;
+    aTo.DefaultCharset   := aFrom.DefaultCharset;
+    aTo.DefaultCollation := aFrom.DefaultCollation;
+    aTo.Credentials.CopyFrom(aFrom.Credentials);
   end;
 
 begin
   vDB  := NewDatabase(FocusedDB.ServerKind);
-  CopyRegInfoFrom(FocusedDB);
+  CopyRegInfoFrom(FocusedDB, vDB);
   if uTbDialogs.RegisterDatabase(vDB) = mrOK then begin
-    FocusedDB.CopyFrom(vDB);
+    CopyRegInfoFrom(vDB, FocusedDB);
   end;
 end;
 
@@ -423,7 +479,7 @@ end;
 
 procedure TMainForm.actDisconnectDBExecute(Sender :TObject);
 begin
-  If GetConfirmation('Disconnect Database','Are you sure you want to disconnect %S database and close all open windows?') = mrYes then begin
+  If GetConfirmation('Disconnect Database', Format('Are you sure you want to disconnect %S database and close all open windows?',[FocusedDB.Title])) = mrYes then begin
     CloseAllAndDisconnect(FocusedDB);
   end;
 end;
@@ -449,6 +505,62 @@ end;
 procedure TMainForm.actDropDatabaseUpdate(Sender :TObject);
 begin
   actDropDatabase.Enabled := GetDB(vstMain.FocusedNode) <> nil;
+end;
+
+procedure TMainForm.actDropTableExecute(Sender :TObject);
+var
+  vDBObj :IEvsDBBaseObject;
+  vTbl   :IEvsTableInfo;
+begin
+  vDBObj := FocusedDBObject;
+  if Assigned(vDBObj) and Supports(vDBObj, IEvsTableInfo, vTbl) then begin
+    if dmMain.DropTable(vTbl) then begin
+      GetDatabase(vTbl).Remove(vTbl);
+      vstMain.DeleteNode(vstMain.FocusedNode);
+      vTbl := nil;
+    end;
+  end;
+end;
+
+procedure TMainForm.actEditTableExecute(Sender :TObject);
+var
+  vPage :TEvsTablePage;
+  vData :PIEvsTableInfo;
+  function FocusedTableName:String;
+  begin
+    Result := '';
+    vData := vstMain.GetNodeData(vstMain.FocusedNode);
+    if Assigned(vData) and Assigned(vData^) then
+      Result := vData^.TableName
+  end;
+  function FindObjectPage(const aTable:IEvsTableInfo):TEvsTablePage;
+  var
+    vCntr :Integer;
+  begin
+    Result := Nil;
+    for vCntr := 0 to FDesktop.PageCount -1 do begin
+      if FDesktop.Page[vCntr] is TEvsTablePage then begin
+        if (TEvsTablePage(FDesktop.Page[vCntr]).Table = aTable) then Exit(TEvsTablePage(FDesktop.Page[vCntr]));
+      end;
+    end;
+  end;
+begin
+  vData := vstMain.GetNodeData(vstMain.FocusedNode);
+  if Assigned(vData) and Assigned(vData^) then begin
+    vPage := FindObjectPage(vData^);
+    if not Assigned(vPage) then begin
+      vPage         := TEvsTablePage.Create(FDesktop);
+      vPage.Caption := FocusedDBTitle+':'+vData^.TableName;
+      vPage.Table   := vData^;
+      vPage.Parent  := FDesktop;
+    end;
+    FDesktop.ActivePage := vPage;
+  end;
+end;
+
+procedure TMainForm.actEditTableUpdate(Sender :TObject);
+begin
+  actEditTable.Enabled := NodeGenID(vstMain.FocusedNode) = nIDTable;
 end;
 
 procedure TMainForm.actBackupDBExecute(Sender :TObject);
@@ -504,12 +616,30 @@ end;
 
 Function TMainForm.IsDatabaseNode(const aNode :PVirtualNode) :Boolean;inline;
 var
-  vDt : Pointer;
+  vDt : Pointer = nil;
   vDBObj:PIEvsDBBaseObject absolute vDt;
-  vBase:IEvsDatabaseInfo;
+  vBase:IEvsDatabaseInfo=nil;
 begin
+  Result := False;
   vDt := vstMain.GetNodeData(aNode);
-  Result := Supports(vDBObj^, IEvsDatabaseInfo, vBase);
+  if Assigned(vDt) then Result := Supports(vDBObj^, IEvsDatabaseInfo, vBase);
+end;
+
+Function TMainForm.IsTableNode(const aNode :PVirtualNode) :Boolean;
+var
+  vDBObj:PIEvsDBBaseObject;
+begin
+  Result := False;
+  vDBObj := vstMain.GetNodeData(aNode);
+  if Assigned(vDBObj) then Result := Supports(vDBObj^, IEvsTableInfo);
+end;
+
+function TMainForm.FocusedDBObject :IEvsDBBaseObject;
+var
+  vDT :PIEvsDBBaseObject;
+begin
+  vDT    := vstMain.GetNodeData(vstMain.FocusedNode);
+  Result := vDT^;
 end;
 
 procedure TMainForm.LoadConfig;
@@ -564,19 +694,20 @@ var
   vCntr :Integer;
   vPage :TEvsPage;
 begin
-  for vCntr := 0 to FWorkSpace.PageCount -1 do begin
-      vPage := FWorkSpace.Page[vCntr];
+  for vCntr := 0 to FDesktop.PageCount -1 do begin
+      vPage := FDesktop.Page[vCntr];
     if vPage is TEvsDBPage and (TEvsDBPage(vPage).Database = aDB) then begin
-      FWorkSpace.DeletePage(vPage);
+      FDesktop.DeletePage(vPage);
     end;
   end;
 end;
 
 function TMainForm.NewPage(const aDatabase :IEvsDatabaseInfo; const aCaption :string) :TEvsDBPage;
 begin
-  Result := TEvsDBPage.Create(FWorkSpace);
+  Result := TEvsDBPage.Create(FDesktop);
   Result.Caption := aCaption;
   Result.Database := aDatabase;
+  Result.Parent  := FDesktop;
 end;
 
 function TMainForm.NodeGenID(const aNode :PVirtualNode) :Integer;
@@ -586,35 +717,35 @@ begin // a generic ID to identify a node based on its data, to be used for the d
   vData := vstMain.GetNodeData(aNode);
   if not Assigned(vData^) then begin
     Result := 0; // not a dbobject node probably a group node like tables or fields try to expand.
-    if vstMain.GetNodeLevel(aNode) = cGroupLevel1 then begin
+    if vstMain.GetNodeLevel(aNode) = cGroupLevel1 then begin //group level 1 is the child nodes of a database registration eg the nodes with text , tables, functions etc.
       case aNode^.Index of
-        0: Result := 101;//vData^ := vDB.Table     [Node^.Index];//table
-        1: Result := 102;//vData^ := vDB.Sequence  [Node^.Index];//Sequence
-        2: Result := 103;//vData^ := vDB.Trigger   [Node^.Index];//Trigger
-        3: Result := 104;//vData^ := vDB.View      [Node^.Index];//View
-        4: Result := 105;//vData^ := vDB.StoredProc[Node^.Index];//Procedure
-        5: Result := 106;//vData^ := vDB.UDF       [Node^.Index];//Udf
-        6: Result := 107;//vData^ := nil;                        //System Tables;
-        7: Result := 108;//vData^ := vDB.Domain    [Node^.Index];//Domain
-        8: Result := 109;//vData^ := vDB.Role      [Node^.Index];//Role
-        9: Result := 110;//vData^ := vDB.Exception [Node^.Index];//Exception
+        0: Result := nIDTableGroup;
+        1: Result := nIDSequenceGroup;
+        2: Result := nIDTriggerGroup;
+        3: Result := nIDViewGroup;
+        4: Result := nIDProcedureGroup;
+        5: Result := nIDUdfGroup;
+        //6: Result := 107;                //Tables Group
+        7: Result := nIDDomainGroup;
+        8: Result := nIDRoleGroup;
+        9: Result := nIDExceptionGroup;
       end;
-    end;
-  end else if Supports(vData^, IEvsDatabaseInfo)  then Result := -1   //Database
-  else if Supports(vData^, IEvsTableInfo)     then Result := -2   //table;
-  else if Supports(vData^, IEvsViewInfo)      then Result := -3   //view
-  else if Supports(vData^, IEvsStoredInfo)    then Result := -4   //stored
-  else if Supports(vData^, IEvsExceptionInfo) then Result := -5   //exception
-  else if Supports(vData^, IEvsUDFInfo)       then Result := -6   //UDF
-  else if Supports(vData^, IEvsDomainInfo)    then Result := -7   //Domain
-  else if Supports(vData^, IEvsField)         then Result := -8   //Field
-  else if Supports(vData^, IEvsForeignKey)    then Result := -9   //ForeignKey
-  else if Supports(vData^, IEvsSequenceInfo)  then Result := -10  //Sequence
-  else if Supports(vData^, IEvsIndexInfo)     then Result := -11  //Index
-  else if Supports(vData^, IEvsRoleInfo)      then Result := -12  //Role
-  else if Supports(vData^, IEvsUserInfo)      then Result := -13  //User
-  else if Supports(vData^, IEvsTriggerInfo)   then Result := -14  //Trigger
-  //else if Supports(vData^, IEvsConnection)    then Result := -15; //Connection??
+    end;//Next group level is the table children with text like fields, triggers etc. not yet implemented.
+  end else if Supports(vData^, IEvsDatabaseInfo)  then Result := nIDDatabase
+  else if Supports(vData^, IEvsTableInfo)     then Result := nIDTable
+  else if Supports(vData^, IEvsViewInfo)      then Result := nIDView
+  else if Supports(vData^, IEvsStoredInfo)    then Result := nIDProcedure
+  else if Supports(vData^, IEvsExceptionInfo) then Result := nIDException
+  else if Supports(vData^, IEvsUDFInfo)       then Result := nIDUDF
+  else if Supports(vData^, IEvsDomainInfo)    then Result := nIDDomain
+  else if Supports(vData^, IEvsField)         then Result := nIDField
+  else if Supports(vData^, IEvsForeignKey)    then Result := nIDForeignKey
+  else if Supports(vData^, IEvsSequenceInfo)  then Result := nIDSequence
+  else if Supports(vData^, IEvsIndexInfo)     then Result := nIDIndex
+  else if Supports(vData^, IEvsRoleInfo)      then Result := nIDRole
+  else if Supports(vData^, IEvsUserInfo)      then Result := nIDUser
+  else if Supports(vData^, IEvsTriggerInfo)   then Result := nIDTrigger
+  //else if Supports(vData^, IEvsConnection)    then Result := -15;          //Connection??
   ;
 end;
 
@@ -626,10 +757,37 @@ begin
   else Result := GetDBNode(aNode^.Parent);
 end;
 
-procedure TMainForm.DefaultAction(const aNode :PVirtualNode);
+function TMainForm.DoDefaultAction(const aNode :PVirtualNode):Boolean;
+var
+  vID:Integer;
 begin
-
-  if NodeGenID(aNode) = 0 then vstMain.Expanded[aNode] := not vstMain.Expanded[aNode];
+  Result := False;
+  //if NodeGenID(aNode) = 0 then vstMain.Expanded[aNode] := not vstMain.Expanded[aNode];
+  vID := NodeGenID(aNode);
+  case vID of
+    //0,nIDTableGroup..nIDExceptionGroup : vstMain.Expanded[aNode] := not vstMain.Expanded[aNode];
+    //nIDDatabase   : //Database
+    //nIDTable      : //table
+    //nIDView       : //view
+    //nIDProcedure  : //stored
+    //nIDException  : //exception
+    //nIDUDF        : //UDF
+    //nIDDomain     : //Domain
+    //nIDField      : //Field
+    //nIDForeignKey : //ForeignKey
+    //nIDSequence   : //Sequence
+    //nIDIndex      : //Index
+    //nIDRole       : //Role
+    //nIDUser       : //User
+    //nIDTrigger    : //Trigger
+    nIDTrigger..nIDDatabase  : begin
+      if Assigned(vDefaultAction[vID]) then
+        vDefaultAction[vID].Execute
+      else
+        vstMain.Expanded[aNode] := not vstMain.Expanded[aNode];
+       Result := True;
+    end;
+  end;
 end;
 
 function TMainForm.SupportedClass(const aControl :TObject) :Boolean;
@@ -640,6 +798,17 @@ end;
 Function TMainForm.FocusedDB :IEvsDatabaseInfo;inline;
 begin
   Result := GetDB(vstMain.FocusedNode);
+end;
+
+Function TMainForm.NodeTable(const aNode :PVirtualNode) :IEvsTableInfo;
+var
+  vData :PIEvsTableInfo;
+begin
+  Result := Nil;
+  if Assigned(aNode) then begin
+    vData  := vstMain.GetNodeData(aNode);
+    if Assigned(vData) then Result := vData^;
+  end;
 end;
 
 procedure TMainForm.vstMainFreeNode(Sender :TBaseVirtualTree; Node :PVirtualNode);
@@ -702,8 +871,8 @@ begin
           vData := Sender.GetNodeData(Node);
           if Assigned(vData^) then begin
           if (vData^ is IEvsDBBaseObject) then
-              CellText := vData^.ObjectTitle;
-          end else CellText := ' ';
+              CellText := vData^.GetObjectTitle;
+          end else CellText := ' ERROR ';
         end;
       end;
     end;
@@ -823,7 +992,10 @@ begin
       8: vData^ := vDB.Role      [Node^.Index];//Role
       9: vData^ := vDB.Exception [Node^.Index];//Exception
     end;
+  end else if IsTableNode(ParentNode) then begin
+    vData^ := NodeTable(ParentNode).Field[Node^.Index];
   end else vData^ := Nil; {$MESSAGE WARN 'pass the fields as well'}
+
 end;
 
 function TMainForm.FocusedDBTitle :String;inline;
@@ -844,12 +1016,13 @@ begin
   vDB := GetDB(vstMain.FocusedNode);
   Allow := False; //Assigned(vDB) and Assigned(vDB.Connection);
   if Assigned(vDB) and Assigned(vDB.Connection) then begin
-    vPg := FWorkSpace.AddNewPage(vDB.Title+':Query');//don't use newpage directly it does not handle the tab creation.
+    vPg := FDesktop.NewPage(vDB.Title+':Query');
     if vPg is TEvsDBPage then TEvsDBPage(vPg).Database := vDB;
     vFr := TSqlEditorFrame.Create(vPg);
     vFr.Database := vDB;
     vFr.Align    := alClient;
     vFr.Parent   := vPg;
+    vFr.sneQuery.Font := FDefaults.QueryFont;
   end;
 end;
 
@@ -859,8 +1032,7 @@ var
 begin
   if aNode = Nil then Exit(Nil);
   vData := vstMain.GetNodeData(aNode);
-  if not Supports(vData^, IEvsDatabaseInfo, Result) then
-    Result := GetDB(aNode^.Parent);
+  if not Supports(vData^, IEvsDatabaseInfo, Result) then Result := GetDB(aNode^.Parent);
 end;
 
 procedure TMainForm.TabChanging(aSender :TObject; aNewTabIndex :Integer; var ACanChange :Boolean);
@@ -871,24 +1043,28 @@ end;
 constructor TMainForm.Create(aOwner :TComponent);
 begin
   inherited Create(aOwner);
-  FWorkSpace := TEvsATTabsNoteBook.Create(Self);
-  FWorkSpace.Parent := Self;
-  FWorkSpace.Align := alClient;
-  FWorkSpace.ShowAddTabButton := True;
-  FWorkSpace.TabPosition := tpTop;
-  FWorkSpace.OnNewTabClicked := @HandleNewTabClik;
-  FWorkSpace.PageClass := TEvsDBPage;
-  Image1.Parent := FWorkSpace;
+  FDesktop        := TEvsATTabsNoteBook.Create(Self);
+  FDesktop.Parent := Self;
+  FDesktop.Align  := alClient;
+  FDesktop.ShowAddTabButton := True;
+  FDesktop.TabPosition      := tpTop;
+  FDesktop.OnNewTabClicked  := @HandleNewTabClik;
+  FDesktop.PageClass        := TEvsDBPage;
+  Image1.Parent             := FDesktop;
   DBRegistry.AddObserver(Self);
   FWorkBench := CreateStorage;
   FSettingFileName := utbConfig.GetConfigurationDirectory + utbConfig.GetConfigFileName;
   if FileExists(FSettingFileName) then LoadConfig
   else SetupWorkbench;
+  vDefaultAction[nIDDatabase] := nil;//actConnectDB;
+  vDefaultAction[nIDTable] := actEditTable;
+  FDefaults.Init;
 end;
 
 destructor TMainForm.Destroy;
 begin
   SaveConfig;
+  FDefaults.Done;
   inherited Destroy;
 end;
 
@@ -912,5 +1088,7 @@ begin
 end;
 {$ENDREGION}
 
+initialization
+    FillChar(vDefaultAction[Low(vDefaultAction)],Length(vDefaultAction) * SizeOf(TAction),#0);
 end.
 

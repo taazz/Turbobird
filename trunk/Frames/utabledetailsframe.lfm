@@ -1,0 +1,19 @@
+object TableDetailsFrame: TTableDetailsFrame
+  Left = 0
+  Height = 361
+  Top = 0
+  Width = 637
+  ClientHeight = 361
+  ClientWidth = 637
+  TabOrder = 0
+  DesignLeft = 695
+  DesignTop = 242
+  object Label1: TLabel
+    Left = 158
+    Height = 15
+    Top = 142
+    Width = 103
+    Caption = 'Table Details Frame'
+    ParentColor = False
+  end
+end

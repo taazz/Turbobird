@@ -1,0 +1,54 @@
+object Frame1: TFrame1
+  Left = 0
+  Height = 240
+  Top = 0
+  Width = 699
+  ClientHeight = 240
+  ClientWidth = 699
+  TabOrder = 0
+  DesignLeft = 342
+  DesignTop = 168
+  object vstFields: TVirtualStringTree
+    Left = 0
+    Height = 240
+    Top = 0
+    Width = 699
+    Align = alClient
+    DefaultText = 'Node'
+    Header.AutoSizeIndex = 0
+    Header.Columns = <    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAutoSpring, coAllowFocus]
+        Position = 0
+        Tag = 1
+        Text = 'Field Name'
+        Width = 250
+      end    
+      item
+        Position = 1
+        Tag = 2
+        Text = 'Data Type'
+        Width = 150
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
+        Position = 2
+        Tag = 3
+        Text = 'Size'
+        Width = 100
+      end    
+      item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coSmartResize, coAllowFocus]
+        Position = 3
+        Tag = 4
+        Text = 'Key'
+        Width = 75
+      end>
+    Header.DefaultHeight = 17
+    Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+    Header.Style = hsFlatButtons
+    TabOrder = 0
+    TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
+    TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages, toUseBlendedSelection, toUseExplorerTheme]
+  end
+end

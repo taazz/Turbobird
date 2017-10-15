@@ -1,4 +1,4 @@
-object frFontEdit: TfrFontEdit
+object EvsFontEditFrame: TEvsFontEditFrame
   Left = 0
   Height = 369
   Top = 0
@@ -15,7 +15,7 @@ object frFontEdit: TfrFontEdit
     Width = 175
     ItemHeight = 0
     OnSelectionChange = lbFontNameSelectionChange
-    TabOrder = 0
+    TabOrder = 1
   end
   object lblFontName: TLabel
     Left = 15
@@ -45,7 +45,8 @@ object frFontEdit: TfrFontEdit
       'Bold Italic'
     )
     ItemHeight = 15
-    TabOrder = 1
+    OnSelectionChange = lbStyleSelectionChange
+    TabOrder = 3
   end
   object lblSize: TLabel
     Left = 334
@@ -80,7 +81,8 @@ object frFontEdit: TfrFontEdit
     )
     ItemHeight = 15
     ItemIndex = 2
-    TabOrder = 2
+    OnSelectionChange = lbSizeSelectionChange
+    TabOrder = 5
   end
   object edFontName: TEdit
     Left = 13
@@ -88,8 +90,8 @@ object frFontEdit: TfrFontEdit
     Top = 30
     Width = 174
     OnChange = edFontNameChange
-    OnExit = edFontNameExit
-    TabOrder = 3
+    OnKeyDown = edFontNameKeyDown
+    TabOrder = 0
     Text = 'edFontName'
   end
   object edStyle: TEdit
@@ -97,7 +99,9 @@ object frFontEdit: TfrFontEdit
     Height = 23
     Top = 30
     Width = 131
-    TabOrder = 4
+    OnChange = edStyleChange
+    OnKeyDown = edStyleKeyDown
+    TabOrder = 2
   end
   object edSize: TEdit
     Left = 332
@@ -105,7 +109,9 @@ object frFontEdit: TfrFontEdit
     Top = 30
     Width = 69
     MaxLength = 5
-    TabOrder = 5
+    OnChange = edSizeChange
+    OnKeyDown = edSizeKeyDown
+    TabOrder = 4
     Text = '10'
   end
   object grpEffects: TCheckGroup
@@ -129,6 +135,7 @@ object frFontEdit: TfrFontEdit
       'Strikeout'
       'Underline'
     )
+    OnItemClick = grpEffectsItemClick
     TabOrder = 6
     Data = {
       020000000202
@@ -136,19 +143,19 @@ object frFontEdit: TfrFontEdit
   end
   object grpSample: TGroupBox
     Left = 194
-    Height = 85
+    Height = 136
     Top = 220
     Width = 207
     Caption = ' Sample '
     ChildSizing.LeftRightSpacing = 4
     ChildSizing.TopBottomSpacing = 1
     ChildSizing.HorizontalSpacing = 2
-    ClientHeight = 65
+    ClientHeight = 116
     ClientWidth = 203
-    TabOrder = 7
+    TabOrder = 9
     object lblSample: TLabel
       Left = 4
-      Height = 63
+      Height = 114
       Top = 1
       Width = 195
       Align = alClient
@@ -163,7 +170,8 @@ object frFontEdit: TfrFontEdit
     Top = 332
     Width = 175
     ItemHeight = 16
-    TabOrder = 8
+    OnChange = cmbColorChange
+    TabOrder = 7
   end
   object Label5: TLabel
     Left = 15
@@ -179,7 +187,7 @@ object frFontEdit: TfrFontEdit
     Top = 332
     Width = 207
     ItemHeight = 15
-    TabOrder = 9
+    TabOrder = 8
     Text = 'cmbScript'
     Visible = False
   end

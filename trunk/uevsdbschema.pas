@@ -405,6 +405,8 @@ type
     Function AddIndex(const aName:widestring; aOrder:TEvsSortOrder):IEvsIndexInfo;overload; extdecl;
     Function FieldByName(const aName:Widestring):IEvsFieldInfo;                             extdecl;
 
+    Function UniqueFieldName(const aPrefix, aSufix:widestring):Widestring;                  extdecl;
+
     Procedure Remove(const aObject:IEvsFieldInfo);  overload; extdecl;
     Procedure Remove(const aObject:IEvsIndexInfo);  overload; extdecl;
     Procedure Remove(const aObject:IEvsTriggerInfo);overload; extdecl;
@@ -415,10 +417,10 @@ type
     Property Collation   :WideString read GetCollation   write SetCollation; // probably will not keep it.
     Property SystemTable :LongBool   read GetSystemTable write SetSystemTable;
     //table collections
-    Property FieldCount   :Integer read GetFieldCount;
-    Property IndexCount   :Integer read GetIndexCount;
-    Property TriggerCount :Integer read GetTriggerCount;
-    Property ForeignKeyCount:Integer read GetForeignKeyCount;
+    Property FieldCount      :Integer read GetFieldCount;
+    Property IndexCount      :Integer read GetIndexCount;
+    Property TriggerCount    :Integer read GetTriggerCount;
+    Property ForeignKeyCount :Integer read GetForeignKeyCount;
     //checks
     //primary key
     //foreign key
@@ -1398,6 +1400,7 @@ uses uTBCommon;
 resourcestring
   SErrorListIndex = 'List index out of bounds (%d)';
   rsFieldNotFound = 'Field <%S> not found in %S';
+  rsField = 'Field';
 
 {$REGION ' Internal Types ' }
 
@@ -1515,6 +1518,7 @@ type
     Procedure SetFieldScale(aValue :Integer);         extdecl;
     Procedure SetFieldSize(aValue :integer);          extdecl;
     function GetIsPrimary :ByteBool;                  extdecl;
+  //protected
     function GetObjectTitle :Widestring;              extdecl;
   public
     Function EqualsTo(const aCompare :IEvsCopyable) :Boolean; override; extdecl;
@@ -1743,16 +1747,18 @@ type
     Procedure Remove(const aObject :IEvsFieldInfo);   overload; extdecl;
     Procedure Remove(const aObject :IEvsIndexInfo);   overload; extdecl;
 
+    Function UniqueFieldName(const aPrefix, aSufix:widestring):Widestring;extdecl;
+
     Property TableName   :WideString read GetTableName   write SetTableName;
     Property Description :WideString read GetDescription write SetDescription;
     Property CharSet     :WideString read GetCharset     write SetCharSet;
     Property Collation   :WideString read GetCollation   write SetCollation; // default collation for the table it will be used when creating string fields with no collation information.
     Property SystemTable :LongBool   read GetSystemTable write SetSystemTable;
 
-    Property FieldCount   :Integer read GetFieldCount;
-    Property IndexCount   :Integer read GetIndexCount;
-    Property TriggerCount :Integer read GetTriggerCount;
-    Property FKeyCount    :Integer read GetFKeyCount;
+    Property FieldCount      :Integer read GetFieldCount;
+    Property IndexCount      :Integer read GetIndexCount;
+    Property TriggerCount    :Integer read GetTriggerCount;
+    Property ForeignKeyCount :Integer read GetFKeyCount;
 
     Property Index     [aIndex :Integer] :IEvsIndexInfo   read GetIndex      write SetIndex;
     Property Field     [aIndex :Integer] :IEvsFieldInfo   read GetField      write SetField;      default;
@@ -5860,6 +5866,25 @@ begin
   finally
     EndUpdate;
   end;
+end;
+
+Function TEvsTableInfo.UniqueFieldName(const aPrefix, aSufix :widestring) :Widestring; extdecl;
+  function CombinedName(aCntr:Integer):widestring;inline;
+  begin
+    if Trim(aPrefix) <> '' then Result := Trim(aPrefix) + rsField else Result := rsField;
+    if Trim(aSufix ) <> '' then Result := Result + Trim(aSufix);
+    Result := Result+IntToStr(aCntr);
+  end;
+var
+  vCntr : Integer;
+  vDone : Boolean;
+begin
+  vCntr := 0;
+  repeat
+    inc(vCntr);
+    Result := CombinedName(vCntr);
+    vDone := FieldByName(CombinedName(vCntr)) = Nil;
+  until vDone;
 end;
 
 Constructor TEvsTableInfo.Create(aOwner :TEvsDBInfo; aRefCounted :Boolean);

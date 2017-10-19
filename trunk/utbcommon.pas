@@ -66,15 +66,15 @@ const //consts from turbocommon.inc copied here to avoid duplications.
 const
   // Some field types used in e.g. RDB$FIELDS
   // todo: (low priority) perhaps move to enumeration with fixed constant values
+  //*************************************  D E L E T E  *************************************
   BlobType    = 261;
   CharType    = 14;
   CStringType = 40; // probably null-terminated string used for UDFs
   VarCharType = 37;
-  // Available character set encodings for Firebird.
   // Update this whenever Firebird supports new character sets
+  //*************************************  D E L E T E  *************************************
   DefaultFBCharacterSet = 42; //Used for GUI controls etc. UTF8 in CharacterSets below.
-  // Available character sets as per Firebird 2.5
-   ///Hate, hate, hate tall pieces of code.
+  //*************************************  D E L E T E  *************************************
   FBReservedWords : array[0..166] of string = ( //JKOZ: make it an external source and dynamically changed (no need for recompilation).
                                            'ADD',                'ADMIN',  'ALL',      'ALTER',     'AND',        'ANY',      'AS',      'AT',
                                            'BETWEEN',            'BIGINT', 'BLOB',     'BOTH',      'BY',         'CASE',     'CAST',    'CHAR',
@@ -98,6 +98,7 @@ const
                                            'SQLSTATE (2.5.1)',   'VIEW',   'TRAILING', 'VARYING',   'WHEN',       'WHILE',    'WHERE',   'CHAR_LENGTH',
                                            'RETURNING_VALUES',   'BEGIN',  'DELETE',   'VARIABLE',  'ESCAPE',     'FULL',     'DISCONNECT'
                                            );
+  //*************************************  D E L E T E  *************************************
   //why I did this?
   cFldName        = 'field_name';
   cFldDescription = 'field_description';
@@ -115,6 +116,7 @@ const
   cFldSource      = 'field_source';
   cFldCharLength  = 'characterlength';
 
+  //*************************************  D E L E T E  *************************************
   cTmplFields     = 'SELECT r.RDB$FIELD_NAME AS '     + cFldName        + ', ' +
                     'r.RDB$DESCRIPTION AS '           + cFldDescription + ', ' +
                     'r.RDB$DEFAULT_SOURCE AS '        + cFldDefSource   + ', ' + {SQL source for default value}
@@ -138,6 +140,7 @@ const
                     'WHERE r.RDB$RELATION_NAME= ''%S'' '+
                     'ORDER BY r.RDB$FIELD_POSITION;';
 
+  //*************************************  D E L E T E  *************************************
   //JKOZ : convert to external source for multilingual support, after I remove the dependency on the title in the code.
   NumObjects = 13; //number of different objects in dbObjects array below
   dbObjectsEN: array[TObjectType] of string = ('Unknown', 'Tables', 'Generators', 'Triggers', 'Views', 'Stored Procedures', 'UDFs','Sys Tables',
@@ -158,7 +161,8 @@ type
     the return method to release the component back to the pool.
 
     Should I convert it to a generic pool to avoid type casting?
-  }
+
+  } //************** keep
 
   TEvsCustomComponentPool = class(TObject)
   private
@@ -193,14 +197,14 @@ type
 
   { TEvsConnectionPool }
 
-  TEvsConnectionPool = class(TEvsCustomComponentPool)
+  TEvsConnectionPool = class(TEvsCustomComponentPool)//**************** KEEP
   public
     function Aquire : TSQLConnection;overload;
   end;
 
   { TEvsQueryPool }
 
-  TEvsQueryPool = class(TEvsCustomComponentPool)
+  TEvsQueryPool = class(TEvsCustomComponentPool) //******************* KEEP
     function Aquire:TSQLQuery;overload;
   end;
 
@@ -209,7 +213,7 @@ type
   // the base methods of creating have been overriden and wrapped in a locking mechanism to
   // allow multiple threads to aquire and release components. The count and softmax are shared
   // from all threads.
-  TEvsThreadedComponentPool = Class(TEvsCustomComponentPool)
+  TEvsThreadedComponentPool = Class(TEvsCustomComponentPool) //*********** KEEP
   private
     FLock :TCriticalSection;
     procedure SetLazyCreate(aValue :Boolean); override;
@@ -229,7 +233,7 @@ type
 
   { TFormEnumerator }
 
-  TFormEnumerator = class
+  TFormEnumerator = class //*********** MODE TO helpers
   private
     FList   : TScreen;
     FClass  : TFormClass;
@@ -244,95 +248,95 @@ type
 
   { TScreenHelper }
 
-  TScreenHelper = class helper for TScreen
+  TScreenHelper = class helper for TScreen //************** MODE TO HELPERS
     function FormByClass(const aClass:TFormClass):TFormEnumerator;
   end;
 
-function IsReservedWord(const aName:String):boolean;
+function IsReservedWord(const aName:String):boolean;//****** Move to firebird unit
 
 
 // Retrieve available collations for specified Characterset into Collations
-function GetCollations(const Characterset: string; var Collations: TStringList): boolean;
+function GetCollations(const Characterset: string; var Collations: TStringList): boolean;//move to firebird units
 
 // Given field retrieval query in FieldQuery, return field type and size.
 // Includes support for field types that are domains and arrays
-procedure GetFieldType(FieldQuery: TMDOQuery; var FieldType: string; var FieldSize: integer);
+procedure GetFieldType(FieldQuery: TMDOQuery; var FieldType: string; var FieldSize: integer);//move to firbird units
 
 // Returns field type DDL given a RDB$FIELD_TYPE value as well
 // as subtype/length/scale (use -1 for empty/unknown values)
 function GetFBTypeName(Index: Integer; SubType: integer=-1; FieldLength: integer=-1;
-                       Precision: integer=-1; Scale: integer=-1): string;
+                       Precision: integer=-1; Scale: integer=-1): string;                //move to firebird units
 
 // Tries to guess if an RDB$RELATION_FIELDS.RDB$FIELD_SOURCE domain name for a column is system-generated.
-function IsFieldDomainSystemGenerated(FieldSource: string): boolean;
+function IsFieldDomainSystemGenerated(FieldSource: string): boolean;//move to firebird units
 
 // Tries to guess if an index name is a system generated primary key index
-function IsPrimaryIndexSystemGenerated(IndexName: string): boolean;
+function IsPrimaryIndexSystemGenerated(IndexName: string): boolean;//move to firebird units
 
 // Given TIBConnection parameters, sets transaction isolation level
-procedure SetTransactionIsolation(Params: TStrings);
+procedure SetTransactionIsolation(Params: TStrings);//move to firebird units
 
 { Using a pool Manager return an existing query or create a new and return it.
   The procedure initializes the transaction to the one passed or creates a new only
   for the new query. }
-function GetQuery(const aConnection :TMDODataBase; const aTransaction :TMDOTransaction=nil) :TMDOQuery;
-function GetQuery(const aConnection :TMDODataBase; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TMDOTransaction=Nil) :TMDOQuery;
+function GetQuery(const aConnection :TMDODataBase; const aTransaction :TMDOTransaction=nil) :TMDOQuery;//***************** DELETE
+function GetQuery(const aConnection :TMDODataBase; const aSQLCmd :string; const aParams :Array of const; const aTransaction :TMDOTransaction=Nil) :TMDOQuery;//***************** DELETE
 
 //the connection passed is used to initialize the new connection.
-function GetConnection(const aConnection:TMDODataBase):TMDODataBase;
+function GetConnection(const aConnection:TMDODataBase):TMDODataBase;//***************** DELETE
 //function GetConnection(const aDB:TDBInfo):TMDODataBase;
 
 {
  If there is empty space in the pool the query is returned there if not the returned item is destroyed
  including the transaction that might own.}
-procedure ReleaseQuery(const aQuery : TSQLQuery);deprecated 'use the MDO Query instead';
-procedure ReleaseQuery(const aQuery : TMDOQuery);
-procedure ReleaseConnection(const aConnection:TIBConnection);deprecated 'use the MDO Database instead';
+procedure ReleaseQuery(const aQuery : TSQLQuery);deprecated 'use the MDO Query instead'; //***************** DELETE
+procedure ReleaseQuery(const aQuery : TMDOQuery);//***************** DELETE
+procedure ReleaseConnection(const aConnection:TIBConnection);deprecated 'use the MDO Database instead';//***************** DELETE
 
 //MDO Jump;
 //procedure Connect(const aCnn:TMDODataBase;const aDatabase:TDBInfo);overload;
-procedure Connect(const aCnn:TMDODatabase;const aDatabase:TDBDetails);overload;
+procedure Connect(const aCnn:TMDODatabase;const aDatabase:TDBDetails);overload;//***************** DELETE
 
 //function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBInfo):Boolean;overload;
-function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBDetails):Boolean;overload;
+function IsConnectedTo(const aCnn:TMDODataBase; const aDB:TDBDetails):Boolean;overload;//***************** DELETE
 
 
 //function SQLExecute(const aDB :TDBInfo; const aCommand:string; aParams:Array of const;const aTransaction:TMDOTransaction=nil) :Boolean;
-function SQLExecute(const aConn :TMDODataBase; const aCommand:string; aParams:Array of const; const aTransaction:TMDOTransaction=nil) :Boolean;
+function SQLExecute(const aConn :TMDODataBase; const aCommand:string; aParams:Array of const; const aTransaction:TMDOTransaction=nil) :Boolean;//***************** DELETE
 
-function FindCustomForm(aCaption: string; aClass: TFormClass): TForm;
+function FindCustomForm(aCaption: string; aClass: TFormClass): TForm;//***************** KEEP
 
 //initialization routines
 //procedure InitDBInfo(var aDBInfo:TDBInfo);
-procedure InitDBRec(var aRec:TDBDetails);
+procedure InitDBRec(var aRec:TDBDetails);   //***************** DELETE
 //function  NewDBInfo:PDBinfo;
 
-//generic call to clear on controls that support it.
+//generic call to clear, on controls that support it.
 procedure ClearControls(const aParent:TWinControl);experimental;
-function WhereStr(const aFieldNames: array of string; const aFieldValues:array of const; const aLinkStatement:string='and'; Enclose:Boolean = False ):string;
+function WhereStr(const aFieldNames: array of string; const aFieldValues:array of const; const aLinkStatement:string='and'; Enclose:Boolean = False ):string;//*** keep
 
-function GetServerName(const aDBName: string): string;
-function ChangeServerName(const aDBName:string; aServerName:String):string;
-function ExtractDBName(const aDBName: string): string;
-function ExtractHost(const aDBName: string): string;
+function GetServerName(const aDBName: string): string;                      //***** delete
+function ChangeServerName(const aDBName:string; aServerName:String):string; //***** delete
+function ExtractDBName(const aDBName: string): string;                      //***** delete
+function ExtractHost(const aDBName: string): string;                        //***** delete
 
-function NotImplementedException:ETBException;
-function ReplaceException(const aMessage:string):ETBException;
-function SilentException(const aMessage:String):ETBSilentException;
+function NotImplementedException:ETBException;                              //***** KEEP
+function ReplaceException(const aMessage:string):ETBException;              //***** KEEP
+function SilentException(const aMessage:String):ETBSilentException;         //***** KEEP
 
-function DeprecatedException:ETBException;
-function EOF(const aStream:TStream):Boolean;inline;
-function CharCount(const aChar : Char; const aString:string):Integer;
-function Split(const aSource:String; const aDelimiter:Char):TStringArray;
-function Split(const aSource:wideString; const aDelimiter:WideChar):TWideStringArray;
-function _VarArray(const aValues: array of const): Variant;
-function _VarArray(const aValues: TStringArray): Variant;
-function _VarArray(const aValues: TWideStringArray): Variant;
-procedure ToStrings(const aArray:TWideStringArray; const aStrings:TStrings);
+function DeprecatedException:ETBException;                                  //***** KEEP
+function EOF(const aStream:TStream):Boolean;inline;                         //***** KEEP
+function CharCount(const aChar : Char; const aString:string):Integer;       //***** KEEP
+function Split(const aSource:String; const aDelimiter:Char):TStringArray;   //***** KEEP
+function Split(const aSource:wideString; const aDelimiter:WideChar):TWideStringArray;//***** KEEP
+function _VarArray(const aValues: array of const): Variant;                 //***** KEEP
+function _VarArray(const aValues: TStringArray): Variant;                   //***** KEEP
+function _VarArray(const aValues: TWideStringArray): Variant;               //***** KEEP
+procedure ToStrings(const aArray:TWideStringArray; const aStrings:TStrings);//***** KEEP
 
-Function Between(const LowValue, HighValue, aValue :Int64):Boolean;inline;
-Function FullDBName(const aDatabase:IEvsdatabaseInfo):string;inline;
-procedure ParseFullDBName(const aCnnString:String; var aHost, aPort, aDatabase:string);
+Function Between(const LowValue, HighValue, aValue :Int64):Boolean;inline;  //***** KEEP
+Function FullDBName(const aDatabase:IEvsdatabaseInfo):string;inline;        //***** DELETE
+procedure ParseFullDBName(const aCnnString:String; var aHost, aPort, aDatabase:string); //***** DELETE
 
 implementation
 

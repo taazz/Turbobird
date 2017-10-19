@@ -1401,12 +1401,12 @@ end;
 
 Function TEvsMDOConnection.GetFieldDDL(Const aObject :IEvsFieldInfo) :widestring; extdecl;
 begin
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  raise utbcommon.NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 Function TEvsMDOConnection.GetTableDDL(Const aObject :IEvsTableInfo) :widestring; extdecl;
 begin
-  raise NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
+  raise utbcommon.NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 Function TEvsMDOConnection.GetCharsets :PVarArray; extdecl;

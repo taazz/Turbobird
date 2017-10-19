@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterSQL, SynCompletion, Forms, Controls, ExtCtrls, uEvsTabNotebook, uEvsDBSchema, uBaseFrame,
-  ComCtrls, ActnList;
+  ComCtrls, ActnList, StdActns;
 
 type
 
@@ -18,10 +18,10 @@ type
     actExport :TAction;
     actImport :TAction;
     actToggleComment :TAction;
+    SearchFind1 :TSearchFind;
     SynCompletion1 :TSynCompletion;
     sneQuery :TSynEdit;
     SynSQLSyn1 :TSynSQLSyn;
-    ToolBar1 :TToolBar;
     procedure actExecuteUpdate(Sender :TObject);
   private
     { private declarations }

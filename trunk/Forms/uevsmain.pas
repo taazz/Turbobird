@@ -584,7 +584,13 @@ begin
           if vDB.Connection = nil then
             dmMain.ConnectDatabase(vDB);
           Allowed := Assigned(vDB.Connection);
-          if Allowed then Sender.ReinitChildren(Node,False);
+          if Allowed then begin
+            Sender.ReinitChildren(Node,False);
+            if not Assigned(Sender.FocusedNode) then begin
+              Sender.FocusedNode := Node;
+              Sender.Selected[Node] := True;
+            end;
+          end;
         end;
       end;
     cGroupLevel1 : begin
@@ -1010,19 +1016,18 @@ end;
 procedure TMainForm.HandleNewTabClik(var Allow :Boolean; var aCaption :string; var aChild :TControlClass);
 var
   vDB:IEvsDatabaseInfo;
-  vPg:TEvsPage;
-  vFr:TSqlEditorFrame;
+  vPg:TEvsQueryPage;
+  //vFr:TSqlEditorFrame;
 begin
   vDB := GetDB(vstMain.FocusedNode);
-  Allow := False; //Assigned(vDB) and Assigned(vDB.Connection);
+  Allow := False;
   if Assigned(vDB) and Assigned(vDB.Connection) then begin
-    vPg := FDesktop.NewPage(vDB.Title+':Query');
-    if vPg is TEvsDBPage then TEvsDBPage(vPg).Database := vDB;
-    vFr := TSqlEditorFrame.Create(vPg);
-    vFr.Database := vDB;
-    vFr.Align    := alClient;
-    vFr.Parent   := vPg;
-    vFr.sneQuery.Font := FDefaults.QueryFont;
+    vPg := TEvsQueryPage.Create(Self);
+    vPg.Caption := vDB.Title+':Query';
+    vPg.Database := vDB;
+    vPg.SqlEditor.Font := FDefaults.QueryFont;
+    vPg.Parent := FDesktop;
+    FDesktop.ActivePage := vPg;
   end;
 end;
 

@@ -7,8 +7,8 @@ inherited SqlEditorFrame: TSqlEditorFrame
   DesignTop = 205
   inline sneQuery: TSynEdit[0]
     Left = 0
-    Height = 365
-    Top = 26
+    Height = 391
+    Top = 0
     Width = 790
     Align = alClient
     Font.Height = -13
@@ -505,15 +505,7 @@ inherited SqlEditorFrame: TSqlEditorFrame
       end
     end
   end
-  object ToolBar1: TToolBar[1]
-    Left = 0
-    Height = 26
-    Top = 0
-    Width = 790
-    Caption = 'ToolBar1'
-    TabOrder = 1
-  end
-  object SynSQLSyn1: TSynSQLSyn[2]
+  object SynSQLSyn1: TSynSQLSyn[1]
     DefaultFilter = 'SQL Files (*.sql)|*.sql'
     Enabled = False
     CommentAttri.Foreground = clTeal
@@ -527,7 +519,7 @@ inherited SqlEditorFrame: TSqlEditorFrame
     left = 396
     top = 140
   end
-  object SynCompletion1: TSynCompletion[3]
+  object SynCompletion1: TSynCompletion[2]
     Position = 0
     LinesInWindow = 6
     SelectedColor = clHighlight
@@ -539,7 +531,7 @@ inherited SqlEditorFrame: TSqlEditorFrame
     left = 476
     top = 140
   end
-  object aclQuery: TActionList[4]
+  object aclQuery: TActionList[3]
     left = 255
     top = 186
     object actExecute: TAction
@@ -555,6 +547,11 @@ inherited SqlEditorFrame: TSqlEditorFrame
     end
     object actImport: TAction
       Caption = 'actImport'
+    end
+    object SearchFind1: TSearchFind
+      Category = 'Search'
+      Caption = '&Find ...'
+      ShortCut = 16454
     end
   end
 end

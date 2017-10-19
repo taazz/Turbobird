@@ -165,15 +165,15 @@ begin
     vFrm.BorderStyle := bsDialog;
     vFontFrame := TEvsFontEditFrame.Create(Nil);
     try
-      vFontFrame.Top := 0;
-      vFontFrame.Left := 0;
+      vFontFrame.Top := cVBorderGap;
+      vFontFrame.Left := cHBorderGap;
       vFontFrame.Parent := vFrm;
       vFontFrame.EditFont := aFont;
-      vFrm.Height := vFontFrame.Height+vFrm.ButtonPanel1.Height + 4;
-      vFrm.Height := vFontFrame.Width +2;
+      vFrm.Height := vFontFrame.Height+vFrm.ButtonPanel1.Height + cVBorderGap+cVBorderGap;
+      vFrm.Width := vFontFrame.Width + cHBorderGap+cHBorderGap;
       Result := vFrm.ShowModal;
       if Result = mrOK then begin
-        vFont := vFontFrame.EditFont; //execute the ScreenToObject
+        vFont := vFontFrame.EditFont; //execute ScreenToObject;
       end;
     finally
       vFontFrame.Free;

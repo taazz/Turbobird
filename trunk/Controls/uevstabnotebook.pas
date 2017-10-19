@@ -57,7 +57,8 @@ type
     procedure SetTabSet(aValue :TATTabs);
     procedure SetTabsVisible(aValue :Boolean);
   protected
-    function  IndexOfTab(aCaption:String):Integer;
+    function  IndexOfTab(aCaption:String):Integer;overload;
+    function  IndexOfTab(aPage:TEvsPage):Integer;overload;
     procedure DoNewTabButtonClick(aSender :TObject);
     procedure TabChanging(Sender: TObject; ANewTabIndex: Integer; var ACanChange: boolean) ;
     procedure TabClosing(Sender: TObject; ATabIndex: Integer; var ACanClose, aCanContinue: Boolean);
@@ -68,9 +69,9 @@ type
     procedure SetActivePage(aValue :TEvsPage); override;
     procedure SetPageIndex(aValue :Integer); override;
     property Tab[aIndex:Integer]:TATTabData read GetTabData;
+  public //overriden methods.
     procedure InsertControl(aControl :TControl; Index :Integer); override;
     procedure RemoveControl(aControl :TControl); override;
-  public //overriden methods.
     property TabHeight : Integer read GetTabHeight write SetTabHeight;
     property TabAngle:integer read GetTabAngle Write SetTabAngle;
   public
@@ -268,11 +269,9 @@ procedure TEvsATTabsNoteBook.RemoveControl(aControl :TControl);
 var
   vIdx:Integer;
 begin
+  if aControl is TEvsPage then vIdx := IndexOfTab(TEvsPage(aControl));
   inherited RemoveControl(aControl);
-  if aControl is TEvsPage then begin
-    vIdx := IndexOfTab(TEvsPage(aControl).Caption);
-    if vIdx > -1 then FTabSet.DeleteTab(vIdx, False, False);
-  end;
+  if vIdx > -1 then FTabSet.DeleteTab(vIdx, False, False);
 end;
 
 function TEvsATTabsNoteBook.IndexOfTab(aCaption :String) :Integer;
@@ -282,6 +281,19 @@ begin
   Result := -1;
   for vCntr := 0 to FTabSet.TabCount -1 do begin
     if AnsiCompareText(aCaption, Tab[vCntr].TabCaption) = 0 then Exit(vCntr);
+  end;
+end;
+
+function TEvsATTabsNoteBook.IndexOfTab(aPage :TEvsPage) :Integer;
+var
+  vCntr :Integer;
+  vObj:TObject;
+begin
+  Result := -1;
+  for vCntr := 0 to FTabSet.TabCount -1 do begin
+    vObj := Tab[vCntr].TabObject;
+    if (Tab[vCntr].TabObject = aPage) then
+      Exit(vCntr);
   end;
 end;
 
@@ -376,7 +388,6 @@ begin
   if Assigned(FOnNewTabClicked) then FOnNewTabClicked(vAllow, vCaption, vChild);
   if vAllow then begin
     vPage := NewPage(vCaption);
-
   end;
 end;
 
@@ -401,11 +412,11 @@ begin
   if Sender is TATTabs then begin
     vObj := TATTabs(Sender).GetTabData(ATabIndex);
     if Assigned(vObj) and(vObj.TabObject is TEvsPage) then begin
-      FreeAndNil(vObj.TabObject);
-      aCanContinue := False;
+      FreeAndNil(vObj.TabObject);//remember this one nil first and then free the object
+      aCanContinue := True;      //so the removecontrol method will not find the tab to delete.
     end;
-    NextPage(False);
-  end else aCanClose := False;
+  end else
+    aCanClose := False;
 end;
 
 procedure TEvsATTabsNoteBook.ApplyTheme1;
@@ -437,7 +448,7 @@ end;
 
 procedure TEvsATTabsNoteBook.SetPageIndex(aValue :Integer);
 begin
-  //inherited SetPageIndex(aValue);
+  Tabset.TabIndex := aValue;
 end;
 
 {$EndRegion 'TEvsNoteBook' }

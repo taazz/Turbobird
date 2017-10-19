@@ -4,7 +4,7 @@
     <PathDelim Value="\"/>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="54">
+    <Units Count="57">
       <Unit0>
         <Filename Value="TurboBird_New.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -19,8 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uEvsMain"/>
-        <TopLine Value="978"/>
-        <CursorPos X="39" Y="1023"/>
+        <TopLine Value="990"/>
+        <CursorPos X="43" Y="1031"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -41,9 +41,9 @@
         <Filename Value="Controls\uevsnotebook.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsNoteBook"/>
-        <EditorIndex Value="11"/>
-        <TopLine Value="370"/>
-        <CursorPos X="3" Y="372"/>
+        <EditorIndex Value="16"/>
+        <TopLine Value="364"/>
+        <CursorPos X="3" Y="388"/>
         <UsageCount Value="204"/>
         <Loaded Value="True"/>
       </Unit3>
@@ -75,11 +75,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="ufrFontEditor"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="102"/>
-        <CursorPos Y="154"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="115"/>
+        <CursorPos X="14" Y="156"/>
         <UsageCount Value="205"/>
-        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="Forms\udbdetails.pas"/>
@@ -98,7 +97,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uTbDialogs"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="33" Y="21"/>
+        <TopLine Value="130"/>
+        <CursorPos X="29" Y="178"/>
         <UsageCount Value="205"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -114,9 +114,10 @@
         <Filename Value="uevsdbschema.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsDBSchema"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="2968"/>
-        <CursorPos X="22" Y="2999"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="4849"/>
+        <CursorPos Y="4880"/>
+        <FoldState Value=" T7=9JO2 pigjTLh2s"/>
         <UsageCount Value="216"/>
         <Loaded Value="True"/>
       </Unit10>
@@ -163,22 +164,18 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uEvsSqlEditor"/>
-        <EditorIndex Value="12"/>
-        <TopLine Value="51"/>
-        <CursorPos X="3" Y="97"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="23" Y="37"/>
         <UsageCount Value="225"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="Controls\uevstabnotebook.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsTabNotebook"/>
-        <EditorIndex Value="10"/>
-        <TopLine Value="51"/>
-        <CursorPos X="32" Y="79"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="54"/>
+        <CursorPos X="19" Y="86"/>
         <UsageCount Value="225"/>
-        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="Frames\ugridresultframe.pas"/>
@@ -244,9 +241,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uTableDetailsFrame"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="65"/>
-        <CursorPos X="3" Y="92"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="56"/>
+        <CursorPos X="12" Y="93"/>
         <UsageCount Value="235"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -258,7 +256,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uTableFieldsFrame"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="6"/>
         <CursorPos X="24" Y="35"/>
         <UsageCount Value="235"/>
@@ -269,10 +267,9 @@
         <Filename Value="uevsguicommon.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uEvsGUICommon"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="20"/>
-        <CursorPos X="30" Y="49"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="200"/>
+        <CursorPos Y="230"/>
         <UsageCount Value="219"/>
         <Bookmarks Count="1">
           <Item0 X="19" Y="38"/>
@@ -287,137 +284,141 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="uTableIndicesFrame"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="137"/>
+        <UsageCount Value="200"/>
       </Unit25>
       <Unit26>
-        <Filename Value="utbfirebird.pas"/>
-        <UnitName Value="uTBFirebird"/>
-        <EditorIndex Value="15"/>
-        <TopLine Value="686"/>
-        <CursorPos X="30" Y="790"/>
-        <UsageCount Value="105"/>
+        <Filename Value="utbcommon.pas"/>
+        <UnitName Value="uTBCommon"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="282"/>
+        <CursorPos X="34" Y="323"/>
+        <UsageCount Value="41"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
+        <Filename Value="utbfirebird.pas"/>
+        <UnitName Value="uTBFirebird"/>
+        <EditorIndex Value="17"/>
+        <TopLine Value="1380"/>
+        <CursorPos X="19" Y="1409"/>
+        <UsageCount Value="105"/>
+        <Loaded Value="True"/>
+      </Unit27>
+      <Unit28>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\collect.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="5"/>
         <CursorPos X="3" Y="21"/>
-        <UsageCount Value="58"/>
-      </Unit27>
-      <Unit28>
+        <UsageCount Value="47"/>
+      </Unit28>
+      <Unit29>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\stringl.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1294"/>
         <CursorPos X="18" Y="1312"/>
-        <UsageCount Value="58"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="Controls\attabs.pas"/>
-        <UnitName Value="ATTabs"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="449"/>
-        <CursorPos Y="485"/>
-        <UsageCount Value="90"/>
+        <UsageCount Value="47"/>
       </Unit29>
       <Unit30>
-        <Filename Value="..\..\..\1.4.4\lcl\forms.pp"/>
-        <UnitName Value="Forms"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="277"/>
-        <CursorPos X="14" Y="306"/>
-        <UsageCount Value="66"/>
+        <Filename Value="Controls\attabs.pas"/>
+        <UnitName Value="ATTabs"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="1258"/>
+        <CursorPos Y="1305"/>
+        <UsageCount Value="83"/>
+        <Loaded Value="True"/>
       </Unit30>
       <Unit31>
+        <Filename Value="..\..\..\1.4.4\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="229"/>
+        <CursorPos X="15" Y="258"/>
+        <UsageCount Value="58"/>
+        <Loaded Value="True"/>
+      </Unit31>
+      <Unit32>
         <Filename Value="..\..\..\Components\Evosi\gdiplus\pas\uevsgdipluscanvas.pas"/>
         <UnitName Value="uEvsGDIPlusCanvas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="592"/>
         <CursorPos X="26" Y="624"/>
-        <UsageCount Value="60"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="..\..\..\1.4.4\lcl\include\wincontrol.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="5754"/>
-        <CursorPos X="9" Y="5794"/>
-        <UsageCount Value="57"/>
+        <UsageCount Value="49"/>
       </Unit32>
       <Unit33>
-        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1618"/>
-        <CursorPos X="14" Y="1653"/>
-        <UsageCount Value="54"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="6189"/>
+        <CursorPos Y="6219"/>
+        <UsageCount Value="49"/>
+        <Loaded Value="True"/>
       </Unit33>
       <Unit34>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1791"/>
+        <CursorPos X="3" Y="1820"/>
+        <UsageCount Value="65"/>
+      </Unit34>
+      <Unit35>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\classes\compon.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="30"/>
         <CursorPos Y="32"/>
-        <UsageCount Value="54"/>
-      </Unit34>
-      <Unit35>
+        <UsageCount Value="43"/>
+      </Unit35>
+      <Unit36>
         <Filename Value="..\..\..\1.4.4\lcl\comctrls.pp"/>
         <UnitName Value="ComCtrls"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="320"/>
-        <CursorPos X="3" Y="348"/>
-        <UsageCount Value="30"/>
-      </Unit35>
-      <Unit36>
+        <TopLine Value="2000"/>
+        <CursorPos X="21" Y="2042"/>
+        <UsageCount Value="19"/>
+      </Unit36>
+      <Unit37>
         <Filename Value="..\..\..\1.4.4\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="2015"/>
-        <CursorPos X="29" Y="2044"/>
-        <UsageCount Value="11"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1831"/>
-        <CursorPos X="3" Y="1851"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="1574"/>
+        <CursorPos X="14" Y="1601"/>
+        <UsageCount Value="23"/>
       </Unit37>
       <Unit38>
-        <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsstrings.pas"/>
-        <UnitName Value="uEvsStrings"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="147"/>
-        <CursorPos X="32" Y="192"/>
-        <FoldState Value=" TIlQ1{:031p"/>
-        <UsageCount Value="59"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="4816"/>
+        <CursorPos Y="4865"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit38>
       <Unit39>
+        <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsstrings.pas"/>
+        <UnitName Value="uEvsStrings"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="147"/>
+        <CursorPos X="32" Y="192"/>
+        <FoldState Value=" TIlQ1{:031p"/>
+        <UsageCount Value="103"/>
+      </Unit39>
+      <Unit40>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\win\sysutils.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="34"/>
         <CursorPos X="29" Y="42"/>
-        <UsageCount Value="59"/>
-      </Unit39>
-      <Unit40>
+        <UsageCount Value="47"/>
+      </Unit40>
+      <Unit41>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\strutils.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="208"/>
         <CursorPos X="19" Y="259"/>
-        <UsageCount Value="59"/>
-      </Unit40>
-      <Unit41>
+        <UsageCount Value="47"/>
+      </Unit41>
+      <Unit42>
         <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysstrh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="50"/>
         <CursorPos X="53" Y="79"/>
-        <UsageCount Value="59"/>
-      </Unit41>
-      <Unit42>
-        <Filename Value="..\..\..\1.4.4\lcl\buttonpanel.pas"/>
-        <UnitName Value="ButtonPanel"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="86"/>
-        <CursorPos X="19" Y="113"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="47"/>
       </Unit42>
       <Unit43>
         <Filename Value="Forms\uevsframedialog.pas"/>
@@ -425,215 +426,198 @@
         <ComponentName Value="EvsFrameDialog"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uEvsFrameDialog"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="3" Y="14"/>
-        <UsageCount Value="125"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos X="26" Y="59"/>
+        <UsageCount Value="218"/>
       </Unit43>
       <Unit44>
-        <Filename Value="..\..\..\1.4.4\lcl\graphics.pp"/>
-        <UnitName Value="Graphics"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="552"/>
-        <CursorPos X="14" Y="580"/>
-        <UsageCount Value="10"/>
-      </Unit44>
-      <Unit45>
         <Filename Value="..\..\..\1.4.4\lcl\lcltype.pp"/>
         <UnitName Value="LCLType"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="392"/>
         <CursorPos X="3" Y="421"/>
-        <UsageCount Value="53"/>
-      </Unit45>
-      <Unit46>
-        <Filename Value="..\..\..\1.4.4\lcl\lmessages.pp"/>
-        <UnitName Value="LMessages"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="293"/>
-        <CursorPos X="3" Y="322"/>
-        <UsageCount Value="11"/>
-      </Unit46>
-      <Unit47>
-        <Filename Value="..\..\..\1.4.4\lcl\stdctrls.pp"/>
-        <UnitName Value="StdCtrls"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="491"/>
-        <CursorPos X="21" Y="513"/>
-        <FoldState Value=" T7iKLl3 pjGlOK{w1}"/>
-        <UsageCount Value="11"/>
-      </Unit47>
-      <Unit48>
-        <Filename Value="..\..\..\1.4.4\lcl\include\customlistbox.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="328"/>
-        <CursorPos X="3" Y="330"/>
-        <UsageCount Value="10"/>
-      </Unit48>
-      <Unit49>
-        <Filename Value="..\..\..\1.4.4\lcl\include\font.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="805"/>
-        <CursorPos X="3" Y="829"/>
-        <UsageCount Value="10"/>
-      </Unit49>
-      <Unit50>
-        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\packages\fcl-image\src\fpcanvas.pp"/>
-        <UnitName Value="FPCanvas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="69"/>
-        <CursorPos X="14" Y="101"/>
-        <UsageCount Value="10"/>
-      </Unit50>
-      <Unit51>
+        <UsageCount Value="42"/>
+      </Unit44>
+      <Unit45>
         <Filename Value="utbtypes.pas"/>
         <UnitName Value="uTBTypes"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="35"/>
-        <CursorPos X="47" Y="64"/>
-        <UsageCount Value="14"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="132"/>
+        <CursorPos X="3" Y="166"/>
+        <UsageCount Value="72"/>
+        <Loaded Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="..\..\..\1.4.4\lcl\actnlist.pas"/>
+        <UnitName Value="ActnList"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="225"/>
+        <CursorPos X="3" Y="225"/>
+        <UsageCount Value="58"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="Frames\uevssqleditor.lfm"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="503"/>
+        <CursorPos X="8" Y="555"/>
+        <UsageCount Value="58"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="..\..\..\1.4.4\lcl\stdactns.pas"/>
+        <UnitName Value="StdActns"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="11"/>
+        <CursorPos X="30" Y="46"/>
+        <UsageCount Value="34"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="..\..\..\1.4.4\components\synedit\synedit.pp"/>
+        <UnitName Value="SynEdit"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6140"/>
+        <CursorPos X="11" Y="6186"/>
+        <UsageCount Value="22"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="..\..\..\1.4.4\components\synedit\syneditmiscclasses.pp"/>
+        <UnitName Value="SynEditMiscClasses"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="65"/>
+        <CursorPos X="3" Y="94"/>
+        <UsageCount Value="22"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="utbactions.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uTBActions"/>
+        <EditorIndex Value="8"/>
+        <CursorPos X="28" Y="18"/>
+        <FoldState Value=" TJj01QT"/>
+        <UsageCount Value="73"/>
         <Loaded Value="True"/>
       </Unit51>
       <Unit52>
-        <Filename Value="..\..\..\1.4.4\lcl\actnlist.pas"/>
-        <UnitName Value="ActnList"/>
-        <EditorIndex Value="14"/>
-        <TopLine Value="94"/>
-        <CursorPos X="3" Y="123"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <Filename Value="..\..\..\1.4.4\components\synedit\syneditkeycmds.pp"/>
+        <UnitName Value="SynEditKeyCmds"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="265"/>
+        <CursorPos X="20" Y="293"/>
+        <UsageCount Value="16"/>
       </Unit52>
       <Unit53>
-        <Filename Value="Frames\uevssqleditor.lfm"/>
-        <EditorIndex Value="13"/>
-        <TopLine Value="503"/>
-        <CursorPos X="8" Y="555"/>
-        <UsageCount Value="14"/>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysutilh.inc"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="261"/>
+        <CursorPos X="13" Y="290"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="None"/>
       </Unit53>
+      <Unit54>
+        <Filename Value="..\..\..\1.4.4\lcl\include\toolbutton.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="827"/>
+        <CursorPos X="24" Y="863"/>
+        <UsageCount Value="9"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="..\..\..\1.4.4\lcl\include\customframe.inc"/>
+        <EditorIndex Value="10"/>
+        <TopLine Value="87"/>
+        <CursorPos X="22" Y="123"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="..\..\..\1.4.4\lcl\include\graphiccontrol.inc"/>
+        <EditorIndex Value="13"/>
+        <CursorPos Y="40"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit56>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="20" HistoryIndex="18">
       <Position1>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="18" Column="52"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4103" TopLine="4074"/>
       </Position1>
       <Position2>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="54" Column="63" TopLine="9"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4105" TopLine="4074"/>
       </Position2>
       <Position3>
-        <Filename Value="uevsdbschema.pas"/>
-        <Caret Line="109" Column="16" TopLine="58"/>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="1030" TopLine="1002"/>
       </Position3>
       <Position4>
-        <Filename Value="uevsdbschema.pas"/>
-        <Caret Line="2999" Column="22" TopLine="2968"/>
+        <Filename Value="Forms\uevsmain.pas"/>
+        <Caret Line="1031" Column="43" TopLine="990"/>
       </Position4>
       <Position5>
-        <Filename Value="Frames\ufrfonteditor.pas"/>
-        <Caret Line="223" Column="22" TopLine="193"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4096" TopLine="4074"/>
       </Position5>
       <Position6>
-        <Filename Value="Frames\ufrfonteditor.pas"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4101" TopLine="4074"/>
       </Position6>
       <Position7>
-        <Filename Value="Frames\uevssqleditor.pas"/>
-        <Caret Line="8" Column="39"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4103" TopLine="4074"/>
       </Position7>
       <Position8>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="32" Column="20" TopLine="3"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4105" TopLine="4074"/>
       </Position8>
       <Position9>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="94" Column="30" TopLine="88"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4839" TopLine="4810"/>
       </Position9>
       <Position10>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="68" Column="3" TopLine="38"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4850" TopLine="4810"/>
       </Position10>
       <Position11>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="142" Column="47" TopLine="127"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4851" TopLine="4810"/>
       </Position11>
       <Position12>
-        <Filename Value="Frames\uevssqleditor.pas"/>
-        <Caret Line="34" Column="5" TopLine="6"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4852" TopLine="4810"/>
       </Position12>
       <Position13>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="64" Column="73" TopLine="9"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4851" TopLine="4810"/>
       </Position13>
       <Position14>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="125" Column="10" TopLine="84"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4852" TopLine="4810"/>
       </Position14>
       <Position15>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="130" Column="46" TopLine="94"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4851" TopLine="4810"/>
       </Position15>
       <Position16>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="81" TopLine="42"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4852" TopLine="4810"/>
       </Position16>
       <Position17>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="142" Column="53" TopLine="110"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4851" TopLine="4810"/>
       </Position17>
       <Position18>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="66" Column="51" TopLine="14"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\control.inc"/>
+        <Caret Line="4865" TopLine="4816"/>
       </Position18>
       <Position19>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="62" Column="54" TopLine="16"/>
+        <Filename Value="..\..\..\1.4.4\lcl\include\graphiccontrol.inc"/>
+        <Caret Line="40"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsstrings.pas"/>
-        <Caret Line="24" Column="37"/>
+        <Filename Value="..\..\..\1.4.4\fpc\2.6.4\source\rtl\objpas\sysutils\sysutilh.inc"/>
+        <Caret Line="290" Column="13" TopLine="261"/>
       </Position20>
-      <Position21>
-        <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsstrings.pas"/>
-        <Caret Line="174" Column="18" TopLine="138"/>
-      </Position21>
-      <Position22>
-        <Filename Value="..\..\..\Components\Evosi\Common\Src\uevsstrings.pas"/>
-        <Caret Line="175" Column="5" TopLine="145"/>
-      </Position22>
-      <Position23>
-        <Filename Value="Controls\uevstabnotebook.pas"/>
-        <Caret Line="88" Column="14" TopLine="59"/>
-      </Position23>
-      <Position24>
-        <Filename Value="Controls\uevstabnotebook.pas"/>
-        <Caret Line="78" Column="42" TopLine="40"/>
-      </Position24>
-      <Position25>
-        <Filename Value="Controls\uevsnotebook.pas"/>
-        <Caret Line="95" Column="69" TopLine="67"/>
-      </Position25>
-      <Position26>
-        <Filename Value="Controls\uevsnotebook.pas"/>
-        <Caret Line="370" Column="49" TopLine="370"/>
-      </Position26>
-      <Position27>
-        <Filename Value="Controls\uevsnotebook.pas"/>
-        <Caret Line="95" Column="39" TopLine="56"/>
-      </Position27>
-      <Position28>
-        <Filename Value="Controls\uevstabnotebook.pas"/>
-        <Caret Line="78" Column="42" TopLine="40"/>
-      </Position28>
-      <Position29>
-        <Filename Value="Controls\uevstabnotebook.pas"/>
-        <Caret Line="79" Column="89" TopLine="50"/>
-      </Position29>
-      <Position30>
-        <Filename Value="uevsguicommon.pas"/>
-        <Caret Line="62" Column="32" TopLine="24"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
@@ -660,7 +644,7 @@
         <Line Value="3017"/>
       </Item3>
     </BreakPoints>
-    <Watches Count="4">
+    <Watches Count="6">
       <Item1>
         <Expression Value="fDatabase"/>
       </Item1>
@@ -668,11 +652,17 @@
         <Expression Value="fname"/>
       </Item2>
       <Item3>
-        <Expression Value="TEvsTablePage(FDesktop.Page[vCntr]).Ftable"/>
+        <Expression Value="@apage^"/>
       </Item3>
       <Item4>
-        <Expression Value="@Result"/>
+        <Expression Value="@vobj^"/>
       </Item4>
+      <Item5>
+        <Expression Value="@vObj"/>
+      </Item5>
+      <Item6>
+        <Expression Value="@Apage"/>
+      </Item6>
     </Watches>
   </Debugging>
 </CONFIG>

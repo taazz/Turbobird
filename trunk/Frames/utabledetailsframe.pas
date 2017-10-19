@@ -5,7 +5,7 @@ unit uTableDetailsFrame;
 interface
 
 uses
-  Classes, SysUtils, CommCtrl, FileUtil, Forms, Controls, StdCtrls, ComCtrls, uEvsTabNotebook, uEvsNoteBook, uEvsDBSchema,
+  Classes, SysUtils, CommCtrl, FileUtil, Forms, Controls, StdCtrls, ComCtrls, uEvsTabNotebook, uEvsNoteBook, uEvsDBSchema, uTBTypes,
   uTableFieldsFrame;
 
 type
@@ -89,22 +89,22 @@ end;
 
 procedure TTableDetailsFrame.CreateIndicesTab;
 begin
-  {$MESSAGE WARN 'Needs Implementation'}
+  NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 procedure TTableDetailsFrame.CreateForeignKeyTab;
 begin
-  {$MESSAGE WARN 'Needs Implementation'}
+  NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 procedure TTableDetailsFrame.CreateChecksTab;
 begin
-  {$MESSAGE WARN 'Needs Implementation'}
+  NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 procedure TTableDetailsFrame.CreateTriggersTab;
 begin
-  {$MESSAGE WARN 'Needs Implementation'}
+  NotImplementedException; {$MESSAGE WARN 'Needs Implementation'}
 end;
 
 constructor TTableDetailsFrame.Create(aOwner :TComponent);

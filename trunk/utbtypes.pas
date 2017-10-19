@@ -137,7 +137,7 @@ type
   // Note: the order and count must match the array below
   // Also, do not assign values to the individual enums; code depends
   // on them starting with 0 and being continious
-  TObjectType = ( //Groups as seen in the tree.
+  TObjectType = ( //Groups as seen in the tree.  //***** DELETE
                   otUnknown,  otTables,  otGenerators,  otTriggers, otViews,   otStoredProcedures,
                   otUDFs,    otDomains, otSystemTables,
                   otRoles,  otExceptions, otUsers,   otIndexes, otConstraints);
@@ -154,9 +154,21 @@ type
     Destructor Destroy; override;
   end;
 
+//various constants used through out the application will be moved to the new utbcommons when done.
+const
+  cVBorderGap = 2;
+  cHBorderGap = 2;
+
+procedure NotImplementedException;
+
 implementation
 
-uses utbcommon;
+//uses utbcommon;
+
+procedure NotImplementedException;
+begin
+  raise ETBNotImplemented.Create('Not implemented.') at get_caller_addr(get_frame);
+end;
 
 { TDBInfo }
 {$IFDEF EVS_ThreadSafe}

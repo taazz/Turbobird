@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, virtualtreeview_package, mdolaz, uEvsMain, uDMMain, uEvsNoteBook, utbDBRegistry, uTbToArray, uEvsDBSchema, uEvsGenIntf, uEvsIntfObjects,
   uEvsSqlEditor, uEvsTabNotebook, uGridResultFrame, uGeneratorsFrame, uBaseFrame, uEvsBackupRestore, uTableDetailsFrame, uTableFieldsFrame, 
-uEvsGUICommon, uTableIndicesFrame, uEvsFrameDialog;
+uEvsGUICommon, uTableIndicesFrame, uEvsFrameDialog, uTBActions;
 
 {$R *.res}
 
